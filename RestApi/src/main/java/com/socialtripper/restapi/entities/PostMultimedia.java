@@ -1,18 +1,23 @@
 package com.socialtripper.restapi.entities;
 
-
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.validation.constraints.NotNull;
-import java.util.UUID;
 
 @Entity
 @Table(name = "posts_multimedia")
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
 public class PostMultimedia {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "post_multimedia_id")
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @ManyToOne
     @JoinColumn(name = "post_id", nullable = false)

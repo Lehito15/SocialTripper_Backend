@@ -1,17 +1,47 @@
 package com.socialtripper.restapi.entities;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.UUID;
 
 @Entity
 @Table(name = "accounts")
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class Account {
+    public Account(UUID uuid, String nickname, String email, boolean isPublic, String salt, String phone, String role, boolean isExpired, boolean isLocked, LocalDate createdAt, String homePageUrl, String description, int followersNumber, int followingNumber, int numberOfTrips, Multimedia profilePicture) {
+        this.uuid = uuid;
+        this.nickname = nickname;
+        this.email = email;
+        this.isPublic = isPublic;
+        this.salt = salt;
+        this.phone = phone;
+        this.role = role;
+        this.isExpired = isExpired;
+        this.isLocked = isLocked;
+        this.createdAt = createdAt;
+        this.homePageUrl = homePageUrl;
+        this.description = description;
+        this.followersNumber = followersNumber;
+        this.followingNumber = followingNumber;
+        this.numberOfTrips = numberOfTrips;
+        this.profilePicture = profilePicture;
+    }
+
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "account_id")
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false)
+    private UUID uuid;
 
     @Column(nullable = false, unique = true, length = 20)
     @NotNull

@@ -1,16 +1,22 @@
 package com.socialtripper.restapi.entities;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import javax.validation.constraints.NotNull;
-import java.util.UUID;
 
 @Entity
 @Table(name = "activities")
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
 public class Activity {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "activity_id")
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @Column(nullable = false, unique = true, length = 100)
     @NotNull

@@ -1,8 +1,6 @@
 package com.socialtripper.restapi.entities;
 
 import jakarta.persistence.*;
-
-import javax.validation.constraints.NotNull;
 import java.util.Set;
 import java.util.UUID;
 
@@ -10,9 +8,11 @@ import java.util.UUID;
 @Table(name = "messages")
 public class Message {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "message_id")
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false)
+    private UUID uuid;
 
     @Column(length = 10000)
     private String content;

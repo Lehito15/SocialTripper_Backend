@@ -9,9 +9,11 @@ import java.util.UUID;
 @Table(name = "employees")
 public class Employee {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "employee_id")
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false)
+    private UUID uuid;
 
     @Column(nullable = false, length = 50)
     @NotNull

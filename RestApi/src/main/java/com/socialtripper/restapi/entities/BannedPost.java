@@ -2,14 +2,11 @@ package com.socialtripper.restapi.entities;
 
 import jakarta.persistence.*;
 
-import java.util.UUID;
-
 @Entity
 @Table(name = "banned_posts")
 public class BannedPost {
     @Id
-    @Column(name = "banned_post_id")
-    private UUID id;
+    private Long id;
 
     @MapsId
     @OneToOne

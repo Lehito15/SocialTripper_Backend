@@ -2,7 +2,10 @@ package com.socialtripper.restapi.entities;
 
 
 import jakarta.persistence.*;
-
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.Set;
@@ -10,11 +13,28 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "posts")
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class Post {
+    public Post(UUID uuid, String content, LocalDate dateOfPost, boolean isExpired, boolean isLocked, int commentsNumber, int reactionsNumber, Set<PostMultimedia> postMultimedia) {
+        this.uuid = uuid;
+        this.content = content;
+        this.dateOfPost = dateOfPost;
+        this.isExpired = isExpired;
+        this.isLocked = isLocked;
+        this.commentsNumber = commentsNumber;
+        this.reactionsNumber = reactionsNumber;
+        this.postMultimedia = postMultimedia;
+    }
+
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "post_id")
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false, unique = true)
+    private UUID uuid;
 
     @Column(length = 2220)
     private String content;
@@ -45,5 +65,4 @@ public class Post {
 
     @OneToMany(mappedBy = "post")
     private Set<PostMultimedia> postMultimedia;
-
 }

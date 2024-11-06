@@ -1,18 +1,54 @@
 package com.socialtripper.restapi.entities;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
 @Table(name = "events")
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
 public class Event {
+    public Event(UUID uuid, String description, String rules, Boolean isPublic, LocalDate dateOfCreation, int numberOfParticipants, int actualNumberOfParticipants, int maxNumberOfParticipants, BigDecimal startLongitude, BigDecimal startLatitude, BigDecimal stopLongitude, BigDecimal stopLatitude, BigDecimal destinationLongitude, BigDecimal destinationLatitude, String homePageUrl, EventStatus eventStatus, Relation relation, Account owner, Multimedia icon, Set<EventActivity> eventActivities, Set<EventLanguage> eventLanguages) {
+        this.uuid = uuid;
+        this.description = description;
+        this.rules = rules;
+        this.isPublic = isPublic;
+        this.dateOfCreation = dateOfCreation;
+        this.numberOfParticipants = numberOfParticipants;
+        this.actualNumberOfParticipants = actualNumberOfParticipants;
+        this.maxNumberOfParticipants = maxNumberOfParticipants;
+        this.startLongitude = startLongitude;
+        this.startLatitude = startLatitude;
+        this.stopLongitude = stopLongitude;
+        this.stopLatitude = stopLatitude;
+        this.destinationLongitude = destinationLongitude;
+        this.destinationLatitude = destinationLatitude;
+        this.homePageUrl = homePageUrl;
+        this.eventStatus = eventStatus;
+        this.relation = relation;
+        this.owner = owner;
+        this.icon = icon;
+        this.eventActivities = eventActivities;
+        this.eventLanguages = eventLanguages;
+    }
+
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "event_id")
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false)
+    private UUID uuid;
 
     @Column(length = 5000)
     private String description;
@@ -77,5 +113,11 @@ public class Event {
     @ManyToOne
     @JoinColumn(name = "icon_id")
     private Multimedia icon;
+
+    @OneToMany(mappedBy = "event")
+    private Set<EventActivity> eventActivities;
+
+    @OneToMany(mappedBy = "event")
+    private Set<EventLanguage> eventLanguages;
 
 }
