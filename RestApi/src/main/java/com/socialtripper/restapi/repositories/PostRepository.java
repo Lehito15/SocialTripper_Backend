@@ -11,8 +11,10 @@ import java.util.UUID;
 
 @Repository
 public interface PostRepository extends JpaRepository<Post, Long> {
-    @Query(value = "select * from find_post_by_uuid(:post_uuid);", nativeQuery = true)
-    Optional<Post> findPostByUuid(@Param("post_uuid") UUID post_uuid);
+    Optional<Post> findByUuid(UUID post_uuid);
+
+    @Query(value = "select p.id from posts p where p.uuid = :post_uuid;", nativeQuery = true)
+    Optional<Long> findIdByUuid(@Param("post_uuid") UUID post_uuid);
 
     @Query(value = "select * from find_user_posts(:user_uuid);", nativeQuery = true)
     List<Post> findPostsByUserUUID(@Param("user_uuid") UUID user_uuid);
@@ -34,8 +36,5 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     @Query(value = "select expire_post(:post_uuid);", nativeQuery = true)
     boolean expirePostByUUID(@Param("post_uuid") UUID post_uuid);
-
-    @Query(value = "select e.id from events e where e.uuid = :uuid;", nativeQuery = true)
-    Optional<Long> findIdByUUID(@Param("uuid") UUID uuid);
 
 }

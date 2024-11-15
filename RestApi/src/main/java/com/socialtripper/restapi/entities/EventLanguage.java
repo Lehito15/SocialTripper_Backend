@@ -15,6 +15,17 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 public class EventLanguage {
+    public EventLanguage(Language language, BigDecimal requiredLevel) {
+        this.requiredLevel = requiredLevel;
+        this.language = language;
+    }
+
+    public EventLanguage(Event event, Language language, BigDecimal requiredLevel) {
+        this.requiredLevel = requiredLevel;
+        this.event = event;
+        this.language = language;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

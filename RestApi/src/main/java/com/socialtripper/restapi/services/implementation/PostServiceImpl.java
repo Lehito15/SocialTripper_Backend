@@ -16,6 +16,7 @@ import com.socialtripper.restapi.services.GroupService;
 import com.socialtripper.restapi.services.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -26,12 +27,9 @@ public class PostServiceImpl implements PostService {
     private final PersonalPostRepository personalPostRepository;
     private final GroupPostRepository groupPostRepository;
     private final EventPostRepository eventPostRepository;
-    private final AccountMapper accountMapper;
     private final PostMapper postMapper;
     private final GroupPostMapper groupPostMapper;
     private final EventPostMapper eventPostMapper;
-    private final GroupMapper groupMapper;
-    private final EventMapper eventMapper;
     private final AccountService accountService;
     private final GroupService groupService;
     private final EventService eventService;
@@ -42,28 +40,28 @@ public class PostServiceImpl implements PostService {
                            GroupPostRepository groupPostRepository,
                            EventPostRepository eventPostRepository,
                            PostMapper postMapper,
-                           PostMultimediaMapper postMultimediaMapper,
                            AccountService accountService,
                            GroupService groupService,
                            EventService eventService,
-                           AccountMapper accountMapper,
                            GroupPostMapper groupPostMapper,
-                           EventPostMapper eventPostMapper,
-                           GroupMapper groupMapper,
-                           EventMapper eventMapper) {
+                           EventPostMapper eventPostMapper) {
         this.postRepository = postRepository;
         this.postMapper = postMapper;
         this.personalPostRepository = personalPostRepository;
         this.groupPostRepository = groupPostRepository;
         this.eventPostRepository = eventPostRepository;
         this.accountService = accountService;
-        this.accountMapper = accountMapper;
         this.groupPostMapper = groupPostMapper;
         this.eventPostMapper = eventPostMapper;
         this.eventService = eventService;
         this.groupService = groupService;
-        this.eventMapper = eventMapper;
-        this.groupMapper = groupMapper;
+    }
+
+    @Override
+    public Post getPostReference(UUID uuid) {
+        return postRepository.getReferenceById(postRepository.findIdByUuid(uuid).orElseThrow(
+                () -> new PostNotFoundException(uuid)
+        ));
     }
 
     @Override
@@ -75,7 +73,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public PostDTO findPostByUUID(UUID uuid) {
-        return postMapper.toDTO(postRepository.findPostByUuid(uuid)
+        return postMapper.toDTO(postRepository.findByUuid(uuid)
                                                 .orElseThrow(
                                                          () -> new PostNotFoundException(uuid)
         ));
@@ -112,31 +110,36 @@ public class PostServiceImpl implements PostService {
                 .toList();
     }
 
-    private Post getPostWithPublisher(PostDTO postDTO, UUID userUUID) {
-        Post postToSave = postMapper.toEntity(postDTO);
-        Account publisherAccountReference = accountService.getAccountReference(userUUID);
-        postToSave.setAccount(publisherAccountReference);
-        return postToSave;
+    private Post getNewPostWithReferences(PostDTO postDTO, UUID userUUID) {
+        Post post = postMapper.toEntity(postDTO);
+        post.setUuid(UUID.randomUUID());
+        post.setDateOfPost(LocalDateTime.now());
+        post.setExpired(false);
+        post.setLocked(false);
+        post.setCommentsNumber(0);
+        post.setCommentsNumber(0);
+        post.setAccount(accountService.getAccountReference(userUUID));
+        return post;
     }
 
     @Override
-    public PostDTO saveUserPost(PostDTO postDTO, UUID userUUID) {
-        Post postToSave = getPostWithPublisher(postDTO, userUUID);
+    public PostDTO saveUserPost(PostDTO postDTO) {
+        Post postToSave = getNewPostWithReferences(postDTO, postDTO.account().uuid());
         PersonalPost personalPost = new PersonalPost(postToSave);
         return postMapper.toDTO(personalPostRepository.save(personalPost).getPost());
     }
 
     @Override
-    public GroupPostDTO saveGroupPost(PostDTO postDTO, UUID userUUID, UUID groupUUID) {
-        Post postToSave = getPostWithPublisher(postDTO, userUUID);
-        GroupPost groupPost = new GroupPost(postToSave, groupService.getGroupReference(groupUUID));
+    public GroupPostDTO saveGroupPost(GroupPostDTO groupPostDTO) {
+        Post postToSave = getNewPostWithReferences(groupPostDTO.post(), groupPostDTO.post().account().uuid());
+        GroupPost groupPost = new GroupPost(postToSave, groupService.getGroupReference(groupPostDTO.group().uuid()));
         return groupPostMapper.toDTO(groupPostRepository.save(groupPost));
     }
 
     @Override
-    public EventPostDTO saveEventPost(PostDTO postDTO, UUID userUUID, UUID eventUUID) {
-        Post postToSave = getPostWithPublisher(postDTO, userUUID);
-        EventPost eventPost = new EventPost(postToSave, eventService.getEventReference(eventUUID));
+    public EventPostDTO saveEventPost(EventPostDTO eventPostDTO) {
+        Post postToSave = getNewPostWithReferences(eventPostDTO.post(), eventPostDTO.post().account().uuid());
+        EventPost eventPost = new EventPost(postToSave, eventService.getEventReference(eventPostDTO.event().uuid()));
         return eventPostMapper.toDTO(eventPostRepository.save(eventPost));
     }
 
@@ -163,6 +166,15 @@ public class PostServiceImpl implements PostService {
                 "Success on locking posts of user with uuid: " + uuid,
                 postCount);
         return new UserPostsLockedMessageDTO("No posts to lock.", postCount);
+    }
+
+    @Override
+    public PostDTO updatePost(UUID uuid, PostDTO postDTO) {
+        Post postToUpdate = postMapper.copyNonNullValues(
+                getPostReference(uuid),
+                postDTO
+        );
+        return postMapper.toDTO(postRepository.save(postToUpdate));
     }
 
 

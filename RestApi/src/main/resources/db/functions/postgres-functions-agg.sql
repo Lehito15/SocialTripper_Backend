@@ -133,3 +133,88 @@ WHERE uuid = event_uuid
 RETURN result;
 END;
 $$ LANGUAGE plpgsql;
+
+
+CREATE OR REPLACE FUNCTION does_username_exist(username_input TEXT)
+RETURNS BOOLEAN AS $$
+BEGIN
+RETURN EXISTS (
+    SELECT 1
+    FROM accounts a
+    WHERE a.nickname = username_input
+);
+END;
+$$ LANGUAGE plpgsql;
+
+
+CREATE OR REPLACE FUNCTION find_user_current_groups(user_uuid UUID)
+RETURNS SETOF groups
+AS $$
+BEGIN
+RETURN QUERY
+SELECT g.*
+FROM accounts a
+         JOIN groups_participants gp ON gp.account_id = a.id
+         JOIN groups g ON g.id = gp.group_id
+WHERE a.uuid = user_uuid
+  AND gp.left_at IS NULL;
+END;
+$$ LANGUAGE plpgsql;
+
+
+CREATE OR REPLACE FUNCTION is_email_in_use(email_input TEXT)
+RETURNS BOOLEAN AS $$
+BEGIN
+RETURN EXISTS (
+    SELECT 1
+    FROM accounts a
+    WHERE a.email = email_input
+);
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION is_phone_in_use(phone_input TEXT)
+RETURNS BOOLEAN AS $$
+BEGIN
+RETURN EXISTS (
+    SELECT 1
+    FROM accounts a
+    WHERE a.phone = phone_input
+);
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE PROCEDURE userEndsFollowing(follower_uuid UUID, followed_uuid UUID)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+UPDATE follows
+SET following_to = CURRENT_TIMESTAMP
+WHERE follower_id = (SELECT a.id from accounts a where a.uuid = follower_uuid) AND
+    followed_id = (SELECT a.id from accounts a where a.uuid = followed_uuid) AND
+    following_to IS NULL;
+END;
+$$;
+
+
+CREATE OR REPLACE PROCEDURE userLeftEvent(user_uuid UUID, event_uuid UUID)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+UPDATE events_participants
+SET left_at = CURRENT_TIMESTAMP
+WHERE event_id = (SELECT e.id from events e where e.uuid = event_uuid) AND
+    account_id = (SELECT a.id from accounts a where a.uuid = user_uuid);
+END;
+$$;
+
+CREATE OR REPLACE PROCEDURE userLeftGroup(user_uuid UUID, group_uuid UUID)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+UPDATE groups_participants
+SET left_at = CURRENT_TIMESTAMP
+WHERE group_id = (SELECT g.id from groups g where g.uuid = group_uuid) AND
+    account_id = (SELECT a.id from accounts a where a.uuid = user_uuid);
+END;
+$$;

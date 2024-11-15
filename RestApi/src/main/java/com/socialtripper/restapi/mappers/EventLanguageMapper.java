@@ -8,30 +8,24 @@ import org.springframework.stereotype.Component;
 @Component
 public class EventLanguageMapper {
     private final LanguageMapper languageMapper;
-    private final EventMapper eventMapper;
 
     @Autowired
-    public EventLanguageMapper(LanguageMapper languageMapper, EventMapper eventMapper) {
+    public EventLanguageMapper(LanguageMapper languageMapper) {
         this.languageMapper = languageMapper;
-        this.eventMapper = eventMapper;
     }
 
     public EventLanguage toEntity(EventLanguageDTO eventLanguageDTO) {
         if (eventLanguageDTO == null) return null;
         return new EventLanguage(
-                eventLanguageDTO.id(),
-                eventLanguageDTO.requiredLevel(),
-                eventMapper.toEntity(eventLanguageDTO.eventDTO()),
-                languageMapper.toEntity(eventLanguageDTO.languageDTO())
+                languageMapper.toEntity(eventLanguageDTO.language()),
+                eventLanguageDTO.requiredLevel()
         );
     }
 
     public EventLanguageDTO toDTO(EventLanguage eventLanguage) {
         if (eventLanguage == null) return null;
         return new EventLanguageDTO(
-                eventLanguage.getId(),
                 eventLanguage.getRequiredLevel(),
-                eventMapper.toDTO(eventLanguage.getEvent()),
                 languageMapper.toDTO(eventLanguage.getLanguage())
         );
     }

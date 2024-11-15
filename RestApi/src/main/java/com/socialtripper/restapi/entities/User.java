@@ -1,14 +1,23 @@
 package com.socialtripper.restapi.entities;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
 @Entity
 @Table(name = "users")
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,7 +51,6 @@ public class User {
     private BigDecimal height;
 
     @Column(nullable = false, precision = 2, scale = 1)
-    @NotNull
     private BigDecimal physicality;
 
     @OneToOne
@@ -58,5 +66,19 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     private Set<UserActivity> userActivities;
+
+    public User(UUID uuid, String name, String surname, Character gender,
+                LocalDate dateOfBirth, BigDecimal weight, BigDecimal height, BigDecimal physicality) {
+        this.uuid = uuid;
+        this.name = name;
+        this.surname = surname;
+        this.gender = gender;
+        this.dateOfBirth = dateOfBirth;
+        this.weight = weight;
+        this.height = height;
+        this.physicality = physicality;
+        this.userActivities = new HashSet<>();
+        this.userLanguages = new HashSet<>();
+    }
 
 }

@@ -27,14 +27,6 @@ public class Multimedia {
     @NotNull
     private String url;
 
-    public Multimedia(UUID uuid, String url, String mimeType, String mimeSubtype, MultimediaCategory multimediaCategory) {
-        this.uuid = uuid;
-        this.url = url;
-        this.mimeType = mimeType;
-        this.mimeSubtype = mimeSubtype;
-        this.multimediaCategory = multimediaCategory;
-    }
-
     @Column(name = "mimie_type", nullable = false, length = 15)
     @NotNull
     private String mimeType;
@@ -43,7 +35,11 @@ public class Multimedia {
     @NotNull
     private String mimeSubtype;
 
-    @ManyToOne
-    @JoinColumn(name = "multimedia_category_id")
-    private MultimediaCategory multimediaCategory;
+
+    public Multimedia(UUID uuid, String url, String mimeType, String mimeSubtype) {
+        this.uuid = uuid;
+        this.url = url;
+        this.mimeType = mimeType;
+        this.mimeSubtype = mimeSubtype;
+    }
 }

@@ -5,10 +5,11 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -18,22 +19,6 @@ import java.util.UUID;
 @Getter
 @Setter
 public class Group {
-    public Group(UUID uuid, String name, int numberOfMembers, Boolean isPublic, String description, String rules, LocalDate dateOfCreation, String homePageUrl, BigDecimal locationLongitude, BigDecimal locationLatitude, LocationScope locationScope, Account owner, Multimedia icon) {
-        this.uuid = uuid;
-        this.name = name;
-        this.numberOfMembers = numberOfMembers;
-        this.isPublic = isPublic;
-        this.description = description;
-        this.rules = rules;
-        this.dateOfCreation = dateOfCreation;
-        this.homePageUrl = homePageUrl;
-        this.locationLongitude = locationLongitude;
-        this.locationLatitude = locationLatitude;
-        this.locationScope = locationScope;
-        this.owner = owner;
-        this.icon = icon;
-    }
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -60,7 +45,6 @@ public class Group {
     private String rules;
 
     @Column(name = "date_of_creation", nullable = false)
-    @NotNull
     private LocalDate dateOfCreation;
 
     @Column(name = "home_page_url", nullable = false, unique = true, length = 512)
@@ -85,5 +69,26 @@ public class Group {
     @ManyToOne
     @JoinColumn(name = "profile_picture_id")
     private Multimedia icon;
+
+    @OneToMany(mappedBy = "group")
+    private Set<GroupActivity> groupActivities;
+
+    @OneToMany(mappedBy = "group")
+    private Set<GroupLanguage> groupLanguages;
+
+    public Group(UUID uuid, String name, int numberOfMembers, Boolean isPublic, String description, String rules, LocalDate dateOfCreation, String homePageUrl, BigDecimal locationLongitude, BigDecimal locationLatitude) {
+        this.uuid = uuid;
+        this.name = name;
+        this.numberOfMembers = numberOfMembers;
+        this.isPublic = isPublic;
+        this.description = description;
+        this.rules = rules;
+        this.dateOfCreation = dateOfCreation;
+        this.homePageUrl = homePageUrl;
+        this.locationLongitude = locationLongitude;
+        this.locationLatitude = locationLatitude;
+        this.groupActivities = new HashSet<>();
+        this.groupLanguages = new HashSet<>();
+    }
 
 }

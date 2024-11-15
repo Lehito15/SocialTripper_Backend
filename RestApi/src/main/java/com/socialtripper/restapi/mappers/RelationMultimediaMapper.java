@@ -2,12 +2,10 @@ package com.socialtripper.restapi.mappers;
 
 import com.socialtripper.restapi.dto.entities.RelationMultimediaDTO;
 import com.socialtripper.restapi.entities.RelationMultimedia;
-import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-@Getter
 public class RelationMultimediaMapper {
     private MultimediaMapper multimediaMapper;
     private RelationMapper relationMapper;
