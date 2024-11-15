@@ -8,18 +8,18 @@ import org.springframework.stereotype.Component;
 @Component
 public class GroupPostMapper {
     private final PostMapper postMapper;
-    private final GroupMapper groupMapper;
+    private final GroupThumbnailMapper groupThumbnailMapper;
 
     @Autowired
-    public GroupPostMapper(PostMapper postMapper, GroupMapper groupMapper) {
+    public GroupPostMapper(PostMapper postMapper, GroupThumbnailMapper groupThumbnailMapper) {
         this.postMapper = postMapper;
-        this.groupMapper = groupMapper;
+        this.groupThumbnailMapper = groupThumbnailMapper;
     }
 
     public GroupPost toEntity(GroupPostDTO groupPostDTO) {
         if (groupPostDTO == null) return null;
         return new GroupPost(
-                postMapper.toEntity(groupPostDTO.postDTO())
+                postMapper.toEntity(groupPostDTO.post())
         );
     }
 
@@ -27,7 +27,7 @@ public class GroupPostMapper {
         if (groupPost == null) return null;
         return new GroupPostDTO(
                 postMapper.toDTO(groupPost.getPost()),
-                groupPost.getGroup().getUuid()
+                groupThumbnailMapper.toDTO(groupPost.getGroup())
         );
     }
 }

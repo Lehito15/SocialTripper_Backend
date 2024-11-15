@@ -1,15 +1,17 @@
 package com.socialtripper.restapi.dto.entities;
 
+import com.socialtripper.restapi.dto.thumbnails.AccountThumbnailDTO;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
 
 public record EventDTO(UUID uuid, String description, String rules,
-                       Boolean isPublic, LocalDate dateOfCreation, int numberOfParticipants,
-                       int actualNumberOfParticipants, int maxNumberOfParticipants, BigDecimal startLongitude,
+                       Boolean isPublic, LocalDate dateOfCreation, LocalDateTime eventStartTime, LocalDateTime eventEndTime, Integer numberOfParticipants,
+                       Integer actualNumberOfParticipants, Integer maxNumberOfParticipants, BigDecimal startLongitude,
                        BigDecimal startLatitude, BigDecimal stopLongitude, BigDecimal stopLatitude,
                        BigDecimal destinationLongitude, BigDecimal destinationLatitude, String homePageUrl,
-                       EventStatusDTO eventStatusDTO, RelationDTO relationDTO, AccountDTO ownerDTO, MultimediaDTO iconDTO,
-                       Set<EventActivityDTO> eventActivitiesDTO, Set<EventLanguageDTO> eventLanguagesDTO) {
+                       EventStatusDTO eventStatus, RelationDTO relation, AccountThumbnailDTO owner,
+                       MultimediaDTO icon, Set<EventActivityDTO> activities, Set<EventLanguageDTO> languages) {
 }

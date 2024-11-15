@@ -41,11 +41,31 @@ public class AccountMapper {
                 account.isExpired(),
                 account.isLocked(),
                 account.getCreatedAt(),
-                account.getHomePageUrl(),account.getHomePageUrl(),
+                account.getHomePageUrl(),
+                account.getDescription(),
                 account.getFollowersNumber(),
                 account.getFollowingNumber(),
                 account.getNumberOfTrips(),
                 account.getProfilePicture()
         );
+    }
+
+    public Account copyNonNullValues(Account account, AccountDTO accountDTO) {
+        if (accountDTO == null) return null;
+        if (accountDTO.uuid() != null) account.setUuid(accountDTO.uuid());
+        if (accountDTO.nickname() != null) account.setNickname(accountDTO.nickname());
+        if (accountDTO.email() != null) account.setEmail(accountDTO.email());
+        if (accountDTO.salt() != null) account.setSalt(accountDTO.salt());
+        if (accountDTO.phone() != null) account.setPhone(accountDTO.phone());
+        if (accountDTO.role() != null) account.setRole(accountDTO.role());
+        account.setPublic(accountDTO.isPublic());
+        account.setExpired(accountDTO.isExpired());
+        account.setLocked(accountDTO.isLocked());
+        if (accountDTO.createdAt() != null) account.setCreatedAt(accountDTO.createdAt());
+        if (accountDTO.homePageUrl() != null) account.setHomePageUrl(accountDTO.homePageUrl());
+        account.setFollowersNumber(accountDTO.followersNumber());
+        account.setFollowingNumber(accountDTO.followingNumber());
+        account.setNumberOfTrips(accountDTO.numberOfTrips());
+        return account;
     }
 }

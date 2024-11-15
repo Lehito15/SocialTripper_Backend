@@ -1,7 +1,8 @@
 package com.socialtripper.restapi.dto.entities;
 
 
-import java.util.UUID;
+import com.socialtripper.restapi.dto.thumbnails.EventThumbnailDTO;
 
-public record EventPostDTO(PostDTO postDTO, UUID eventUUID) {
+
+public record EventPostDTO(PostDTO post, EventThumbnailDTO event) {
 }

@@ -30,6 +30,14 @@ public class FaultController {
     }
 
     @ResponseBody
+    @ExceptionHandler(AccountNotFoundException.class)
+    @ResponseStatus(value = HttpStatus.NOT_FOUND)
+    ResponseEntity<ErrorDTO> accountNotFoundExceptionHandler(AccountNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ErrorDTO(HttpURLConnection.HTTP_NOT_FOUND,HttpStatus.NOT_FOUND, e.getMessage()));
+    }
+
+    @ResponseBody
     @ExceptionHandler(UserNotFoundException.class)
     @ResponseStatus(value = HttpStatus.NOT_FOUND)
     ResponseEntity<ErrorDTO> userNotFoundExceptionHandler(UserNotFoundException e) {
@@ -43,6 +51,30 @@ public class FaultController {
     ResponseEntity<ErrorDTO> groupNotFoundExceptionHandler(GroupNotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(new ErrorDTO(HttpURLConnection.HTTP_NOT_FOUND,HttpStatus.NOT_FOUND, e.getMessage()));
+    }
+
+    @ResponseBody
+    @ExceptionHandler(UsernameAlreadyTakenException.class)
+    @ResponseStatus(value = HttpStatus.CONFLICT)
+    ResponseEntity<ErrorDTO> usernameTakenExceptionHandler(UsernameAlreadyTakenException e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(new ErrorDTO(HttpURLConnection.HTTP_CONFLICT,HttpStatus.CONFLICT, e.getMessage()));
+    }
+
+    @ResponseBody
+    @ExceptionHandler(PhoneNumberAlreadyInUseException.class)
+    @ResponseStatus(value = HttpStatus.CONFLICT)
+    ResponseEntity<ErrorDTO> phoneNumberTakenExceptionHandler(PhoneNumberAlreadyInUseException e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(new ErrorDTO(HttpURLConnection.HTTP_CONFLICT,HttpStatus.CONFLICT, e.getMessage()));
+    }
+
+    @ResponseBody
+    @ExceptionHandler(EmailAlreadyInUseException.class)
+    @ResponseStatus(value = HttpStatus.CONFLICT)
+    ResponseEntity<ErrorDTO> emailAddressTakenExceptionHandler(EmailAlreadyInUseException e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(new ErrorDTO(HttpURLConnection.HTTP_CONFLICT,HttpStatus.CONFLICT, e.getMessage()));
     }
 
 }

@@ -1,7 +1,7 @@
 package com.socialtripper.restapi.dto.entities;
 
 
-import java.util.UUID;
+import com.socialtripper.restapi.dto.thumbnails.GroupThumbnailDTO;
 
-public record GroupPostDTO (PostDTO postDTO, UUID groupUUID) {
+public record GroupPostDTO (PostDTO post, GroupThumbnailDTO group) {
 }

@@ -1,5 +1,7 @@
 package com.socialtripper.restapi.dto.messages;
 
 
-public record UserLeavesGroupMessageDTO (String message){
+import java.util.UUID;
+
+public record UserLeavesGroupMessageDTO (UUID userUUID, UUID groupUUID, String message){
 }

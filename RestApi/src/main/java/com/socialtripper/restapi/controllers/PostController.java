@@ -11,10 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.net.HttpURLConnection;
 import java.util.List;
@@ -59,41 +56,41 @@ public class PostController {
         return ResponseEntity.ok(postService.findPostsByEventUUID(uuid));
     }
 
-    @PostMapping("/users/{uuid}/posts")
-    public ResponseEntity<PostDTO> createPersonalPost(@PathVariable UUID uuid, @RequestBody PostDTO postDTO) {
-        return ResponseEntity.status(HttpURLConnection.HTTP_CREATED).body(postService.saveUserPost(postDTO, uuid));
+    @PostMapping("/posts")
+    public ResponseEntity<PostDTO> createPersonalPost(@RequestBody PostDTO postDTO) {
+        return ResponseEntity.status(HttpURLConnection.HTTP_CREATED).body(postService.saveUserPost(postDTO));
     }
 
-    @PostMapping("/users/{user-uuid}/groups/{group-uuid}/posts")
-    public ResponseEntity<GroupPostDTO> createGroupPost(@PathVariable(name = "user-uuid") UUID userUUID,
-                                                                @PathVariable(name = "group-uuid") UUID groupUUID,
-                                                                @RequestBody PostDTO postDTO) {
+    @PostMapping("/posts/group-post")
+    public ResponseEntity<GroupPostDTO> createGroupPost(@RequestBody GroupPostDTO postDTO) {
         return ResponseEntity.status(HttpURLConnection.HTTP_CREATED)
-                                .body(postService.saveGroupPost(postDTO, userUUID, groupUUID));
+                                .body(postService.saveGroupPost(postDTO));
     }
 
-    @PostMapping("/users/{user-uuid}/events/{event-uuid}/posts")
-    public ResponseEntity<EventPostDTO> createEventPost(@PathVariable(name = "user-uuid") UUID userUUID,
-                                                        @PathVariable(name = "event-uuid") UUID eventUUID,
-                                                        @RequestBody PostDTO postDTO) {
+    @PostMapping("/posts/event-post")
+    public ResponseEntity<EventPostDTO> createEventPost(@RequestBody EventPostDTO postDTO) {
         return ResponseEntity.status(HttpURLConnection.HTTP_CREATED)
-                .body(postService.saveEventPost(postDTO, userUUID, eventUUID));
+                .body(postService.saveEventPost(postDTO));
     }
 
-    @GetMapping("/posts/{uuid}/expire-post")
+    @DeleteMapping("/posts/{uuid}/expire-post")
     public ResponseEntity<PostExpiredMessageDTO> expirePostByUUID(@PathVariable UUID uuid) {
         return ResponseEntity.ok(postService.expirePostByUUID(uuid));
     }
 
-    @GetMapping("/posts/{uuid}/expire-user-posts")
+    @DeleteMapping("/posts/{uuid}/expire-user-posts")
     public ResponseEntity<UserPostsExpiredMessageDTO> expireUserPostsByUUID(@PathVariable UUID uuid) {
         return ResponseEntity.ok(postService.expirePostsByUserUUID(uuid));
     }
 
-    @GetMapping("/posts/{uuid}/lock-user-posts")
+    @DeleteMapping("/posts/{uuid}/lock-user-posts")
     public ResponseEntity<UserPostsLockedMessageDTO> lockUserPostsByUUID(@PathVariable UUID uuid) {
         return ResponseEntity.ok(postService.lockPostByUUID(uuid));
     }
 
+    @PatchMapping("/posts/{uuid}")
+    public ResponseEntity<PostDTO> updatePost(@PathVariable UUID uuid, @RequestBody PostDTO postDTO) {
+        return ResponseEntity.ok(postService.updatePost(uuid, postDTO));
+    }
 
 }

@@ -31,4 +31,15 @@ public class EventActivity {
     @JoinColumn(name = "activity_id", nullable = false)
     @NotNull
     private Activity activity;
+
+    public EventActivity(Event event, Activity activity, BigDecimal requiredExperience) {
+        this.requiredExperience = requiredExperience;
+        this.event = event;
+        this.activity = activity;
+    }
+
+    public EventActivity(Activity activity, BigDecimal requiredExperience) {
+        this.requiredExperience = requiredExperience;
+        this.activity = activity;
+    }
 }

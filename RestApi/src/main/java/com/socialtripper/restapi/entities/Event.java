@@ -5,10 +5,12 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.DynamicUpdate;
 
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
 
@@ -18,13 +20,21 @@ import java.util.UUID;
 @AllArgsConstructor
 @Getter
 @Setter
+@DynamicUpdate
 public class Event {
-    public Event(UUID uuid, String description, String rules, Boolean isPublic, LocalDate dateOfCreation, int numberOfParticipants, int actualNumberOfParticipants, int maxNumberOfParticipants, BigDecimal startLongitude, BigDecimal startLatitude, BigDecimal stopLongitude, BigDecimal stopLatitude, BigDecimal destinationLongitude, BigDecimal destinationLatitude, String homePageUrl, EventStatus eventStatus, Relation relation, Account owner, Multimedia icon, Set<EventActivity> eventActivities, Set<EventLanguage> eventLanguages) {
+    public Event(UUID uuid, String description, String rules, Boolean isPublic, LocalDate dateOfCreation,
+                 LocalDateTime eventStartTime, LocalDateTime eventEndTime, int numberOfParticipants, int actualNumberOfParticipants,
+                 int maxNumberOfParticipants, BigDecimal startLongitude, BigDecimal startLatitude, BigDecimal stopLongitude,
+                 BigDecimal stopLatitude, BigDecimal destinationLongitude, BigDecimal destinationLatitude, String homePageUrl,
+                 EventStatus eventStatus, Relation relation, Account owner, Multimedia icon, Set<EventActivity> eventActivities,
+                 Set<EventLanguage> eventLanguages) {
         this.uuid = uuid;
         this.description = description;
         this.rules = rules;
         this.isPublic = isPublic;
         this.dateOfCreation = dateOfCreation;
+        this.eventStartTime = eventStartTime;
+        this.eventEndTime = eventEndTime;
         this.numberOfParticipants = numberOfParticipants;
         this.actualNumberOfParticipants = actualNumberOfParticipants;
         this.maxNumberOfParticipants = maxNumberOfParticipants;
@@ -61,8 +71,13 @@ public class Event {
     private Boolean isPublic;
 
     @Column(name = "date_of_creation", nullable = false)
-    @NotNull
     private LocalDate dateOfCreation;
+
+    @Column(name = "event_start_time")
+    private LocalDateTime eventStartTime;
+
+    @Column(name = "event_end_time")
+    private LocalDateTime eventEndTime;
 
     @Column(name = "number_of_participants", nullable = false)
     @NotNull
@@ -101,7 +116,7 @@ public class Event {
     @NotNull
     private EventStatus eventStatus;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "relation_id")
     private Relation relation;
 
