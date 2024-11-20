@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import java.net.HttpURLConnection;
 import java.util.List;
 import java.util.UUID;
@@ -29,8 +30,10 @@ public class AccountController {
     }
 
     @PostMapping("/accounts")
-    public ResponseEntity<AccountThumbnailDTO> createAccount(@RequestBody AccountDTO accountDTO) {
-        return ResponseEntity.status(HttpURLConnection.HTTP_CREATED).body(accountService.createAccount(accountDTO));
+    public ResponseEntity<AccountThumbnailDTO> createAccount(@RequestPart AccountDTO accountDTO,
+                                                             @RequestPart(required = false) MultipartFile profilePicture) {
+        return ResponseEntity.status(HttpURLConnection.HTTP_CREATED)
+                                .body(accountService.createAccount(accountDTO, profilePicture));
     }
 
     @PatchMapping("/accounts/{uuid}")

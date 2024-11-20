@@ -1,4 +1,4 @@
 package com.socialtripper.restapi.dto.entities;
 
-public record PostMultimediaDTO(Long id, PostDTO postDTO, MultimediaDTO multimediaDTO) {
+public record PostMultimediaDTO(Long id, PostDTO postDTO, String multimediaDTO) {
 }

@@ -1,18 +1,22 @@
 package com.socialtripper.restapi.controllers;
 
-import com.socialtripper.restapi.dto.entities.EventDTO;
-import com.socialtripper.restapi.dto.entities.EventStatusDTO;
-import com.socialtripper.restapi.dto.entities.GroupEventDTO;
+import com.socialtripper.restapi.dto.entities.*;
 import com.socialtripper.restapi.dto.messages.EventStatusChangedMessageDTO;
 import com.socialtripper.restapi.dto.messages.UserJoinsEventMessageDTO;
 import com.socialtripper.restapi.dto.messages.UserLeavesEventMessageDTO;
+import com.socialtripper.restapi.dto.requests.EventMultimediaMetadataDTO;
+import com.socialtripper.restapi.dto.requests.UserPathPointsDTO;
+import com.socialtripper.restapi.dto.requests.UserRequestEventDTO;
+import com.socialtripper.restapi.dto.thumbnails.UserJourneyInEventDTO;
 import com.socialtripper.restapi.services.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import java.net.HttpURLConnection;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Controller
@@ -35,8 +39,9 @@ public class EventController {
     }
 
     @PostMapping("/events")
-    public ResponseEntity<EventDTO> createEvent(@RequestBody EventDTO eventDTO) {
-        return ResponseEntity.status(HttpURLConnection.HTTP_CREATED).body(eventService.createEvent(eventDTO));
+    public ResponseEntity<EventDTO> createEvent(@RequestPart EventDTO event,
+                                                @RequestPart(required = false) MultipartFile icon) {
+        return ResponseEntity.status(HttpURLConnection.HTTP_CREATED).body(eventService.createEvent(event, icon));
     }
 
     @PostMapping("/events/group-events")
@@ -77,4 +82,38 @@ public class EventController {
     public ResponseEntity<List<EventDTO>> getUpcomingEvents(@PathVariable UUID uuid) {
         return ResponseEntity.ok(eventService.findUserUpcomingEvents(uuid));
     }
+
+    @PostMapping("/events/multimedia")
+    public ResponseEntity<EventMultimediaMetadataDTO> uploadEventMultimedia(@RequestPart MultipartFile multimedia,
+                                                                            @RequestPart EventMultimediaMetadataDTO eventMultimediaMetadataDTO) {
+        return ResponseEntity.status(HttpURLConnection.HTTP_CREATED).body(
+                eventService.uploadEventMultimedia(eventMultimediaMetadataDTO, multimedia)
+        );
+    }
+
+    @PostMapping("/events/path-points")
+    public ResponseEntity<UserPathPointsDTO> addUserPathPoints(@RequestBody UserPathPointsDTO userPathPointsDTO) {
+        return ResponseEntity.status(HttpURLConnection.HTTP_CREATED).body(
+                eventService.addUserPathPoints(userPathPointsDTO)
+        );
+    }
+
+    @PostMapping("/events/requests")
+    public ResponseEntity<UserRequestEventDTO> userApplyForEvent(@RequestBody UserRequestEventDTO userRequestEventDTO) {
+        return ResponseEntity.status(HttpURLConnection.HTTP_CREATED).body(
+                eventService.userAppliesForEvent(userRequestEventDTO)
+        );
+    }
+
+    @GetMapping("/events/{uuid}/requests")
+    public ResponseEntity<List<Map<String, Object>>> getEventRequests(@PathVariable UUID uuid) {
+        return ResponseEntity.ok(eventService.findEventRequest(uuid));
+    }
+
+    @GetMapping("/events/{event-uuid}/users/{user-uuid}")
+    public ResponseEntity<UserJourneyInEventDTO> getUserJourneyInEvent(@PathVariable("event-uuid") UUID eventUUID,
+                                                                       @PathVariable("user-uuid") UUID userUUID) {
+        return ResponseEntity.ok(eventService.getUserJourneyInEvent(eventUUID, userUUID));
+    }
+
 }

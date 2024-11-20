@@ -2,19 +2,16 @@ package com.socialtripper.restapi.mappers;
 
 import com.socialtripper.restapi.dto.entities.EventDTO;
 import com.socialtripper.restapi.entities.Event;
-import com.socialtripper.restapi.entities.Multimedia;
+import com.socialtripper.restapi.nodes.EventNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import java.util.HashSet;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Component
 public class EventMapper {
     private EventStatusMapper eventStatusMapper;
-    private RelationMapper relationMapper;
     private AccountThumbnailMapper accountThumbnailMapper;
-    private MultimediaMapper multimediaMapper;
     private EventActivityMapper eventActivityMapper;
     private EventLanguageMapper eventLanguageMapper;
 
@@ -34,30 +31,15 @@ public class EventMapper {
     }
 
     @Autowired
-    public void setRelationMapper(RelationMapper relationMapper) {
-        this.relationMapper = relationMapper;
-    }
-
-    @Autowired
     public void setAccountThumbnailMapper(AccountThumbnailMapper accountThumbnailMapper) {
         this.accountThumbnailMapper = accountThumbnailMapper;
     }
 
-    @Autowired
-    public void setMultimediaMapper(MultimediaMapper multimediaMapper) {
-        this.multimediaMapper = multimediaMapper;
-    }
-
     public Event toEntity(EventDTO eventDTO) {
         if (eventDTO == null) return null;
-
-        Multimedia eventIcon = eventDTO.icon() == null ? null : new Multimedia(UUID.randomUUID(),
-                eventDTO.icon().url(),
-                eventDTO.icon().mimeType(),
-                eventDTO.icon().mimeSubtype());
-
         return new Event(
                 eventDTO.uuid(),
+                eventDTO.destination(),
                 eventDTO.description(),
                 eventDTO.rules(),
                 eventDTO.isPublic(),
@@ -77,7 +59,7 @@ public class EventMapper {
                 null,
                 null,
                 null,
-                eventIcon,
+                null,
                 new HashSet<>(),
                 new HashSet<>());
     }
@@ -86,6 +68,7 @@ public class EventMapper {
         if (event == null) return null;
         return new EventDTO(
                 event.getUuid(),
+                event.getDescription(),
                 event.getDescription(),
                 event.getRules(),
                 event.getIsPublic(),
@@ -103,11 +86,28 @@ public class EventMapper {
                 event.getDestinationLatitude(),
                 event.getHomePageUrl(),
                 eventStatusMapper.toDTO(event.getEventStatus()),
-                relationMapper.toDTO(event.getRelation()),
                 accountThumbnailMapper.toDTO(event.getOwner()),
-                multimediaMapper.toDTO(event.getIcon()),
+                event.getIconUrl(),
                 event.getEventActivities().stream().map(eventActivityMapper::toDTO).collect(Collectors.toSet()),
                 event.getEventLanguages().stream().map(eventLanguageMapper::toDTO).collect(Collectors.toSet())
+        );
+    }
+
+    public EventNode toNode(Event event) {
+        if (event == null) return null;
+        return new EventNode(
+                event.getUuid(),
+                event.getDescription(),
+                event.getIsPublic(),
+                event.getIconUrl(),
+                event.getEventStartTime(),
+                event.getEventEndTime(),
+                event.getDestination(),
+                event.getHomePageUrl(),
+                event.getEventLanguages().stream().map(
+                        eventLanguage -> eventLanguage.getLanguage().getName()).collect(Collectors.toSet()),
+                event.getEventActivities().stream().map(
+                        eventActivity -> eventActivity.getActivity().getName()).collect(Collectors.toSet())
         );
     }
 
@@ -119,9 +119,9 @@ public class EventMapper {
         if (eventDTO.isPublic() != null) event.setIsPublic(eventDTO.isPublic());
         if (eventDTO.eventStartTime() != null) event.setEventStartTime(eventDTO.eventStartTime());
         if (eventDTO.eventEndTime() != null) event.setEventEndTime(eventDTO.eventEndTime());
-        if (eventDTO.numberOfParticipants() != null) event.setNumberOfParticipants(eventDTO.numberOfParticipants());
-        if (eventDTO.actualNumberOfParticipants() != null) event.setActualNumberOfParticipants(eventDTO.actualNumberOfParticipants());
-        if (eventDTO.maxNumberOfParticipants() != null) event.setMaxNumberOfParticipants(eventDTO.maxNumberOfParticipants());
+        event.setNumberOfParticipants(eventDTO.numberOfParticipants());
+        event.setActualNumberOfParticipants(eventDTO.actualNumberOfParticipants());
+        event.setMaxNumberOfParticipants(eventDTO.maxNumberOfParticipants());
         if (eventDTO.startLongitude() != null) event.setStartLatitude(eventDTO.startLongitude());
         if (eventDTO.startLatitude() != null) event.setStartLatitude(eventDTO.startLatitude());
         if (eventDTO.stopLongitude() != null) event.setStopLatitude(eventDTO.stopLongitude());

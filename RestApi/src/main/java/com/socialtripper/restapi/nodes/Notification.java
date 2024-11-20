@@ -22,5 +22,5 @@ public class Notification {
     private LocalDateTime expirationTime;
 
     @Relationship(type = "NOTIFIES")
-    private Set<User> notificationUsers;
+    private Set<UserNode> notificationUsers;
 }

@@ -2,13 +2,13 @@ package com.socialtripper.restapi.mappers;
 
 import com.socialtripper.restapi.dto.entities.GroupDTO;
 import com.socialtripper.restapi.entities.Group;
+import com.socialtripper.restapi.nodes.GroupNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import java.util.stream.Collectors;
 
 @Component
 public class GroupMapper {
-    private MultimediaMapper multimediaMapper;
     private AccountThumbnailMapper accountThumbnailMapper;
     private ActivityMapper activityMapper;
     private LanguageMapper languageMapper;
@@ -21,11 +21,6 @@ public class GroupMapper {
     @Autowired
     public void setLanguageMapper(LanguageMapper languageMapper) {
         this.languageMapper = languageMapper;
-    }
-
-    @Autowired
-    public void setMultimediaMapper(MultimediaMapper multimediaMapper) {
-        this.multimediaMapper = multimediaMapper;
     }
 
     @Autowired
@@ -64,13 +59,28 @@ public class GroupMapper {
                 group.getLocationLatitude(),
                 group.getLocationScope(),
                 accountThumbnailMapper.toDTO(group.getOwner()),
-                multimediaMapper.toDTO(group.getIcon()),
+                group.getIconUrl(),
                 group.getGroupActivities().stream().map(
                         groupActivity -> activityMapper.toDTO(groupActivity.getActivity())
                 ).collect(Collectors.toSet()),
                 group.getGroupLanguages().stream().map(
                         groupLanguage -> languageMapper.toDTO(groupLanguage.getLanguage())
                 ).collect(Collectors.toSet())
+        );
+    }
+
+    public GroupNode toNode(Group group) {
+        if (group == null) return null;
+        return new GroupNode(
+                group.getUuid(),
+                group.getName(),
+                group.getIsPublic(),
+                group.getHomePageUrl(),
+                group.getIconUrl(),
+                group.getGroupLanguages().stream().map(
+                        groupLanguage -> groupLanguage.getLanguage().getName()).collect(Collectors.toSet()),
+                group.getGroupActivities().stream().map(
+                        groupActivity -> groupActivity.getActivity().getName()).collect(Collectors.toSet())
         );
     }
 

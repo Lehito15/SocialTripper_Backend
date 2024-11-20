@@ -20,15 +20,15 @@ import java.util.UUID;
 @AllArgsConstructor
 @Getter
 @Setter
-@DynamicUpdate
 public class Event {
-    public Event(UUID uuid, String description, String rules, Boolean isPublic, LocalDate dateOfCreation,
+    public Event(UUID uuid, String destination, String description, String rules, Boolean isPublic, LocalDate dateOfCreation,
                  LocalDateTime eventStartTime, LocalDateTime eventEndTime, int numberOfParticipants, int actualNumberOfParticipants,
                  int maxNumberOfParticipants, BigDecimal startLongitude, BigDecimal startLatitude, BigDecimal stopLongitude,
                  BigDecimal stopLatitude, BigDecimal destinationLongitude, BigDecimal destinationLatitude, String homePageUrl,
-                 EventStatus eventStatus, Relation relation, Account owner, Multimedia icon, Set<EventActivity> eventActivities,
+                 EventStatus eventStatus, Relation relation, Account owner, String iconUrl, Set<EventActivity> eventActivities,
                  Set<EventLanguage> eventLanguages) {
         this.uuid = uuid;
+        this.destination = destination;
         this.description = description;
         this.rules = rules;
         this.isPublic = isPublic;
@@ -48,7 +48,7 @@ public class Event {
         this.eventStatus = eventStatus;
         this.relation = relation;
         this.owner = owner;
-        this.icon = icon;
+        this.iconUrl = iconUrl;
         this.eventActivities = eventActivities;
         this.eventLanguages = eventLanguages;
     }
@@ -59,6 +59,9 @@ public class Event {
 
     @Column(nullable = false)
     private UUID uuid;
+
+    @Column(length = 100)
+    private String destination;
 
     @Column(length = 5000)
     private String description;
@@ -125,9 +128,8 @@ public class Event {
     @NotNull
     private Account owner;
 
-    @ManyToOne
-    @JoinColumn(name = "icon_id")
-    private Multimedia icon;
+    @Column(name = "icon_url")
+    private String iconUrl;
 
     @OneToMany(mappedBy = "event")
     private Set<EventActivity> eventActivities;

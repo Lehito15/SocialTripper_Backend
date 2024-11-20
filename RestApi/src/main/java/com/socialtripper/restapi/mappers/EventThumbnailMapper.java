@@ -31,7 +31,7 @@ public class EventThumbnailMapper {
                 event.getNumberOfParticipants(),
                 event.getHomePageUrl(),
                 eventStatusMapper.toDTO(event.getEventStatus()),
-                multimediaMapper.toDTO(event.getIcon()),
+                event.getIconUrl(),
                 event.getEventActivities().stream().map(eventActivityMapper::toDTO).collect(Collectors.toSet()),
                 event.getEventLanguages().stream().map(eventLanguageMapper::toDTO).collect(Collectors.toSet())
         );

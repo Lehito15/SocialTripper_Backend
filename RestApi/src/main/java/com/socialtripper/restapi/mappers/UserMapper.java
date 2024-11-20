@@ -2,6 +2,7 @@ package com.socialtripper.restapi.mappers;
 
 import com.socialtripper.restapi.dto.entities.UserDTO;
 import com.socialtripper.restapi.entities.User;
+import com.socialtripper.restapi.nodes.UserNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import java.util.stream.Collectors;
@@ -65,6 +66,23 @@ public class UserMapper {
         );
     }
 
+    public UserNode toNode(User user) {
+        if (user == null) return null;
+        return new UserNode(
+                user.getUuid(),
+                user.getName(),
+                user.getSurname(),
+                user.getAccount().getNickname(),
+                user.getAccount().isPublic(),
+                user.getAccount().isLocked(),
+                user.getAccount().getProfilePictureUrl(),
+                user.getUserLanguages().stream().map(
+                        userLanguage -> userLanguage.getLanguage().getName()).collect(Collectors.toSet()),
+                user.getUserActivities().stream().map(
+                        userActivity -> userActivity.getActivity().getName()).collect(Collectors.toSet())
+        );
+    }
+
     public User copyNonNullValues(User user, UserDTO userDTO) {
         if (userDTO == null) return null;
         if (userDTO.uuid() != null) user.setUuid(userDTO.uuid());
@@ -75,7 +93,6 @@ public class UserMapper {
         if (userDTO.weight() != null) user.setWeight(userDTO.weight());
         if (userDTO.height() != null) user.setHeight(userDTO.height());
         if (userDTO.physicality() != null) user.setPhysicality(userDTO.physicality());
-
         return user;
     }
 }

@@ -8,5 +8,5 @@ import java.util.UUID;
 public record PostDTO(UUID uuid, String content, LocalDateTime dateOfPost,
                       Boolean isExpired, Boolean isLocked, Integer commentsNumber,
                       Integer reactionsNumber, AccountThumbnailDTO account,
-                      Set<PostMultimediaDTO> postMultimedia) {
+                      Set<String> postMultimediaUrls) {
 }

@@ -7,10 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import javax.validation.constraints.NotNull;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -54,12 +51,9 @@ public class Post {
     @NotNull
     private Account account;
 
-    @OneToMany(mappedBy = "post")
-    private Set<PostMultimedia> postMultimedia;
 
     public Post(UUID uuid, String content) {
         this.uuid = uuid;
         this.content = content;
-        this.postMultimedia = new HashSet<>();
     }
 }

@@ -6,7 +6,7 @@ import com.socialtripper.restapi.dto.messages.UserEndsFollowingMessageDTO;
 import com.socialtripper.restapi.dto.messages.UserStartsFollowingMessageDTO;
 import com.socialtripper.restapi.dto.thumbnails.AccountThumbnailDTO;
 import com.socialtripper.restapi.entities.Account;
-
+import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 import java.util.UUID;
 
@@ -16,7 +16,7 @@ public interface AccountService {
     Long getAccountIdByUUID(UUID uuid);
     AccountThumbnailDTO findAccountByUUID(UUID uuid);
     AccountThumbnailDTO updateAccount(UUID uuid, AccountDTO accountDTO);
-    AccountThumbnailDTO createAccount(AccountDTO accountDTO);
+    AccountThumbnailDTO createAccount(AccountDTO accountDTO, MultipartFile profilePicture);
     UserStartsFollowingMessageDTO followUser(FollowDTO followDTO);
     UserEndsFollowingMessageDTO unfollowUser(FollowDTO followDTO);
     List<AccountThumbnailDTO> getFollowedAccounts(UUID uuid);

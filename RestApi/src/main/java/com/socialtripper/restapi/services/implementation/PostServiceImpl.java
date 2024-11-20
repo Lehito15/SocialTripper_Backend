@@ -9,21 +9,28 @@ import com.socialtripper.restapi.dto.messages.UserPostsLockedMessageDTO;
 import com.socialtripper.restapi.entities.*;
 import com.socialtripper.restapi.exceptions.PostNotFoundException;
 import com.socialtripper.restapi.mappers.*;
-import com.socialtripper.restapi.repositories.*;
-import com.socialtripper.restapi.services.AccountService;
-import com.socialtripper.restapi.services.EventService;
-import com.socialtripper.restapi.services.GroupService;
-import com.socialtripper.restapi.services.PostService;
+import com.socialtripper.restapi.nodes.PostNode;
+import com.socialtripper.restapi.repositories.graph.PostNodeRepository;
+import com.socialtripper.restapi.repositories.relational.EventPostRepository;
+import com.socialtripper.restapi.repositories.relational.GroupPostRepository;
+import com.socialtripper.restapi.repositories.relational.PersonalPostRepository;
+import com.socialtripper.restapi.repositories.relational.PostRepository;
+import com.socialtripper.restapi.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
 public class PostServiceImpl implements PostService {
     private final PostRepository postRepository;
+    private final PostNodeRepository postNodeRepository;
     private final PersonalPostRepository personalPostRepository;
     private final GroupPostRepository groupPostRepository;
     private final EventPostRepository eventPostRepository;
@@ -31,6 +38,8 @@ public class PostServiceImpl implements PostService {
     private final GroupPostMapper groupPostMapper;
     private final EventPostMapper eventPostMapper;
     private final AccountService accountService;
+    private final UserService userService;
+    private final MultimediaService multimediaService;
     private final GroupService groupService;
     private final EventService eventService;
 
@@ -44,7 +53,10 @@ public class PostServiceImpl implements PostService {
                            GroupService groupService,
                            EventService eventService,
                            GroupPostMapper groupPostMapper,
-                           EventPostMapper eventPostMapper) {
+                           EventPostMapper eventPostMapper,
+                           PostNodeRepository postNodeRepository,
+                           MultimediaService multimediaService,
+                           UserService userService) {
         this.postRepository = postRepository;
         this.postMapper = postMapper;
         this.personalPostRepository = personalPostRepository;
@@ -55,6 +67,9 @@ public class PostServiceImpl implements PostService {
         this.eventPostMapper = eventPostMapper;
         this.eventService = eventService;
         this.groupService = groupService;
+        this.postNodeRepository = postNodeRepository;
+        this.multimediaService = multimediaService;
+        this.userService = userService;
     }
 
     @Override
@@ -122,25 +137,83 @@ public class PostServiceImpl implements PostService {
         return post;
     }
 
+    private Set<String> uploadPostMultimedia(String filename, MultipartFile[] multimedia) {
+        Set<String> multimediaUrls = new HashSet<>();
+        for(MultipartFile multimediaFile : multimedia) {
+            try {
+                multimediaUrls.add(multimediaService.uploadMultimedia(
+                        multimediaFile,
+                        filename
+                ));
+            } catch(IOException e){
+                System.err.println(e.getMessage());
+            }
+        }
+        return multimediaUrls;
+    }
+
     @Override
-    public PostDTO saveUserPost(PostDTO postDTO) {
+    public PostDTO saveUserPost(PostDTO postDTO, MultipartFile[] multimedia) {
         Post postToSave = getNewPostWithReferences(postDTO, postDTO.account().uuid());
         PersonalPost personalPost = new PersonalPost(postToSave);
-        return postMapper.toDTO(personalPostRepository.save(personalPost).getPost());
+        PersonalPost savedPost = personalPostRepository.save(personalPost);
+
+        Set<String> multimediaUrls = uploadPostMultimedia(
+                "post/" + savedPost.getPost().getUuid() + "/" + UUID.randomUUID(),
+                multimedia);
+        PostNode savedPostNode = saveToGraphDB(savedPost.getPost(), multimediaUrls,
+                null, null);
+        return postMapper.toDTO(savedPost.getPost(), savedPostNode);
     }
 
     @Override
-    public GroupPostDTO saveGroupPost(GroupPostDTO groupPostDTO) {
+    public GroupPostDTO saveGroupPost(GroupPostDTO groupPostDTO, MultipartFile[] multimedia) {
         Post postToSave = getNewPostWithReferences(groupPostDTO.post(), groupPostDTO.post().account().uuid());
         GroupPost groupPost = new GroupPost(postToSave, groupService.getGroupReference(groupPostDTO.group().uuid()));
-        return groupPostMapper.toDTO(groupPostRepository.save(groupPost));
+        GroupPost savedPost = groupPostRepository.save(groupPost);
+
+        Set<String> multimediaUrls = uploadPostMultimedia(
+                "groups/" + savedPost.getGroup().getUuid() +
+                        "/posts" + savedPost.getPost().getUuid() + "/" + UUID.randomUUID(),
+                multimedia
+        );
+        saveToGraphDB(savedPost.getPost(), multimediaUrls,
+                savedPost.getGroup().getUuid(), null);
+        return groupPostMapper.toDTO(savedPost);
     }
 
     @Override
-    public EventPostDTO saveEventPost(EventPostDTO eventPostDTO) {
+    public EventPostDTO saveEventPost(EventPostDTO eventPostDTO, MultipartFile[] multimedia) {
         Post postToSave = getNewPostWithReferences(eventPostDTO.post(), eventPostDTO.post().account().uuid());
         EventPost eventPost = new EventPost(postToSave, eventService.getEventReference(eventPostDTO.event().uuid()));
-        return eventPostMapper.toDTO(eventPostRepository.save(eventPost));
+        EventPost savedPost = eventPostRepository.save(eventPost);
+
+        Set<String> multimediaUrls = uploadPostMultimedia(
+                "events/" + savedPost.getEvent().getUuid() +
+                        "/posts" + savedPost.getPost().getUuid()+ "/" + UUID.randomUUID(),
+                multimedia);
+        saveToGraphDB(savedPost.getPost(), multimediaUrls,
+                null, savedPost.getEvent().getUuid());
+        return eventPostMapper.toDTO(savedPost);
+    }
+
+    private PostNode saveToGraphDB(Post post, Set<String> multimediaUrls,
+                                   UUID groupUUID, UUID eventUUID) {
+        PostNode postToSave = postMapper.toNode(post);
+        postToSave.setMultimediaUrls(multimediaUrls);
+        postToSave.setAuthor(
+                userService.findUserNodeByUUID(
+                        post.getAccount().getUuid()));
+        if (groupUUID != null) {
+            postToSave.setGroup(
+                    groupService.findGroupNodeByUUID(groupUUID));
+        }
+        if (eventUUID != null) {
+            postToSave.setEvent(
+                    eventService.findEventNodeByUUID(eventUUID)
+            );
+        }
+        return postNodeRepository.save(postToSave);
     }
 
     @Override

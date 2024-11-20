@@ -1,7 +1,7 @@
 package com.socialtripper.restapi.services.implementation;
 
 import com.socialtripper.restapi.entities.Language;
-import com.socialtripper.restapi.repositories.LanguageRepository;
+import com.socialtripper.restapi.repositories.relational.LanguageRepository;
 import com.socialtripper.restapi.services.LanguageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

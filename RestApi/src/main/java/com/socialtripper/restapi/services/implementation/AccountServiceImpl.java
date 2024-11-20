@@ -13,11 +13,15 @@ import com.socialtripper.restapi.exceptions.PhoneNumberAlreadyInUseException;
 import com.socialtripper.restapi.exceptions.UsernameAlreadyTakenException;
 import com.socialtripper.restapi.mappers.AccountMapper;
 import com.socialtripper.restapi.mappers.AccountThumbnailMapper;
-import com.socialtripper.restapi.repositories.AccountRepository;
-import com.socialtripper.restapi.repositories.FollowRepository;
+import com.socialtripper.restapi.repositories.relational.AccountRepository;
+import com.socialtripper.restapi.repositories.relational.FollowRepository;
 import com.socialtripper.restapi.services.AccountService;
+import com.socialtripper.restapi.services.MultimediaService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
@@ -28,14 +32,17 @@ public class AccountServiceImpl implements AccountService {
     private final FollowRepository followRepository;
     private final AccountMapper accountMapper;
     private final AccountThumbnailMapper accountThumbnailMapper;
+    private final MultimediaService multimediaService;
 
     @Autowired
     public AccountServiceImpl(AccountRepository accountRepository, AccountMapper accountMapper,
-                              AccountThumbnailMapper accountThumbnailMapper, FollowRepository followRepository) {
+                              AccountThumbnailMapper accountThumbnailMapper, FollowRepository followRepository,
+                              MultimediaService multimediaService) {
         this.accountRepository = accountRepository;
         this.accountMapper = accountMapper;
         this.accountThumbnailMapper = accountThumbnailMapper;
         this.followRepository = followRepository;
+        this.multimediaService = multimediaService;
     }
 
     @Override
@@ -72,12 +79,25 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public AccountThumbnailDTO createAccount(AccountDTO accountDTO) {
+    @Transactional
+    public AccountThumbnailDTO createAccount(AccountDTO accountDTO, MultipartFile profilePicture) {
         if (accountRepository.doesUsernameExist(accountDTO.nickname())) throw new UsernameAlreadyTakenException();
         if (accountRepository.isEmailInUse(accountDTO.email())) throw new EmailAlreadyInUseException();
         if (accountRepository.isPhoneInUse(accountDTO.phone())) throw new PhoneNumberAlreadyInUseException();
+
+        Account newAccount = getNewAccountWithReferences(accountDTO);
+        if (profilePicture != null) {
+            try {
+                newAccount.setProfilePictureUrl(
+                        multimediaService.uploadMultimedia(
+                                profilePicture,
+                                "users/" + newAccount.getUuid() + "/" + UUID.randomUUID()));
+            } catch (IOException e) {
+                System.err.println(e.getMessage());
+            }
+        }
         return accountThumbnailMapper.toDTO(
-                accountRepository.save(getNewAccountWithReferences(accountDTO)));
+                accountRepository.save(newAccount));
     }
 
     @Override

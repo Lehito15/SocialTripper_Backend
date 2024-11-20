@@ -2,18 +2,11 @@ package com.socialtripper.restapi.mappers;
 
 import com.socialtripper.restapi.dto.thumbnails.AccountThumbnailDTO;
 import com.socialtripper.restapi.entities.Account;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.socialtripper.restapi.nodes.UserNode;
 import org.springframework.stereotype.Component;
 
 @Component
 public class AccountThumbnailMapper {
-    private final MultimediaMapper multimediaMapper;
-
-    @Autowired
-    public AccountThumbnailMapper(MultimediaMapper multimediaMapper) {
-        this.multimediaMapper = multimediaMapper;
-    }
-
     public AccountThumbnailDTO toDTO(Account account) {
         if (account == null) return null;
         return new AccountThumbnailDTO(
@@ -25,7 +18,8 @@ public class AccountThumbnailMapper {
                 account.getFollowingNumber(),
                 account.getNumberOfTrips(),
                 account.isPublic(),
-                multimediaMapper.toDTO(account.getProfilePicture())
+                account.getProfilePictureUrl()
         );
     }
+
 }

@@ -66,9 +66,8 @@ public class Group {
     @NotNull
     private Account owner;
 
-    @ManyToOne
-    @JoinColumn(name = "profile_picture_id")
-    private Multimedia icon;
+    @Column(name = "icon_url")
+    private String iconUrl;
 
     @OneToMany(mappedBy = "group")
     private Set<GroupActivity> groupActivities;

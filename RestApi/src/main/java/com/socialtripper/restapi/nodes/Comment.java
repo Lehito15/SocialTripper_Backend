@@ -22,10 +22,7 @@ public class Comment {
     private Comment comment;
 
     @Relationship(type = "REFERS_TO_POST")
-    private Post post;
-
-    @Relationship(type = "REFERS_TO_RELATION")
-    private EventRelation relation;
+    private PostNode post;
 
     @Relationship(type = "COMMENT_NOTIFIES")
     private Notification generatedNotification;

@@ -11,6 +11,6 @@ public record GroupDTO (UUID uuid, String name, Integer numberOfMembers,
                         Boolean isPublic, String description, String rules,
                         LocalDate dateOfCreation, String homePageUrl, BigDecimal locationLongitude,
                         BigDecimal locationLatitude, LocationScope locationScope, AccountThumbnailDTO owner,
-                        MultimediaDTO icon, Set<ActivityDTO> activities, Set<LanguageDTO> languages
+                        String iconUrl, Set<ActivityDTO> activities, Set<LanguageDTO> languages
 ) {
 }

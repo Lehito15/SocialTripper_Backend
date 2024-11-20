@@ -6,6 +6,8 @@ import com.socialtripper.restapi.dto.thumbnails.GroupThumbnailDTO;
 import com.socialtripper.restapi.entities.Group;
 import com.socialtripper.restapi.entities.GroupActivity;
 import com.socialtripper.restapi.entities.GroupLanguage;
+import com.socialtripper.restapi.nodes.GroupNode;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.UUID;
@@ -18,9 +20,10 @@ public interface GroupService {
     Group getNewGroupWithReferences(GroupDTO groupDTO);
     GroupActivity setActivity(UUID uuid, ActivityDTO activityDTO);
     GroupLanguage setLanguage(UUID uuid, LanguageDTO languageDTO);
-    GroupDTO createGroup(GroupDTO groupDTO);
+    GroupDTO createGroup(GroupDTO groupDTO, MultipartFile icon);
     List<GroupThumbnailDTO> findUserCurrentGroups(UUID uuid);
     UserJoinsGroupMessageDTO addUserToGroup(UUID groupUUID, UUID userUUID);
     UserLeavesGroupMessageDTO removeUserFromGroup(UUID groupUUID, UUID userUUID);
     GroupDTO updateGroup(UUID uuid, GroupDTO groupDTO);
+    GroupNode findGroupNodeByUUID(UUID uuid);
 }

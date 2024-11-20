@@ -69,15 +69,14 @@ public class Account {
     @Column(name = "number_of_trips", nullable = false)
     private int numberOfTrips;
 
-    @ManyToOne
-    @JoinColumn(name = "profile_picture_id")
-    private Multimedia profilePicture;
+    @Column(name = "profile_picture_url")
+    private String profilePictureUrl;
 
 
     public Account(UUID uuid, String nickname, String email, boolean isPublic,
                    String salt, String phone, String role, boolean isExpired, boolean isLocked,
                    LocalDate createdAt, String homePageUrl, String description, int followersNumber,
-                   int followingNumber, int numberOfTrips, Multimedia profilePicture) {
+                   int followingNumber, int numberOfTrips, String profilePictureUrl) {
         this.uuid = uuid;
         this.nickname = nickname;
         this.email = email;
@@ -93,13 +92,13 @@ public class Account {
         this.followersNumber = followersNumber;
         this.followingNumber = followingNumber;
         this.numberOfTrips = numberOfTrips;
-        this.profilePicture = profilePicture;
+        this.profilePictureUrl = profilePictureUrl;
     }
 
 
     public Account(UUID uuid, String nickname, String email, boolean isPublic,
                    String phone, String role, String homePageUrl, String description,
-                   Multimedia profilePicture) {
+                   String profilePictureUrl) {
         this.uuid = uuid;
         this.nickname = nickname;
         this.email = email;
@@ -108,6 +107,6 @@ public class Account {
         this.role = role;
         this.homePageUrl = homePageUrl;
         this.description = description;
-        this.profilePicture = profilePicture;
+        this.profilePictureUrl = profilePictureUrl;
     }
 }

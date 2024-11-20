@@ -1,7 +1,7 @@
 package com.socialtripper.restapi.services.implementation;
 
 import com.socialtripper.restapi.entities.Country;
-import com.socialtripper.restapi.repositories.CountryRepository;
+import com.socialtripper.restapi.repositories.relational.CountryRepository;
 import com.socialtripper.restapi.services.CountryService;
 import org.springframework.stereotype.Service;
 

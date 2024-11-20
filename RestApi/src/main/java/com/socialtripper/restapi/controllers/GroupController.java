@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.net.HttpURLConnection;
 import java.util.List;
 import java.util.UUID;
@@ -33,9 +35,10 @@ public class GroupController {
     }
 
     @PostMapping("/groups")
-    public ResponseEntity<GroupDTO> createGroup(@RequestBody GroupDTO groupDTO) {
+    public ResponseEntity<GroupDTO> createGroup(@RequestPart GroupDTO groupDTO,
+                                                @RequestPart(required = false) MultipartFile icon) {
         return ResponseEntity.status(HttpURLConnection.HTTP_CREATED)
-                                .body(groupService.createGroup(groupDTO));
+                                .body(groupService.createGroup(groupDTO, icon));
     }
 
     @GetMapping("/users/{uuid}/groups")

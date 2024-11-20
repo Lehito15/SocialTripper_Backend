@@ -10,18 +10,22 @@ import com.socialtripper.restapi.exceptions.UserNotFoundException;
 import com.socialtripper.restapi.mappers.UserActivityMapper;
 import com.socialtripper.restapi.mappers.UserLanguageMapper;
 import com.socialtripper.restapi.mappers.UserMapper;
-import com.socialtripper.restapi.repositories.UserActivityRepository;
-import com.socialtripper.restapi.repositories.UserLanguageRepository;
-import com.socialtripper.restapi.repositories.UserRepository;
+import com.socialtripper.restapi.nodes.UserNode;
+import com.socialtripper.restapi.repositories.graph.UserNodeRepository;
+import com.socialtripper.restapi.repositories.relational.UserActivityRepository;
+import com.socialtripper.restapi.repositories.relational.UserLanguageRepository;
+import com.socialtripper.restapi.repositories.relational.UserRepository;
 import com.socialtripper.restapi.services.*;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import java.util.UUID;
 
 @Service
 public class UserServiceImpl implements com.socialtripper.restapi.services.UserService {
     private final UserRepository userRepository;
+    private final UserNodeRepository userNodeRepository;
     private final UserLanguageRepository userLanguageRepository;
     private final UserActivityRepository userActivityRepository;
     private final UserMapper userMapper;
@@ -37,7 +41,8 @@ public class UserServiceImpl implements com.socialtripper.restapi.services.UserS
                            CountryService countryService, AccountService accountService,
                            LanguageService languageService, ActivityService activityService,
                            UserActivityRepository userActivityRepository, UserLanguageRepository userLanguageRepository,
-                           UserActivityMapper userActivityMapper, UserLanguageMapper userLanguageMapper) {
+                           UserActivityMapper userActivityMapper, UserLanguageMapper userLanguageMapper,
+                           UserNodeRepository userNodeRepository) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
         this.countryService = countryService;
@@ -48,6 +53,7 @@ public class UserServiceImpl implements com.socialtripper.restapi.services.UserS
         this.userLanguageRepository = userLanguageRepository;
         this.userActivityMapper = userActivityMapper;
         this.userLanguageMapper = userLanguageMapper;
+        this.userNodeRepository = userNodeRepository;
     }
 
     @Override
@@ -70,13 +76,13 @@ public class UserServiceImpl implements com.socialtripper.restapi.services.UserS
     }
 
     @Override
-    public User getNewUserWithReferences(UserDTO userDTO) {
+    public User getNewUserWithReferences(UserDTO userDTO, MultipartFile profilePicture) {
         User user = userMapper.toEntity(userDTO);
         user.setUuid(UUID.randomUUID());
         user.setCountry(countryService.getCountryReference(userDTO.country().name()));
         user.setAccount(
                 accountService.getAccountReference(
-                        accountService.createAccount(userDTO.account()).uuid())
+                        accountService.createAccount(userDTO.account(), profilePicture).uuid())
         );
         return user;
     }
@@ -130,8 +136,8 @@ public class UserServiceImpl implements com.socialtripper.restapi.services.UserS
 
     @Override
     @Transactional
-    public UserDTO createUser(UserDTO userDTO) {
-        User userToSave = getNewUserWithReferences(userDTO);
+    public UserDTO createUser(UserDTO userDTO, MultipartFile profilePicture) {
+        User userToSave = getNewUserWithReferences(userDTO, profilePicture);
         User savedUser = userRepository.save(userToSave);
 
         userDTO.activities().forEach(activity -> {
@@ -145,6 +151,7 @@ public class UserServiceImpl implements com.socialtripper.restapi.services.UserS
                     addLanguage(savedUser.getUuid(), language)
             );
         });
+        saveUserInGraphDB(savedUser);
         return userMapper.toDTO(savedUser);
     }
 
@@ -155,5 +162,21 @@ public class UserServiceImpl implements com.socialtripper.restapi.services.UserS
                 userDTO
         );
         return userMapper.toDTO(userRepository.save(userToUpdate));
+    }
+
+    @Override
+    public UserNode findUserNodeByUUID(UUID uuid) {
+        return userNodeRepository.findByUuid(uuid)
+                .orElseThrow(() -> new UserNotFoundException(uuid));
+    }
+
+    public void saveUserInGraphDB(User user) {
+        UserNode userToSave = userMapper.toNode(user);
+        userToSave.setUuid(user.getAccount().getUuid());
+        userNodeRepository.save(userToSave);
+    }
+
+    public void saveUserInGraphDB(UserNode userNode) {
+        userNodeRepository.save(userNode);
     }
 }

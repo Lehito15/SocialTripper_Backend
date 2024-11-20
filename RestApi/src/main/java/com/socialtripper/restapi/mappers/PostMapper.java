@@ -2,19 +2,13 @@ package com.socialtripper.restapi.mappers;
 
 import com.socialtripper.restapi.dto.entities.PostDTO;
 import com.socialtripper.restapi.entities.Post;
+import com.socialtripper.restapi.nodes.PostNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import java.util.stream.Collectors;
 
 @Component
 public class PostMapper {
-    private PostMultimediaMapper postMultimediaMapper;
     private AccountThumbnailMapper accountThumbnailMapper;
-
-    @Autowired
-    public void setPostMultimediaMapper(PostMultimediaMapper postMultimediaMapper) {
-        this.postMultimediaMapper = postMultimediaMapper;
-    }
 
     @Autowired
     public void setAccountThumbnailMapper(AccountThumbnailMapper accountThumbnailMapper) {
@@ -39,7 +33,31 @@ public class PostMapper {
                 post.getCommentsNumber(),
                 post.getReactionsNumber(),
                 accountThumbnailMapper.toDTO(post.getAccount()),
-                post.getPostMultimedia().stream().map(postMultimediaMapper::toDTO).collect(Collectors.toSet())
+                null
+        );
+    }
+
+    public PostDTO toDTO(Post post, PostNode postNode) {
+        if (postNode == null) return null;
+        return new PostDTO(
+                postNode.getUuid(),
+                postNode.getContent(),
+                postNode.getPostTime(),
+                post.isExpired(),
+                post.isLocked(),
+                postNode.getCommentsNumber(),
+                postNode.getReactionsNumber(),
+                accountThumbnailMapper.toDTO(post.getAccount()),
+                postNode.getMultimediaUrls()
+        );
+    }
+
+    public PostNode toNode(Post post) {
+        if (post == null) return null;
+        return new PostNode(
+                post.getUuid(),
+                post.getContent(),
+                post.getDateOfPost()
         );
     }
 

@@ -7,13 +7,6 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class GroupThumbnailMapper {
-    private final MultimediaMapper multimediaMapper;
-
-    @Autowired
-    public GroupThumbnailMapper(MultimediaMapper multimediaMapper) {
-        this.multimediaMapper = multimediaMapper;
-    }
-
     public GroupThumbnailDTO toDTO(Group group) {
         if (group == null) return null;
         return new GroupThumbnailDTO(
@@ -22,7 +15,7 @@ public class GroupThumbnailMapper {
                 group.getNumberOfMembers(),
                 group.getDescription(),
                 group.getHomePageUrl(),
-                multimediaMapper.toDTO(group.getIcon())
+                group.getIconUrl()
         );
     }
 }

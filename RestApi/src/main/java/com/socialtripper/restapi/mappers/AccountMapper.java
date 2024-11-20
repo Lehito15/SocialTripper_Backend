@@ -24,7 +24,7 @@ public class AccountMapper {
                 accountDTO.followersNumber(),
                 accountDTO.followingNumber(),
                 accountDTO.numberOfTrips(),
-                accountDTO.profilePicture()
+                accountDTO.profilePictureUrl()
         );
     }
 
@@ -46,7 +46,7 @@ public class AccountMapper {
                 account.getFollowersNumber(),
                 account.getFollowingNumber(),
                 account.getNumberOfTrips(),
-                account.getProfilePicture()
+                account.getProfilePictureUrl()
         );
     }
 

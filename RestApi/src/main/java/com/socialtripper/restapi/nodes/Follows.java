@@ -14,7 +14,7 @@ public class Follows {
     private Long id;
 
     @TargetNode
-    private User user;
+    private UserNode user;
 
     private LocalDate followsSince;
 }
