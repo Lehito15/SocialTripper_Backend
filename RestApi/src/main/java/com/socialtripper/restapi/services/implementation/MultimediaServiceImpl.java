@@ -31,8 +31,19 @@ public class MultimediaServiceImpl implements  MultimediaService {
     public String uploadMultimedia(MultipartFile multipartFile, String filename) throws IOException {
         BlobClient blobClient = blobServiceClient
                 .getBlobContainerClient(containerName)
-                .getBlobClient(filename);
+                .getBlobClient(filename + getFileExtension(multipartFile));
         blobClient.upload(multipartFile.getInputStream(), multipartFile.getSize(), true);
         return blobClient.getBlobUrl();
+    }
+
+    public String getFileExtension(MultipartFile multipartFile) {
+        String originalFilename = multipartFile.getOriginalFilename();
+        assert originalFilename != null;
+        int dotIndex = originalFilename.indexOf('.');
+
+        if (dotIndex > 0 && dotIndex < originalFilename.length() - 1) {
+            return originalFilename.substring(dotIndex);
+        }
+        return "";
     }
 }

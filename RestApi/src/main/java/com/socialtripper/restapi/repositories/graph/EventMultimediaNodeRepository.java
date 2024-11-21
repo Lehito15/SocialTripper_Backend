@@ -9,17 +9,15 @@ import java.util.List;
 import java.util.UUID;
 
 @Repository
-public interface EventMultimediaRepository extends Neo4jRepository<EventMultimediaNode, Long> {
-    @Query(value = "match (em:EVENT_MULTIMEDIA)-[:IS_EVENT_MULTIMEDIA]->(e:EVENT) where e.uuid = :eventUUID return em")
+public interface EventMultimediaNodeRepository extends Neo4jRepository<EventMultimediaNode, String> {
+    @Query(value = "match (em:EVENT_MULTIMEDIA)-[:IS_EVENT_MULTIMEDIA]->(e:EVENT)," +
+            "(em)-[:IS_PRODUCED_BY]->(u:USER)" +
+            "where e.uuid = $eventUUID " +
+            "return em")
     List<EventMultimediaNode> findEventMultimediaByUUID(@Param("eventUUID") UUID eventUUID);
 
     @Query(value = "match (em:EVENT_MULTIMEDIA)-[:IS_EVENT_MULTIMEDIA]->(e:EVENT)," +
             "(em)-[:IS_PRODUCED_BY]->(u:USER)" +
-            "where e.uuid = :eventUUID and u.uuid = :userUUID return em")
+            "where e.uuid = $eventUUID and u.uuid = $userUUID return em")
     List<EventMultimediaNode> findUserMultimediaInEvent(@Param("userUUID") UUID  userUUID, @Param("eventUUID") UUID eventUUID);
-
-    @Query(value = "MATCH (em:EVENT_MULTIMEDIA {id: $multimediaId}), " +
-            "(u:USER {uuid: $userUUID}) " +
-            "CREATE (em)-[:IS_PRODUCED_BY]->(u)")
-    void attachUserToMultimedia(@Param("userUUID") UUID userUUID, @Param("multimediaId") Long multimediaId);
 }

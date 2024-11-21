@@ -7,6 +7,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface UserNodeRepository extends Neo4jRepository<UserNode, Long> {
+public interface UserNodeRepository extends Neo4jRepository<UserNode, String> {
     Optional<UserNode> findByUuid(UUID uuid);
 }

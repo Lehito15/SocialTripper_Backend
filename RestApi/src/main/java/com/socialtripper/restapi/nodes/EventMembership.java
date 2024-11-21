@@ -7,6 +7,7 @@ import org.springframework.data.neo4j.core.schema.Id;
 import org.springframework.data.neo4j.core.schema.RelationshipProperties;
 import org.springframework.data.neo4j.core.schema.TargetNode;
 import java.util.List;
+import java.util.UUID;
 
 
 @RelationshipProperties
@@ -15,7 +16,7 @@ import java.util.List;
 public class EventMembership {
     @Id
     @GeneratedValue
-    private Long id;
+    private String id;
 
     List<Double> pathPoints;
 

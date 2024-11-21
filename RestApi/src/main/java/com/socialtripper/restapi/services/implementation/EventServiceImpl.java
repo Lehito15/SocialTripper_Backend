@@ -19,7 +19,7 @@ import com.socialtripper.restapi.nodes.EventNode;
 import com.socialtripper.restapi.nodes.EventMembership;
 import com.socialtripper.restapi.nodes.UserNode;
 import com.socialtripper.restapi.repositories.graph.EventMembershipRepository;
-import com.socialtripper.restapi.repositories.graph.EventMultimediaRepository;
+import com.socialtripper.restapi.repositories.graph.EventMultimediaNodeRepository;
 import com.socialtripper.restapi.repositories.graph.EventNodeRepository;
 import com.socialtripper.restapi.repositories.relational.*;
 import com.socialtripper.restapi.services.*;
@@ -31,6 +31,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 
@@ -41,7 +42,7 @@ public class EventServiceImpl implements EventService {
     private final GroupEventRepository groupEventRepository;
     private final EventActivityRepository eventActivityRepository;
     private final EventLanguageRepository eventLanguageRepository;
-    private final EventMultimediaRepository eventMultimediaRepository;
+    private final EventMultimediaNodeRepository eventMultimediaRepository;
     private final EventMembershipRepository eventMembershipRepository;
     private final EventMapper eventMapper;
     private final GroupEventMapper groupEventMapper;
@@ -63,7 +64,7 @@ public class EventServiceImpl implements EventService {
                             LanguageService languageService, EventActivityRepository eventActivityRepository,
                             EventLanguageRepository eventLanguageRepository, EventParticipantRepository eventParticipantRepository,
                             EventNodeRepository eventNodeRepository, MultimediaService multimediaService,
-                            UserService userService, EventMultimediaRepository eventMultimediaRepository,
+                            UserService userService, EventMultimediaNodeRepository eventMultimediaRepository,
                             EventMultimediaMapper eventMultimediaMapper, EventMembershipRepository eventMembershipRepository) {
         this.eventRepository = eventRepository;
         this.eventMapper = eventMapper;
@@ -287,12 +288,14 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public List<EventMultimediaMetadataDTO> findEventMultimedia(UUID eventUUID) {
-        return eventMultimediaRepository.findEventMultimediaByUUID(eventUUID)
-                            .stream()
-                            .map(eventMultimediaMapper::toDTO).toList();
+        return null;
+//        return eventMultimediaRepository.findEventMultimediaByUUID(eventUUID)
+//                            .stream()
+//                            .map(eventMultimediaMapper::toDTO).toList();
     }
 
     @Override
+    @Transactional
     public EventMultimediaMetadataDTO uploadEventMultimedia(EventMultimediaMetadataDTO multimediaMetadata, MultipartFile multimedia) {
         try {
             String multimediaUrl =
@@ -303,20 +306,15 @@ public class EventServiceImpl implements EventService {
                             "/" + UUID.randomUUID()
             );
 
-
             EventMultimediaNode eventMultimediaNode
                     = new EventMultimediaNode(
                     multimediaUrl,
                     multimediaMetadata.latitude(),
                     multimediaMetadata.longitude(),
                     multimediaMetadata.timestamp(),
-                    findEventNodeByUUID(multimediaMetadata.eventUUID()),
-                    userService.findUserNodeByUUID(multimediaMetadata.userUUID())
-            );
-
-            EventMultimediaNode savedMultimedia = eventMultimediaRepository.save(eventMultimediaNode);
-            eventMultimediaRepository.attachUserToMultimedia(multimediaMetadata.userUUID(),savedMultimedia.getId());
-
+                    userService.findUserNodeByUUID(multimediaMetadata.userUUID()),
+                    findEventNodeByUUID(multimediaMetadata.eventUUID()));
+            eventMultimediaRepository.save(eventMultimediaNode);
             return eventMultimediaMapper.toDTO(eventMultimediaNode);
         } catch(IOException e) {
             System.err.println(e.getMessage());
@@ -326,21 +324,31 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public UserJourneyInEventDTO getUserJourneyInEvent(UUID userUUID, UUID eventUUID) {
-        List<Double> pathPoints = eventMembershipRepository.getUserPathPointsInEvent(userUUID, eventUUID);
+        EventMembership membership = userService.findUserNodeByUUID(
+                userUUID).getEvents()
+                .stream()
+                .filter(event ->
+                        event.getEvent().getUuid().equals(eventUUID))
+                .findFirst()
+                .orElse(null);
 
-        List<Point> coordinates =
-                IntStream.range(0, pathPoints.size() / 2)
-                .mapToObj(i -> new Point(
-                        pathPoints.get(2 * i).intValue(), // x
-                        pathPoints.get(2 * i + 1).intValue() // y
-                ))
-                .toList();
+        List<Point> coordinates = null;
+        if(membership != null) {
+            coordinates =
+                    IntStream.range(0, membership.getPathPoints().size() / 2)
+                            .mapToObj(i -> new Point(
+                                    membership.getPathPoints().get(2 * i).intValue(), // x
+                                    membership.getPathPoints().get(2 * i + 1).intValue() // y
+                            ))
+                            .toList();
+        }
 
         return new UserJourneyInEventDTO(
                 coordinates,
                 eventMultimediaRepository.findUserMultimediaInEvent(userUUID,eventUUID)
                         .stream()
-                        .map(eventMultimediaMapper::toDTO)
+                        .map(multimedia ->
+                                eventMultimediaMapper.toDTO(multimedia, userUUID, eventUUID))
                         .toList()
         );
     }

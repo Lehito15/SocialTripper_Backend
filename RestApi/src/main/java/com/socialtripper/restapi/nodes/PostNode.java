@@ -19,8 +19,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class PostNode {
     @Id
-    @GeneratedValue
-    private Long id;
+    private String id;
 
     private UUID uuid;
     private String content;
@@ -43,6 +42,7 @@ public class PostNode {
     private UserNode author;
 
     public PostNode(UUID uuid, String content, LocalDateTime postTime) {
+        this.id = UUID.randomUUID().toString();
         this.uuid = uuid;
         this.content = content;
         this.postTime = postTime;

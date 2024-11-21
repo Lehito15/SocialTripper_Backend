@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.data.neo4j.core.schema.GeneratedValue;
 import org.springframework.data.neo4j.core.schema.Id;
 import org.springframework.data.neo4j.core.schema.Node;
 import org.springframework.data.neo4j.core.schema.Relationship;
@@ -19,8 +18,7 @@ import java.util.UUID;
 @Setter
 public class EventNode {
     @Id
-    @GeneratedValue
-    private Long id;
+    private String id;
 
     private UUID uuid;
     private String name;
@@ -36,10 +34,13 @@ public class EventNode {
     @Relationship(type = "IS_OWNED_BY_USER")
     private UserNode owner;
 
+
+
     public EventNode(UUID uuid, String name, boolean isPublic,
                      String iconUrl, LocalDateTime startTime, LocalDateTime endTime,
                      String destination, String eventUrl, Set<String> languages,
                      Set<String> activities) {
+        this.id = UUID.randomUUID().toString();
         this.uuid = uuid;
         this.name = name;
         this.isPublic = isPublic;

@@ -7,6 +7,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface GroupNodeRepository extends Neo4jRepository<GroupNode, Long> {
+public interface GroupNodeRepository extends Neo4jRepository<GroupNode, String> {
     Optional<GroupNode> findGroupNodeByUuid(UUID uuid);
 }

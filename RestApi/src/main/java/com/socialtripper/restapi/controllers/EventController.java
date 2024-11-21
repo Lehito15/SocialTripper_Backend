@@ -113,7 +113,12 @@ public class EventController {
     @GetMapping("/events/{event-uuid}/users/{user-uuid}")
     public ResponseEntity<UserJourneyInEventDTO> getUserJourneyInEvent(@PathVariable("event-uuid") UUID eventUUID,
                                                                        @PathVariable("user-uuid") UUID userUUID) {
-        return ResponseEntity.ok(eventService.getUserJourneyInEvent(eventUUID, userUUID));
+        return ResponseEntity.ok(eventService.getUserJourneyInEvent(userUUID, eventUUID));
+    }
+
+    @GetMapping("/events/{uuid}/multimedia")
+    public ResponseEntity<List<EventMultimediaMetadataDTO>> getEventMultimedia(@PathVariable UUID uuid) {
+        return ResponseEntity.ok(eventService.findEventMultimedia(uuid));
     }
 
 }

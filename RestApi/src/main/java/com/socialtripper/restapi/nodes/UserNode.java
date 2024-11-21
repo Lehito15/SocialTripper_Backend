@@ -19,8 +19,7 @@ import java.util.UUID;
 @NoArgsConstructor
 public class UserNode {
     @Id
-    @GeneratedValue
-    private Long id;
+    private String id;
 
     private UUID uuid;
     private String name;
@@ -31,10 +30,6 @@ public class UserNode {
     private String profileUrl;
     private Set<String> languages;
     private Set<String> activities;
-
-    @Relationship(type = "FOLLOWS")
-    @JsonIgnore
-    private Set<Follows> follows;
 
     @Relationship(type = "APPLIES_FOR_EVENT")
     @JsonIgnore
@@ -47,6 +42,13 @@ public class UserNode {
     @Relationship(type = "IS_EVENT_MEMBER")
     @JsonIgnore
     private Set<EventMembership> events;
+
+
+
+
+    @Relationship(type = "FOLLOWS")
+    @JsonIgnore
+    private Set<Follows> follows;
 
     @Relationship(type = "REACTS_TO_COMMENT")
     @JsonIgnore
@@ -75,6 +77,7 @@ public class UserNode {
     public UserNode(UUID uuid, String name, String surname,
                     String nickname, boolean isPublic, boolean isLocked,
                     String profileUrl, Set<String> languages, Set<String> activities) {
+        this.id = UUID.randomUUID().toString();
         this.uuid = uuid;
         this.name = name;
         this.surname = surname;

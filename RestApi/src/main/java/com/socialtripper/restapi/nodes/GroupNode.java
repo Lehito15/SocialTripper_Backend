@@ -19,8 +19,7 @@ import java.util.UUID;
 @Setter
 public class GroupNode {
     @Id
-    @GeneratedValue
-    private Long id;
+    private String id;
 
     private UUID uuid;
     private String name;
@@ -35,6 +34,7 @@ public class GroupNode {
 
     public GroupNode(UUID uuid, String name, boolean isPublic, String homePageUrl,
                      String iconUrl, Set<String> languages, Set<String> activities) {
+        this.id = UUID.randomUUID().toString();
         this.uuid = uuid;
         this.name = name;
         this.isPublic = isPublic;

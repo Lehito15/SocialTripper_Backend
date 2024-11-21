@@ -1,7 +1,6 @@
 package com.socialtripper.restapi.repositories.graph;
 
 import com.socialtripper.restapi.nodes.EventNode;
-import org.neo4j.driver.types.Point;
 import org.springframework.data.neo4j.repository.Neo4jRepository;
 import org.springframework.data.neo4j.repository.query.Query;
 import org.springframework.data.repository.query.Param;
@@ -12,7 +11,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface EventNodeRepository extends Neo4jRepository<EventNode, Long> {
+public interface EventNodeRepository extends Neo4jRepository<EventNode, String> {
     Optional<EventNode> findEventNodeByUuid(UUID uuid);
 
     @Query(value = "MATCH (u:USER {uuid: $userUuid})-[a:APPLIES_FOR_EVENT]->(e:Event {uuid: $eventUuid}) " +
