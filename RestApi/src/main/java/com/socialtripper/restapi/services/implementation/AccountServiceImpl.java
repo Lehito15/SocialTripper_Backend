@@ -132,4 +132,10 @@ public class AccountServiceImpl implements AccountService {
                                 .stream().map(accountThumbnailMapper::toDTO)
                                 .toList();
     }
+
+    @Override
+    public AccountDTO findAccountByEmail(String email) {
+        return accountMapper.toDTO(
+                accountRepository.findByEmail(email).orElse(null));
+    }
 }

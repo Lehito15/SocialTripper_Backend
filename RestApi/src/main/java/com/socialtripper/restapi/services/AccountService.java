@@ -20,4 +20,5 @@ public interface AccountService {
     UserStartsFollowingMessageDTO followUser(FollowDTO followDTO);
     UserEndsFollowingMessageDTO unfollowUser(FollowDTO followDTO);
     List<AccountThumbnailDTO> getFollowedAccounts(UUID uuid);
+    AccountDTO findAccountByEmail(String email);
 }

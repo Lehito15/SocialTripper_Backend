@@ -6,6 +6,8 @@ import com.socialtripper.restapi.nodes.PostNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Set;
+
 @Component
 public class PostMapper {
     private AccountThumbnailMapper accountThumbnailMapper;
@@ -20,6 +22,21 @@ public class PostMapper {
         return new Post(
                         postDTO.uuid(),
                         postDTO.content());
+    }
+
+    public PostDTO toDTO(Post post, Set<String> multimediaUrls) {
+        if (post == null) return null;
+        return new PostDTO(
+                post.getUuid(),
+                post.getContent(),
+                post.getDateOfPost(),
+                post.isExpired(),
+                post.isLocked(),
+                post.getCommentsNumber(),
+                post.getReactionsNumber(),
+                accountThumbnailMapper.toDTO(post.getAccount()),
+                multimediaUrls
+        );
     }
 
     public PostDTO toDTO(Post post) {

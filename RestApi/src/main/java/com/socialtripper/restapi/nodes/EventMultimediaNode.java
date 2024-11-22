@@ -20,6 +20,7 @@ public class EventMultimediaNode {
     @Id
     private String id;
 
+    private UUID uuid;
     private String multimediaUrl;
     private Double latitude;
     private Double longitude;
@@ -31,10 +32,11 @@ public class EventMultimediaNode {
     @Relationship(value = "IS_PRODUCED_BY", direction = Relationship.Direction.OUTGOING)
     private UserNode producer;
 
-    public EventMultimediaNode(String multimediaUrl, Double latitude,
+    public EventMultimediaNode(UUID uuid, String multimediaUrl, Double latitude,
                                Double longitude, LocalDateTime timestamp,
                                UserNode producer, EventNode event) {
         this.id = UUID.randomUUID().toString();
+        this.uuid = uuid;
         this.multimediaUrl = multimediaUrl;
         this.latitude = latitude;
         this.longitude = longitude;

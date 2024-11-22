@@ -31,7 +31,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 
@@ -288,32 +287,46 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public List<EventMultimediaMetadataDTO> findEventMultimedia(UUID eventUUID) {
-        return null;
-//        return eventMultimediaRepository.findEventMultimediaByUUID(eventUUID)
-//                            .stream()
-//                            .map(eventMultimediaMapper::toDTO).toList();
+        List<EventMultimediaMetadataDTO> eventMultimedia = new ArrayList<>();
+        eventMultimediaRepository.findEventMultimediaByUUID(eventUUID).forEach(
+                multimedia -> {
+                    eventMultimedia.add(
+                            new EventMultimediaMetadataDTO(
+                                    multimedia.getMultimediaUrl(),
+                                    multimedia.getLatitude(),
+                                    multimedia.getLongitude(),
+                                    multimedia.getTimestamp(),
+                                    eventMultimediaRepository.findMultimediaProducer(
+                                            multimedia.getUuid().toString()).getUuid(),
+                                    eventUUID
+                            ));
+                }
+        );
+        return eventMultimedia;
     }
 
     @Override
     @Transactional
     public EventMultimediaMetadataDTO uploadEventMultimedia(EventMultimediaMetadataDTO multimediaMetadata, MultipartFile multimedia) {
+        UUID multimediaUUID = UUID.randomUUID();
         try {
             String multimediaUrl =
                     multimediaService.uploadMultimedia(
                     multimedia,
                     "events/" + multimediaMetadata.eventUUID() +
                             "/users/" + multimediaMetadata.userUUID() +
-                            "/" + UUID.randomUUID()
+                            "/" + multimediaUUID
             );
 
             EventMultimediaNode eventMultimediaNode
                     = new EventMultimediaNode(
-                    multimediaUrl,
-                    multimediaMetadata.latitude(),
-                    multimediaMetadata.longitude(),
-                    multimediaMetadata.timestamp(),
-                    userService.findUserNodeByUUID(multimediaMetadata.userUUID()),
-                    findEventNodeByUUID(multimediaMetadata.eventUUID()));
+                            multimediaUUID,
+                            multimediaUrl,
+                            multimediaMetadata.latitude(),
+                            multimediaMetadata.longitude(),
+                            multimediaMetadata.timestamp(),
+                            userService.findUserNodeByUUID(multimediaMetadata.userUUID()),
+                            findEventNodeByUUID(multimediaMetadata.eventUUID()));
             eventMultimediaRepository.save(eventMultimediaNode);
             return eventMultimediaMapper.toDTO(eventMultimediaNode);
         } catch(IOException e) {

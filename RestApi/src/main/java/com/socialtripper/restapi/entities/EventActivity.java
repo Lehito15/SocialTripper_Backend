@@ -19,7 +19,7 @@ public class EventActivity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "required_experience", nullable = false, precision = 2, scale = 1)
+    @Column(name = "required_experience", nullable = false, precision = 3, scale = 1)
     private BigDecimal requiredExperience;
 
     @ManyToOne

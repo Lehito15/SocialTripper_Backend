@@ -50,7 +50,7 @@ public class User {
     @NotNull
     private BigDecimal height;
 
-    @Column(nullable = false, precision = 2, scale = 1)
+    @Column(nullable = false, precision = 3, scale = 1)
     private BigDecimal physicality;
 
     @OneToOne

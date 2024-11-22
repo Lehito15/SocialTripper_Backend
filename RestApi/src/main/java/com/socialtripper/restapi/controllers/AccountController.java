@@ -57,4 +57,9 @@ public class AccountController {
         return ResponseEntity.ok(accountService.getFollowedAccounts(uuid));
     }
 
+    @GetMapping("/accounts/email")
+    public ResponseEntity<AccountDTO> getAccountByEmail(@RequestParam String email) {
+        return ResponseEntity.ok(accountService.findAccountByEmail(email));
+    }
+
 }

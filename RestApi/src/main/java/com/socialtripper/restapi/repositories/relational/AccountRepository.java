@@ -12,6 +12,8 @@ import java.util.UUID;
 public interface AccountRepository extends JpaRepository<Account, Long> {
     Optional<Account> findByUuid(UUID uuid);
 
+    Optional<Account> findByEmail(String email);
+
     @Query(value = "select a.id from accounts a WHERE a.uuid = :uuid", nativeQuery = true)
     Optional<Long> findIdByUUID(@Param("uuid") UUID uuid);
 

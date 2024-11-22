@@ -82,22 +82,28 @@ public class PostServiceImpl implements PostService {
     @Override
     public List<PostDTO> findAllPosts() {
         return postRepository.findAll()
-                .stream().map(postMapper::toDTO)
+                .stream().map(post -> postMapper.toDTO(
+                        post,
+                        postNodeRepository.findPostByUuid(
+                                post.getUuid().toString()).getMultimediaUrls()))
                 .collect(Collectors.toList());
     }
 
     @Override
-    public PostDTO findPostByUUID(UUID uuid) {
-        return postMapper.toDTO(postRepository.findByUuid(uuid)
-                                                .orElseThrow(
-                                                         () -> new PostNotFoundException(uuid)
-        ));
+    public PostDTO findPostByUUID(UUID uuid) {;
+        return postMapper.toDTO(
+                postRepository.findByUuid(uuid).orElseThrow(
+                        () -> new PostNotFoundException(uuid)
+                ),
+                postNodeRepository.findPostByUuid(uuid.toString()));
     }
 
     @Override
     public List<PostDTO> findPostsByUserUUID(UUID uuid) {
         return postRepository.findPostsByUserUUID(uuid).stream()
-                .map(postMapper::toDTO)
+                .map(post -> postMapper.toDTO(
+                        post,
+                        postNodeRepository.findPostByUuid(post.getUuid().toString())))
                 .toList();
     }
 
@@ -105,7 +111,9 @@ public class PostServiceImpl implements PostService {
     public List<PostDTO> findPersonalPostsByUserUUID(UUID uuid) {
         return postRepository.findPersonalPostsByUUID(uuid)
                 .stream()
-                .map(postMapper::toDTO)
+                .map(post -> postMapper.toDTO(
+                        post,
+                        postNodeRepository.findPostByUuid(post.getUuid().toString())))
                 .toList();
     }
 
@@ -113,7 +121,9 @@ public class PostServiceImpl implements PostService {
     public List<PostDTO> findPostsByGroupUUID(UUID uuid) {
         return postRepository.findPostsByGroupUUID(uuid)
                 .stream()
-                .map(postMapper::toDTO)
+                .map(post -> postMapper.toDTO(
+                        post,
+                        postNodeRepository.findPostByUuid(post.getUuid().toString())))
                 .toList();
     }
 
@@ -121,7 +131,9 @@ public class PostServiceImpl implements PostService {
     public List<PostDTO> findPostsByEventUUID(UUID uuid) {
         return postRepository.findPostsByEventUUID(uuid)
                 .stream()
-                .map(postMapper::toDTO)
+                .map(post -> postMapper.toDTO(
+                        post,
+                        postNodeRepository.findPostByUuid(post.getUuid().toString())))
                 .toList();
     }
 
@@ -139,14 +151,16 @@ public class PostServiceImpl implements PostService {
 
     private Set<String> uploadPostMultimedia(String filename, MultipartFile[] multimedia) {
         Set<String> multimediaUrls = new HashSet<>();
-        for(MultipartFile multimediaFile : multimedia) {
-            try {
-                multimediaUrls.add(multimediaService.uploadMultimedia(
-                        multimediaFile,
-                        filename
-                ));
-            } catch(IOException e){
-                System.err.println(e.getMessage());
+        if (multimedia != null) {
+            for(MultipartFile multimediaFile : multimedia) {
+                try {
+                    multimediaUrls.add(multimediaService.uploadMultimedia(
+                            multimediaFile,
+                            filename + UUID.randomUUID()
+                    ));
+                } catch(IOException e){
+                    System.err.println(e.getMessage());
+                }
             }
         }
         return multimediaUrls;
@@ -159,7 +173,7 @@ public class PostServiceImpl implements PostService {
         PersonalPost savedPost = personalPostRepository.save(personalPost);
 
         Set<String> multimediaUrls = uploadPostMultimedia(
-                "post/" + savedPost.getPost().getUuid() + "/" + UUID.randomUUID(),
+                "post/" + savedPost.getPost().getUuid() + "/",
                 multimedia);
         PostNode savedPostNode = saveToGraphDB(savedPost.getPost(), multimediaUrls,
                 null, null);
@@ -174,7 +188,7 @@ public class PostServiceImpl implements PostService {
 
         Set<String> multimediaUrls = uploadPostMultimedia(
                 "groups/" + savedPost.getGroup().getUuid() +
-                        "/posts" + savedPost.getPost().getUuid() + "/" + UUID.randomUUID(),
+                        "/posts" + savedPost.getPost().getUuid() + "/",
                 multimedia
         );
         saveToGraphDB(savedPost.getPost(), multimediaUrls,
@@ -190,7 +204,7 @@ public class PostServiceImpl implements PostService {
 
         Set<String> multimediaUrls = uploadPostMultimedia(
                 "events/" + savedPost.getEvent().getUuid() +
-                        "/posts" + savedPost.getPost().getUuid()+ "/" + UUID.randomUUID(),
+                        "/posts" + savedPost.getPost().getUuid()+ "/",
                 multimedia);
         saveToGraphDB(savedPost.getPost(), multimediaUrls,
                 null, savedPost.getEvent().getUuid());

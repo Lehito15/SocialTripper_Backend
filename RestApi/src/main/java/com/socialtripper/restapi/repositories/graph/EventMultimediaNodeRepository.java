@@ -1,6 +1,7 @@
 package com.socialtripper.restapi.repositories.graph;
 
 import com.socialtripper.restapi.nodes.EventMultimediaNode;
+import com.socialtripper.restapi.nodes.UserNode;
 import org.springframework.data.neo4j.repository.Neo4jRepository;
 import org.springframework.data.neo4j.repository.query.Query;
 import org.springframework.data.repository.query.Param;
@@ -13,11 +14,16 @@ public interface EventMultimediaNodeRepository extends Neo4jRepository<EventMult
     @Query(value = "match (em:EVENT_MULTIMEDIA)-[:IS_EVENT_MULTIMEDIA]->(e:EVENT)," +
             "(em)-[:IS_PRODUCED_BY]->(u:USER)" +
             "where e.uuid = $eventUUID " +
-            "return em")
+            "return em {.*}")
     List<EventMultimediaNode> findEventMultimediaByUUID(@Param("eventUUID") UUID eventUUID);
 
     @Query(value = "match (em:EVENT_MULTIMEDIA)-[:IS_EVENT_MULTIMEDIA]->(e:EVENT)," +
             "(em)-[:IS_PRODUCED_BY]->(u:USER)" +
-            "where e.uuid = $eventUUID and u.uuid = $userUUID return em")
+            "where e.uuid = $eventUUID and u.uuid = $userUUID return em {.*}")
     List<EventMultimediaNode> findUserMultimediaInEvent(@Param("userUUID") UUID  userUUID, @Param("eventUUID") UUID eventUUID);
+
+    @Query(value = "match (em:EVENT_MULTIMEDIA)-[:IS_PRODUCED_BY]->(u:USER) " +
+            "where em.uuid = $multimediaUuid " +
+            "return u {.*}")
+    UserNode findMultimediaProducer(@Param("multimediaUuid") String  multimediaUuid);
 }
