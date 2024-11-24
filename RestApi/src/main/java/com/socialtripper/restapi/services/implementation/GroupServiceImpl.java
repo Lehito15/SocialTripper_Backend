@@ -2,6 +2,7 @@ package com.socialtripper.restapi.services.implementation;
 
 import com.socialtripper.restapi.dto.entities.*;
 import com.socialtripper.restapi.dto.messages.*;
+import com.socialtripper.restapi.dto.requests.UserRequestGroupDTO;
 import com.socialtripper.restapi.dto.thumbnails.GroupThumbnailDTO;
 import com.socialtripper.restapi.entities.Group;
 import com.socialtripper.restapi.entities.GroupActivity;
@@ -154,7 +155,10 @@ public class GroupServiceImpl implements GroupService {
                                 .add(setLanguage(savedGroup.getUuid(), language));
                 }
         );
-        //saveInGraphDB(savedGroup);
+        saveInGraphDB(savedGroup);
+        addUserToGroup(
+                groupDTO.owner().uuid(),
+                savedGroup.getUuid());
         return groupMapper.toDTO(savedGroup);
     }
 
@@ -164,16 +168,36 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
-    public UserJoinsGroupMessageDTO addUserToGroup(UUID groupUUID, UUID userUUID) {
+    public UserJoinsGroupMessageDTO addUserToGroup(UUID userUUID, UUID groupUUID) {
         groupParticipantRepository.save(
                 new GroupParticipant(getGroupReference(groupUUID),
-                        accountService.getAccountReference(userUUID)));
-        return new UserJoinsGroupMessageDTO(userUUID, groupUUID, "user has joined group");
+                        accountService.getAccountReference(userUUID),
+                        LocalDate.now())
+        );
+
+        groupNodeRepository.addUserToGroup(
+                userUUID.toString(),
+                groupUUID.toString()
+        );
+
+        groupNodeRepository.removeUserApplyForGroup(
+                userUUID.toString(),
+                groupUUID.toString()
+        );
+        return new UserJoinsGroupMessageDTO(
+                userUUID,
+                groupUUID,
+                "user has joined group");
     }
 
     @Override
-    public UserLeavesGroupMessageDTO removeUserFromGroup(UUID groupUUID, UUID userUUID) {
+    public UserLeavesGroupMessageDTO removeUserFromGroup(UUID userUUID, UUID groupUUID) {
         groupParticipantRepository.userLeftGroup(userUUID,groupUUID);
+
+        groupNodeRepository.removeUserFromGroup(
+                userUUID.toString(),
+                groupUUID.toString()
+        );
         return new UserLeavesGroupMessageDTO(userUUID, groupUUID, "user has left group");
     }
 
@@ -188,6 +212,27 @@ public class GroupServiceImpl implements GroupService {
         return groupNodeRepository.findGroupNodeByUuid(uuid).
                 orElseThrow(
                         () -> new GroupNotFoundException(uuid));
+    }
+
+    @Override
+    public UserRequestGroupDTO addUserRequestGroup(UUID userUUID, UUID groupUUID) {
+        groupNodeRepository.addUserApplyForGroup(
+                userUUID.toString(),
+                groupUUID.toString()
+        );
+        return new UserRequestGroupDTO(
+                userUUID,
+                groupUUID,
+                "user applied for group"
+        );
+    }
+
+    @Override
+    public boolean isUserInGroup(UUID userUUID, UUID groupUUID) {
+        return groupNodeRepository.isUserInGroup(
+                userUUID.toString(),
+                groupUUID.toString()
+        );
     }
 
     private void saveInGraphDB(Group group) {

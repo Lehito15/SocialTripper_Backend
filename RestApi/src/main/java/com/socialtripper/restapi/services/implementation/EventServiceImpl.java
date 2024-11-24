@@ -7,17 +7,19 @@ import com.socialtripper.restapi.dto.messages.UserLeavesEventMessageDTO;
 import com.socialtripper.restapi.dto.requests.EventMultimediaMetadataDTO;
 import com.socialtripper.restapi.dto.requests.UserPathPointsDTO;
 import com.socialtripper.restapi.dto.requests.UserRequestEventDTO;
+import com.socialtripper.restapi.dto.thumbnails.AccountThumbnailDTO;
+import com.socialtripper.restapi.dto.thumbnails.EventThumbnailDTO;
 import com.socialtripper.restapi.dto.thumbnails.UserJourneyInEventDTO;
 import com.socialtripper.restapi.entities.*;
 import com.socialtripper.restapi.entities.enums.EventStatuses;
 import com.socialtripper.restapi.exceptions.EventNotFoundException;
 import com.socialtripper.restapi.mappers.EventMapper;
 import com.socialtripper.restapi.mappers.EventMultimediaMapper;
+import com.socialtripper.restapi.mappers.EventThumbnailMapper;
 import com.socialtripper.restapi.mappers.GroupEventMapper;
 import com.socialtripper.restapi.nodes.EventMultimediaNode;
 import com.socialtripper.restapi.nodes.EventNode;
 import com.socialtripper.restapi.nodes.EventMembership;
-import com.socialtripper.restapi.nodes.UserNode;
 import com.socialtripper.restapi.repositories.graph.EventMultimediaNodeRepository;
 import com.socialtripper.restapi.repositories.graph.EventNodeRepository;
 import com.socialtripper.restapi.repositories.relational.*;
@@ -43,6 +45,7 @@ public class EventServiceImpl implements EventService {
     private final EventMultimediaNodeRepository eventMultimediaRepository;
     private final EventMapper eventMapper;
     private final GroupEventMapper groupEventMapper;
+    private final EventThumbnailMapper eventThumbnailMapper;
     private final EventMultimediaMapper eventMultimediaMapper;
     private final AccountService accountService;
     private final UserService userService;
@@ -62,7 +65,7 @@ public class EventServiceImpl implements EventService {
                             EventLanguageRepository eventLanguageRepository, EventParticipantRepository eventParticipantRepository,
                             EventNodeRepository eventNodeRepository, MultimediaService multimediaService,
                             UserService userService, EventMultimediaNodeRepository eventMultimediaRepository,
-                            EventMultimediaMapper eventMultimediaMapper) {
+                            EventMultimediaMapper eventMultimediaMapper, EventThumbnailMapper eventThumbnailMapper) {
         this.eventRepository = eventRepository;
         this.eventMapper = eventMapper;
         this.accountService = accountService;
@@ -80,6 +83,7 @@ public class EventServiceImpl implements EventService {
         this.userService = userService;
         this.eventMultimediaRepository = eventMultimediaRepository;
         this.eventMultimediaMapper = eventMultimediaMapper;
+        this.eventThumbnailMapper = eventThumbnailMapper;
     }
 
     @Override
@@ -92,6 +96,13 @@ public class EventServiceImpl implements EventService {
         return eventMapper.toDTO(
                 eventRepository.findByUuid(uuid)
                         .orElseThrow(() -> new EventNotFoundException(uuid)));
+    }
+
+    @Override
+    public EventThumbnailDTO findEventThumbnailByUUID(UUID uuid) {
+        return eventThumbnailMapper.toDTO(
+                findEventByUUID(uuid)
+        );
     }
 
     @Override
@@ -108,6 +119,7 @@ public class EventServiceImpl implements EventService {
     private Event getNewEventWithReferences(EventDTO eventDTO, UUID userUUID) {
         Event event = eventMapper.toEntity(eventDTO);
         event.setUuid(UUID.randomUUID());
+        event.setName(eventDTO.name());
         event.setDateOfCreation(LocalDate.now());
         event.setHomePageUrl("http://events/" + event.getUuid());
         event.setOwner(accountService.getAccountReference(userUUID));
@@ -143,16 +155,30 @@ public class EventServiceImpl implements EventService {
                 (language) -> savedEvent.getEventLanguages()
                                             .add(setLanguage(savedEvent.getUuid(), language))
         );
-        saveInGraphDB(savedEvent);
-        addUserToEvent(savedEvent.getOwner().getUuid(), savedEvent.getUuid());
+        saveInGraphDB(savedEvent, null);
+        addUserToEvent(
+                savedEvent.getOwner().getUuid(),
+                savedEvent.getUuid());
+
         return eventMapper.toDTO(eventToSave);
     }
 
     @Override
-    public GroupEventDTO createGroupEvent(GroupEventDTO groupEventDTO) {
+    public GroupEventDTO createGroupEvent(GroupEventDTO groupEventDTO, MultipartFile icon) {
         GroupEvent eventToSave = new GroupEvent(getNewEventWithReferences(groupEventDTO.eventDTO(),
                                                     groupEventDTO.eventDTO().owner().uuid()),
                 groupService.getGroupReference(groupEventDTO.groupUUID()));
+
+        if (icon != null) {
+            try {
+                eventToSave.getEvent().setIconUrl(
+                        multimediaService.uploadMultimedia(
+                                icon,
+                                "events/" + eventToSave.getEvent().getUuid() + "/" + UUID.randomUUID()));
+            } catch (IOException e) {
+                System.err.println(e.getMessage());
+            }
+        }
 
         GroupEvent savedEvent = groupEventRepository.save(eventToSave);
 
@@ -164,6 +190,10 @@ public class EventServiceImpl implements EventService {
                 (language) -> setLanguage(savedEvent.getEvent().getUuid(), language)
         );
 
+        saveInGraphDB(savedEvent.getEvent(), groupEventDTO.groupUUID());
+        addUserToEvent(
+                savedEvent.getEvent().getOwner().getUuid(),
+                savedEvent.getEvent().getUuid());
         return groupEventMapper.toDTO(savedEvent);
     }
 
@@ -204,13 +234,13 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public List<EventDTO> findUserEventsHistory(UUID uuid) {
-        return eventParticipantRepository.findUserEvents(uuid).stream().map(eventMapper::toDTO).toList();
+    public List<EventThumbnailDTO> findUserEventsHistory(UUID uuid) {
+        return eventParticipantRepository.findUserEvents(uuid).stream().map(eventThumbnailMapper::toDTO).toList();
     }
 
     @Override
-    public List<EventDTO> findUserUpcomingEvents(UUID uuid) {
-        return eventParticipantRepository.findUserUpcomingEvents(uuid).stream().map(eventMapper::toDTO).toList();
+    public List<EventThumbnailDTO> findUserUpcomingEvents(UUID uuid) {
+        return eventParticipantRepository.findUserUpcomingEvents(uuid).stream().map(eventThumbnailMapper::toDTO).toList();
     }
 
     @Override
@@ -221,26 +251,37 @@ public class EventServiceImpl implements EventService {
                         LocalDate.now())
         );
 
+        eventNodeRepository.addUserToEvent(
+                userUUID.toString(),
+                eventUUID.toString()
+        );
 
-        UserNode user = userService.findUserNodeByUUID(userUUID);
-        user.getEvents().add(
-                new EventMembership(
-                        new ArrayList<>(),
-                        findEventNodeByUUID(eventUUID)));
-        user.getAppliedEvents().removeIf(event -> event.getUuid().equals(eventUUID));
-        userService.saveUserInGraphDB(user);
+        eventNodeRepository.removeEventRequest(
+                userUUID.toString(),
+                eventUUID.toString()
+        );
 
-        return new UserJoinsEventMessageDTO(userUUID, eventUUID, "user has joined the event");
+        return new UserJoinsEventMessageDTO(
+                userUUID,
+                eventUUID,
+                "user has joined the event");
     }
 
     @Override
     public UserLeavesEventMessageDTO removeUserFromEvent(UUID userUUID, UUID eventUUID) {
-        eventParticipantRepository.userLeftEvent(userUUID, eventUUID);
-        UserNode user = userService.findUserNodeByUUID(userUUID);
-        user.getEvents().removeIf(event -> event.getEvent().getUuid().equals(eventUUID));
-        userService.saveUserInGraphDB(user);
+        eventParticipantRepository.userLeftEvent(
+                userUUID,
+                eventUUID);
 
-        return new UserLeavesEventMessageDTO(userUUID, eventUUID, "user has left the event");
+        eventNodeRepository.removeUserFromEvent(
+                userUUID.toString(),
+                eventUUID.toString()
+        );
+
+        return new UserLeavesEventMessageDTO(
+                userUUID,
+                eventUUID,
+                "user has left the event");
     }
 
     @Override
@@ -254,8 +295,9 @@ public class EventServiceImpl implements EventService {
     @Override
     public UserPathPointsDTO addUserPathPoints(UserPathPointsDTO userPathPointsDTO) {
         for(List<Double> coordinate: userPathPointsDTO.pathPoints()) {
-            eventNodeRepository.updatePathPoints(userPathPointsDTO.userUUID(),
-                    userPathPointsDTO.eventUUID(),
+            eventNodeRepository.updatePathPoints(
+                    userPathPointsDTO.userUUID().toString(),
+                    userPathPointsDTO.eventUUID().toString(),
                     coordinate);
         }
         return userPathPointsDTO;
@@ -263,9 +305,11 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public UserRequestEventDTO userAppliesForEvent(UserRequestEventDTO userRequestEventDTO) {
-        UserNode applyingUser = userService.findUserNodeByUUID(userRequestEventDTO.userUUID());
-        applyingUser.getAppliedEvents().add(findEventNodeByUUID(userRequestEventDTO.eventUUID()));
-        userService.saveUserInGraphDB(applyingUser);
+        eventNodeRepository.createEventRequest(
+                userRequestEventDTO.userUUID().toString(),
+                userRequestEventDTO.eventUUID().toString()
+        );
+
         return new UserRequestEventDTO(
                 userRequestEventDTO.userUUID(),
                 userRequestEventDTO.eventUUID(),
@@ -273,13 +317,9 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public List<Map<String, Object>> findEventRequest(UUID uuid) {
-        return eventNodeRepository.findEventRequests(uuid);
-    }
-
-    @Override
-    public void removeEventRequest(UUID userUUID, UUID eventUUID) {
-        eventNodeRepository.removeEventRequest(userUUID, eventUUID);
+    public List<AccountThumbnailDTO> findEventRequest(UUID uuid) {
+        return eventNodeRepository.findEventRequests(uuid.toString()).stream().map(user ->
+                accountService.findAccountThumbnailByUUID(user.getUuid())).toList();
     }
 
     @Override
@@ -363,10 +403,25 @@ public class EventServiceImpl implements EventService {
         );
     }
 
+    @Override
+    public List<EventThumbnailDTO> getGroupEvents(UUID groupUUID) {
+        return eventNodeRepository.getGroupEvents(groupUUID.toString())
+                .stream()
+                .map(event -> findEventThumbnailByUUID(
+                        event.getUuid()
+                )).toList();
+    }
 
-    private void saveInGraphDB(Event event) {
+
+    private void saveInGraphDB(Event event, UUID groupUUID) {
         EventNode eventToSave = eventMapper.toNode(event);
         eventToSave.setOwner(userService.findUserNodeByUUID(event.getOwner().getUuid()));
+
+        if  (groupUUID != null) {
+            eventToSave.setGroup(
+                    groupService.findGroupNodeByUUID(groupUUID)
+            );
+        }
         eventNodeRepository.save(eventToSave);
     }
 }

@@ -11,7 +11,6 @@ import com.socialtripper.restapi.entities.*;
 import com.socialtripper.restapi.exceptions.PostNotFoundException;
 import com.socialtripper.restapi.mappers.*;
 import com.socialtripper.restapi.nodes.PostNode;
-import com.socialtripper.restapi.nodes.UserNode;
 import com.socialtripper.restapi.repositories.graph.PostNodeRepository;
 import com.socialtripper.restapi.repositories.relational.EventPostRepository;
 import com.socialtripper.restapi.repositories.relational.GroupPostRepository;
@@ -199,8 +198,8 @@ public class PostServiceImpl implements PostService {
                         "/posts" + savedPost.getPost().getUuid() + "/",
                 multimedia
         );
-        //saveInGraphDB(savedPost.getPost(), multimediaUrls,
-        //        savedPost.getGroup().getUuid(), null);
+        saveInGraphDB(savedPost.getPost(), multimediaUrls,
+                savedPost.getGroup().getUuid(), null);
         return groupPostMapper.toDTO(savedPost);
     }
 
@@ -255,17 +254,31 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public UserReactionToPostMessageDTO addUserReactionToPost(UUID userUUID, UUID postUUID) {
-        PostNode post = findPostNodeByUUID(postUUID);
-        UserNode reactingUser = userService.findUserNodeByUUID(userUUID);
-        post.getReactingUsers().add(reactingUser);
+        postNodeRepository.addPostReaction(
+                userUUID.toString(),
+                postUUID.toString()
+        );
 
-        postNodeRepository.save(post);
         return new UserReactionToPostMessageDTO(
                 userUUID,
                 postUUID,
                 "user reacted to post"
         );
     }
+
+    @Override
+    public UserReactionToPostMessageDTO removeUserReactionToPost(UUID userUUID, UUID postUUID) {
+        postNodeRepository.removePostReaction(
+                userUUID.toString(),
+                postUUID.toString()
+        );
+        return new UserReactionToPostMessageDTO(
+                userUUID,
+                postUUID,
+                "user removed reaction from post"
+        );
+    }
+
 
     private PostNode saveInGraphDB(Post post, Set<String> multimediaUrls,
                                    UUID groupUUID, UUID eventUUID) {

@@ -34,7 +34,8 @@ public class EventNode {
     @Relationship(type = "IS_OWNED_BY_USER")
     private UserNode owner;
 
-
+    @Relationship(type = "IS_GROUP_EVENT")
+    private GroupNode group;
 
     public EventNode(UUID uuid, String name, boolean isPublic,
                      String iconUrl, LocalDateTime startTime, LocalDateTime endTime,

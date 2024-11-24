@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 
@@ -36,8 +35,10 @@ public class GroupParticipant {
     @Column(name = "left_at")
     private LocalDate leftAt;
 
-    public GroupParticipant(Group group, Account participant) {
+    public GroupParticipant(Group group, Account participant,
+                            LocalDate joinedAt) {
         this.group = group;
         this.participant = participant;
+        this.joinedAt = joinedAt;
     }
 }

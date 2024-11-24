@@ -4,6 +4,7 @@ import com.socialtripper.restapi.dto.entities.AccountDTO;
 import com.socialtripper.restapi.dto.entities.FollowDTO;
 import com.socialtripper.restapi.dto.messages.UserEndsFollowingMessageDTO;
 import com.socialtripper.restapi.dto.messages.UserStartsFollowingMessageDTO;
+import com.socialtripper.restapi.dto.requests.UserRequestFollowDTO;
 import com.socialtripper.restapi.dto.thumbnails.AccountThumbnailDTO;
 import com.socialtripper.restapi.entities.Account;
 import com.socialtripper.restapi.entities.Follow;

@@ -1,9 +1,6 @@
 package com.socialtripper.restapi.controllers;
 
 import com.socialtripper.restapi.dto.entities.AccountDTO;
-import com.socialtripper.restapi.dto.entities.FollowDTO;
-import com.socialtripper.restapi.dto.messages.UserEndsFollowingMessageDTO;
-import com.socialtripper.restapi.dto.messages.UserStartsFollowingMessageDTO;
 import com.socialtripper.restapi.dto.thumbnails.AccountThumbnailDTO;
 import com.socialtripper.restapi.services.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +9,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import java.net.HttpURLConnection;
-import java.util.List;
 import java.util.UUID;
 
 @Controller
@@ -40,21 +36,6 @@ public class AccountController {
     public ResponseEntity<AccountThumbnailDTO> updateAccount(@PathVariable UUID uuid,
                                                              @RequestBody AccountDTO accountDTO) {
         return ResponseEntity.ok(accountService.updateAccount(uuid, accountDTO));
-    }
-
-    @PostMapping("/accounts/follow")
-    public ResponseEntity<UserStartsFollowingMessageDTO> followAccount(@RequestBody FollowDTO followDTO) {
-        return ResponseEntity.ok(accountService.followUser(followDTO));
-    }
-
-    @DeleteMapping("/accounts/follow")
-    public ResponseEntity<UserEndsFollowingMessageDTO> unfollowAccount(@RequestBody FollowDTO followDTO) {
-        return ResponseEntity.ok(accountService.unfollowUser(followDTO));
-    }
-
-    @GetMapping("/accounts/{uuid}/follows")
-    public ResponseEntity<List<AccountThumbnailDTO>> getFollowedAccounts(@PathVariable UUID uuid) {
-        return ResponseEntity.ok(accountService.getFollowedAccounts(uuid));
     }
 
     @GetMapping("/accounts/email")

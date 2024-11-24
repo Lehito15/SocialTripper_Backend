@@ -2,6 +2,7 @@ package com.socialtripper.restapi.services;
 
 import com.socialtripper.restapi.dto.entities.*;
 import com.socialtripper.restapi.dto.messages.*;
+import com.socialtripper.restapi.dto.requests.UserRequestGroupDTO;
 import com.socialtripper.restapi.dto.thumbnails.GroupThumbnailDTO;
 import com.socialtripper.restapi.entities.Group;
 import com.socialtripper.restapi.entities.GroupActivity;
@@ -22,8 +23,10 @@ public interface GroupService {
     GroupLanguage setLanguage(UUID uuid, LanguageDTO languageDTO);
     GroupDTO createGroup(GroupDTO groupDTO, MultipartFile icon);
     List<GroupThumbnailDTO> findUserCurrentGroups(UUID uuid);
-    UserJoinsGroupMessageDTO addUserToGroup(UUID groupUUID, UUID userUUID);
-    UserLeavesGroupMessageDTO removeUserFromGroup(UUID groupUUID, UUID userUUID);
+    UserJoinsGroupMessageDTO addUserToGroup(UUID userUUID, UUID groupUUID);
+    UserLeavesGroupMessageDTO removeUserFromGroup(UUID userUUID, UUID groupUUID);
     GroupDTO updateGroup(UUID uuid, GroupDTO groupDTO);
     GroupNode findGroupNodeByUUID(UUID uuid);
+    UserRequestGroupDTO addUserRequestGroup(UUID userUUID, UUID groupUUID);
+    boolean isUserInGroup(UUID userUUID, UUID groupUUID);
 }

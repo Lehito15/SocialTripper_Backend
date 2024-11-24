@@ -1,8 +1,13 @@
 package com.socialtripper.restapi.services.implementation;
 
+import com.socialtripper.restapi.dto.entities.FollowDTO;
 import com.socialtripper.restapi.dto.entities.UserActivityDTO;
 import com.socialtripper.restapi.dto.entities.UserDTO;
 import com.socialtripper.restapi.dto.entities.UserLanguageDTO;
+import com.socialtripper.restapi.dto.messages.UserEndsFollowingMessageDTO;
+import com.socialtripper.restapi.dto.messages.UserStartsFollowingMessageDTO;
+import com.socialtripper.restapi.dto.requests.UserRequestFollowDTO;
+import com.socialtripper.restapi.dto.thumbnails.AccountThumbnailDTO;
 import com.socialtripper.restapi.entities.User;
 import com.socialtripper.restapi.entities.UserActivity;
 import com.socialtripper.restapi.entities.UserLanguage;
@@ -20,6 +25,9 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -168,6 +176,67 @@ public class UserServiceImpl implements com.socialtripper.restapi.services.UserS
     public UserNode findUserNodeByUUID(UUID uuid) {
         return userNodeRepository.findByUuid(uuid)
                 .orElseThrow(() -> new UserNotFoundException(uuid));
+    }
+
+    @Override
+    public UserRequestFollowDTO addFollowRequest(FollowDTO followDTO) {
+        userNodeRepository.createFollowRequest(
+                followDTO.follower().uuid().toString(),
+                followDTO.followed().uuid().toString()
+        );
+
+        return new UserRequestFollowDTO(
+                followDTO.follower().uuid(),
+                followDTO.followed().uuid(),
+                "user requests follow"
+        );
+    }
+
+    @Override
+    public UserStartsFollowingMessageDTO followUser(FollowDTO followDTO) {
+        userNodeRepository.addUserFollow(
+                followDTO.follower().uuid().toString(),
+                followDTO.followed().uuid().toString()
+        );
+
+        userNodeRepository.removeFollowRequest(
+                followDTO.follower().uuid().toString(),
+                followDTO.followed().uuid().toString()
+        );
+
+        return accountService.followUser(followDTO);
+    }
+
+    @Override
+    public UserEndsFollowingMessageDTO unfollowUser(FollowDTO followDTO) {
+        userNodeRepository.removeUserFollow(
+                followDTO.follower().uuid().toString(),
+                followDTO.followed().uuid().toString()
+        );
+
+        return accountService.unfollowUser(followDTO);
+    }
+
+    @Override
+    public List<AccountThumbnailDTO> getFollowedAccounts(UUID uuid) {
+        return accountService.getFollowedAccounts(uuid);
+    }
+
+    @Override
+    public Boolean isFollowingUser(FollowDTO followDTO) {
+        return userNodeRepository.isFollowingUser(
+                followDTO.follower().uuid().toString(),
+                followDTO.followed().uuid().toString()
+        );
+    }
+
+    @Override
+    public List<AccountThumbnailDTO> getUserFollowRequests(UUID uuid) {
+        return userNodeRepository.getUserFollowRequests(uuid.toString())
+                .stream()
+                .map(follower ->
+                        accountService.findAccountThumbnailByUUID(follower.getUuid())
+                ).toList();
     }
 
     public void saveUserInGraphDB(User user) {

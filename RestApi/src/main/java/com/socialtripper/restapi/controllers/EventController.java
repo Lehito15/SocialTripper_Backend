@@ -7,6 +7,8 @@ import com.socialtripper.restapi.dto.messages.UserLeavesEventMessageDTO;
 import com.socialtripper.restapi.dto.requests.EventMultimediaMetadataDTO;
 import com.socialtripper.restapi.dto.requests.UserPathPointsDTO;
 import com.socialtripper.restapi.dto.requests.UserRequestEventDTO;
+import com.socialtripper.restapi.dto.thumbnails.AccountThumbnailDTO;
+import com.socialtripper.restapi.dto.thumbnails.EventThumbnailDTO;
 import com.socialtripper.restapi.dto.thumbnails.UserJourneyInEventDTO;
 import com.socialtripper.restapi.services.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +18,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import java.net.HttpURLConnection;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 @Controller
@@ -45,8 +46,9 @@ public class EventController {
     }
 
     @PostMapping("/events/group-events")
-    public ResponseEntity<GroupEventDTO> createGroupEvent(@RequestBody GroupEventDTO eventDTO) {
-        return ResponseEntity.status(HttpURLConnection.HTTP_CREATED).body(eventService.createGroupEvent(eventDTO));
+    public ResponseEntity<GroupEventDTO> createGroupEvent(@RequestPart GroupEventDTO eventDTO,
+                                                          @RequestPart(required = false) MultipartFile icon) {
+        return ResponseEntity.status(HttpURLConnection.HTTP_CREATED).body(eventService.createGroupEvent(eventDTO, icon));
     }
 
     @PatchMapping("/events/{uuid}/set-status")
@@ -61,25 +63,27 @@ public class EventController {
         return ResponseEntity.ok(eventService.updateEvent(uuid, eventDTO));
     }
 
-    @PostMapping("/users/{user-uuid}/events/{event-uuid}")
-    public ResponseEntity<UserJoinsEventMessageDTO> addUserToEvent(@PathVariable("user-uuid") UUID userUUID,
-                                                                   @PathVariable("event-uuid") UUID eventUUID) {
-        return ResponseEntity.ok(eventService.addUserToEvent(userUUID, eventUUID));
+    @PostMapping("/events/add-member")
+    public ResponseEntity<UserJoinsEventMessageDTO> addUserToEvent(@RequestBody UserRequestEventDTO userRequestEvent) {
+        return ResponseEntity.ok(eventService.addUserToEvent(
+                userRequestEvent.userUUID(),
+                userRequestEvent.eventUUID()));
     }
 
-    @DeleteMapping("/users/{user-uuid}/events/{event-uuid}")
-    public ResponseEntity<UserLeavesEventMessageDTO> removeUserFromEvent(@PathVariable("user-uuid") UUID userUUID,
-                                                                         @PathVariable("event-uuid") UUID eventUUID) {
-        return ResponseEntity.ok(eventService.removeUserFromEvent(userUUID, eventUUID));
+    @DeleteMapping("/events/remove-member")
+    public ResponseEntity<UserLeavesEventMessageDTO> removeUserFromEvent(@RequestBody UserRequestEventDTO userRequestEvent) {
+        return ResponseEntity.ok(eventService.removeUserFromEvent(
+                userRequestEvent.userUUID(),
+                userRequestEvent.eventUUID()));
     }
 
     @GetMapping("/users/{uuid}/events")
-    public ResponseEntity<List<EventDTO>> getUserEvents(@PathVariable UUID uuid) {
+    public ResponseEntity<List<EventThumbnailDTO>> getUserEvents(@PathVariable UUID uuid) {
         return ResponseEntity.ok(eventService.findUserEventsHistory(uuid));
     }
 
     @GetMapping("/users/{uuid}/events/upcoming")
-    public ResponseEntity<List<EventDTO>> getUpcomingEvents(@PathVariable UUID uuid) {
+    public ResponseEntity<List<EventThumbnailDTO>> getUpcomingEvents(@PathVariable UUID uuid) {
         return ResponseEntity.ok(eventService.findUserUpcomingEvents(uuid));
     }
 
@@ -98,7 +102,7 @@ public class EventController {
         );
     }
 
-    @PostMapping("/events/requests")
+    @PostMapping("/events/request")
     public ResponseEntity<UserRequestEventDTO> userApplyForEvent(@RequestBody UserRequestEventDTO userRequestEventDTO) {
         return ResponseEntity.status(HttpURLConnection.HTTP_CREATED).body(
                 eventService.userAppliesForEvent(userRequestEventDTO)
@@ -106,7 +110,7 @@ public class EventController {
     }
 
     @GetMapping("/events/{uuid}/requests")
-    public ResponseEntity<List<Map<String, Object>>> getEventRequests(@PathVariable UUID uuid) {
+    public ResponseEntity<List<AccountThumbnailDTO>> getEventRequests(@PathVariable UUID uuid) {
         return ResponseEntity.ok(eventService.findEventRequest(uuid));
     }
 
@@ -119,6 +123,11 @@ public class EventController {
     @GetMapping("/events/{uuid}/multimedia")
     public ResponseEntity<List<EventMultimediaMetadataDTO>> getEventMultimedia(@PathVariable UUID uuid) {
         return ResponseEntity.ok(eventService.findEventMultimedia(uuid));
+    }
+
+    @GetMapping("/groups/{uuid}/events")
+    public ResponseEntity<List<EventThumbnailDTO>> getGroupEvents(@PathVariable UUID uuid) {
+        return ResponseEntity.ok(eventService.getGroupEvents(uuid));
     }
 
 }

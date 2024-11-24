@@ -1,6 +1,5 @@
 package com.socialtripper.restapi.nodes;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,7 +7,6 @@ import lombok.Setter;
 import org.springframework.data.neo4j.core.schema.Id;
 import org.springframework.data.neo4j.core.schema.Node;
 import org.springframework.data.neo4j.core.schema.Relationship;
-
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -42,24 +40,17 @@ public class UserNode {
     @Relationship(type = "POSTS")
     private Set<PostNode> posts;
 
-    @Relationship(type = "REQUEST_FOLLOW")
+    @Relationship(type = "IS_GROUP_MEMBER")
+    private Set<GroupNode> groups;
+
+    @Relationship(type = "APPLIES_FOR_GROUP")
+    private Set<GroupNode> appliedGroups;
+
+    @Relationship(type = "REQUESTS_FOLLOW")
     private Set<UserNode> requestedFollows;
 
     @Relationship(type = "FOLLOWS")
     private Set<UserNode> follows;
-
-
-
-
-
-
-    @Relationship(type = "BELONGS_TO_GROUP")
-    @JsonIgnore
-    private Set<GroupNode> groups;
-
-    @Relationship(type = "APPLIES_FOR_GROUP")
-    @JsonIgnore
-    private Set<GroupNode> appliedGroups;
 
     public UserNode(UUID uuid, String name, String surname,
                     String nickname, String profileUrl,

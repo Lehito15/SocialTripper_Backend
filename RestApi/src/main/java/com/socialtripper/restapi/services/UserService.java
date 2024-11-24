@@ -1,13 +1,21 @@
 package com.socialtripper.restapi.services;
 
+import com.socialtripper.restapi.dto.entities.FollowDTO;
 import com.socialtripper.restapi.dto.entities.UserActivityDTO;
 import com.socialtripper.restapi.dto.entities.UserDTO;
 import com.socialtripper.restapi.dto.entities.UserLanguageDTO;
+import com.socialtripper.restapi.dto.messages.UserEndsFollowingMessageDTO;
+import com.socialtripper.restapi.dto.messages.UserStartsFollowingMessageDTO;
+import com.socialtripper.restapi.dto.requests.UserRequestFollowDTO;
+import com.socialtripper.restapi.dto.thumbnails.AccountThumbnailDTO;
+import com.socialtripper.restapi.entities.Account;
 import com.socialtripper.restapi.entities.User;
 import com.socialtripper.restapi.entities.UserActivity;
 import com.socialtripper.restapi.entities.UserLanguage;
 import com.socialtripper.restapi.nodes.UserNode;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 import java.util.UUID;
 
 public interface UserService {
@@ -21,6 +29,12 @@ public interface UserService {
     UserActivityDTO setUserActivity(UUID uuid, UserActivityDTO userActivityDTO);
     UserLanguageDTO setUserLanguage(UUID uuid, UserLanguageDTO userLanguageDTO);
     UserNode findUserNodeByUUID(UUID uuid);
+    UserRequestFollowDTO addFollowRequest(FollowDTO followDTO);
+    UserStartsFollowingMessageDTO followUser(FollowDTO followDTO);
+    UserEndsFollowingMessageDTO unfollowUser(FollowDTO followDTO);
+    List<AccountThumbnailDTO> getFollowedAccounts(UUID uuid);
+    Boolean isFollowingUser(FollowDTO followDTO);
+    List<AccountThumbnailDTO> getUserFollowRequests(UUID uuid);
     void saveUserInGraphDB(User user);
     void saveUserInGraphDB(UserNode userNode);
 }

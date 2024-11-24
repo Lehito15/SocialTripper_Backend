@@ -2,6 +2,9 @@ INSERT INTO activities (id, name) VALUES (1, 'running'), (2, 'hiking'), (3, 'wal
 
 INSERT INTO locations_scopes (id, name) VALUES (1, 'city'), (2, 'country');
 
+INSERT INTO events_statuses (id, name) VALUES
+                                           (1,'created'), (2, 'in progress'), (3, 'finished'), (4, 'cancelled');
+
 INSERT INTO languages (name) VALUES
                                  -- Języki narodowe europejskie
                                  ('English'),
@@ -311,10 +314,6 @@ VALUES
         null
     );
 
-
-
-INSERT INTO events_statuses (id, name) VALUES
-                                       (1,'created'), (2, 'in progress'), (3, 'finished'), (4, 'cancelled');
 
 INSERT INTO events (
     uuid,

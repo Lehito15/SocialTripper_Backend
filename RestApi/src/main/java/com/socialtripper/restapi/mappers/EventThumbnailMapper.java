@@ -1,5 +1,6 @@
 package com.socialtripper.restapi.mappers;
 
+import com.socialtripper.restapi.dto.entities.EventDTO;
 import com.socialtripper.restapi.dto.thumbnails.EventThumbnailDTO;
 import com.socialtripper.restapi.entities.Event;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,15 +10,13 @@ import java.util.stream.Collectors;
 
 @Component
 public class EventThumbnailMapper {
-    private final MultimediaMapper multimediaMapper;
     private final EventStatusMapper eventStatusMapper;
     private final EventActivityMapper eventActivityMapper;
     private final EventLanguageMapper eventLanguageMapper;
 
     @Autowired
-    public EventThumbnailMapper(MultimediaMapper multimediaMapper, EventStatusMapper eventStatusMapper,
-                                EventActivityMapper eventActivityMapper, EventLanguageMapper eventLanguageMapper) {
-        this.multimediaMapper = multimediaMapper;
+    public EventThumbnailMapper(EventStatusMapper eventStatusMapper, EventActivityMapper eventActivityMapper,
+                                EventLanguageMapper eventLanguageMapper) {
         this.eventStatusMapper = eventStatusMapper;
         this.eventActivityMapper = eventActivityMapper;
         this.eventLanguageMapper = eventLanguageMapper;
@@ -34,6 +33,20 @@ public class EventThumbnailMapper {
                 event.getIconUrl(),
                 event.getEventActivities().stream().map(eventActivityMapper::toDTO).collect(Collectors.toSet()),
                 event.getEventLanguages().stream().map(eventLanguageMapper::toDTO).collect(Collectors.toSet())
+        );
+    }
+
+    public EventThumbnailDTO toDTO(EventDTO eventDTO) {
+        if (eventDTO == null) return null;
+        return new EventThumbnailDTO(
+                eventDTO.uuid(),
+                eventDTO.description(),
+                eventDTO.numberOfParticipants(),
+                eventDTO.homePageUrl(),
+                eventDTO.eventStatus(),
+                eventDTO.iconUrl(),
+                eventDTO.activities(),
+                eventDTO.languages()
         );
     }
 }

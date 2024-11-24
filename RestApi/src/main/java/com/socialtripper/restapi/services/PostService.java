@@ -30,5 +30,5 @@ public interface PostService {
     UserPostsLockedMessageDTO lockPostByUUID(UUID uuid);
     PostDTO updatePost(UUID uuid, PostDTO postDTO);
     UserReactionToPostMessageDTO addUserReactionToPost(UUID userUUID, UUID postUUID);
-
+    UserReactionToPostMessageDTO removeUserReactionToPost(UUID userUUID, UUID postUUID);
 }
