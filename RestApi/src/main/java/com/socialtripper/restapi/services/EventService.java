@@ -42,5 +42,6 @@ public interface EventService {
     List<AccountThumbnailDTO> findEventRequest(UUID uuid);
     UserJourneyInEventDTO getUserJourneyInEvent(UUID userUUID, UUID eventUUID);
     List<EventThumbnailDTO> getGroupEvents(UUID groupUUID);
+    Boolean isEventMember(UUID userUUID, UUID eventUUID);
 
 }

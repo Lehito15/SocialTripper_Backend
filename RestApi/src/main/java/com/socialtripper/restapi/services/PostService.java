@@ -31,4 +31,5 @@ public interface PostService {
     PostDTO updatePost(UUID uuid, PostDTO postDTO);
     UserReactionToPostMessageDTO addUserReactionToPost(UUID userUUID, UUID postUUID);
     UserReactionToPostMessageDTO removeUserReactionToPost(UUID userUUID, UUID postUUID);
+    Boolean didUserReactToPost(UUID userUUID, UUID postUUID);
 }

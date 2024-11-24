@@ -279,6 +279,14 @@ public class PostServiceImpl implements PostService {
         );
     }
 
+    @Override
+    public Boolean didUserReactToPost(UUID userUUID, UUID postUUID) {
+        return postNodeRepository.didUserReact(
+                userUUID.toString(),
+                postUUID.toString()
+        );
+    }
+
 
     private PostNode saveInGraphDB(Post post, Set<String> multimediaUrls,
                                    UUID groupUUID, UUID eventUUID) {

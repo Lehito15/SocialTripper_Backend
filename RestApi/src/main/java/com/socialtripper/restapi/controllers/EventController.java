@@ -130,4 +130,10 @@ public class EventController {
         return ResponseEntity.ok(eventService.getGroupEvents(uuid));
     }
 
+    @GetMapping("/events/{event-uuid}/users/{user-uuid}/is-member")
+    public ResponseEntity<Boolean> isEventMember(@PathVariable("event-uuid") UUID eventUUID,
+                                                 @PathVariable("user-uuid") UUID userUUID) {
+        return ResponseEntity.ok(eventService.isEventMember(userUUID, eventUUID));
+    }
+
 }

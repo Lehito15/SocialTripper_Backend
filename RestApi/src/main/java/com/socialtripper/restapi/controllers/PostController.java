@@ -114,4 +114,10 @@ public class PostController {
         );
     }
 
+    @GetMapping("/posts/{post-uuid}/user/{user-uuid}/did-react")
+    public ResponseEntity<Boolean> didUserReactToPost(@PathVariable("post-uuid") UUID postUUID,
+                                                      @PathVariable("user-uuid") UUID userUUID) {
+        return ResponseEntity.ok(postService.didUserReactToPost(userUUID, postUUID));
+    }
+
 }

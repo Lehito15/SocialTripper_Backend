@@ -412,6 +412,13 @@ public class EventServiceImpl implements EventService {
                 )).toList();
     }
 
+    @Override
+    public Boolean isEventMember(UUID userUUID, UUID eventUUID) {
+        return eventNodeRepository.isEventMember(
+                userUUID.toString(),
+                eventUUID.toString()
+        );
+    }
 
     private void saveInGraphDB(Event event, UUID groupUUID) {
         EventNode eventToSave = eventMapper.toNode(event);

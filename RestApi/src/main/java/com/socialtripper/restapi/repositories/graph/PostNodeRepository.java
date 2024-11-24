@@ -24,4 +24,8 @@ public interface PostNodeRepository extends Neo4jRepository<PostNode, String> {
     @Query(value = "match (u: USER {uuid: $userUuid})-[r:REACTS_TO_POST]->(p: POST {uuid: $postUuid})" +
             " delete r")
     void removePostReaction(@Param("userUuid") String userUuid, @Param("postUuid") String postUuid);
+
+    @Query(value = "match (u: USER {uuid: $userUuid})-[r:REACTS_TO_POST]->(p: POST {uuid: $postUuid})" +
+            " return count(r) > 0 as isMember")
+    boolean didUserReact(@Param("userUuid") String userUuid, @Param("postUuid") String postUuid);
 }
