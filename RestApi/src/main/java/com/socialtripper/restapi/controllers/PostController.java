@@ -6,6 +6,7 @@ import com.socialtripper.restapi.dto.entities.PostDTO;
 import com.socialtripper.restapi.dto.messages.PostExpiredMessageDTO;
 import com.socialtripper.restapi.dto.messages.UserPostsExpiredMessageDTO;
 import com.socialtripper.restapi.dto.messages.UserPostsLockedMessageDTO;
+import com.socialtripper.restapi.dto.messages.UserReactionToPostMessageDTO;
 import com.socialtripper.restapi.services.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -94,6 +95,12 @@ public class PostController {
     @PatchMapping("/posts/{uuid}")
     public ResponseEntity<PostDTO> updatePost(@PathVariable UUID uuid, @RequestBody PostDTO postDTO) {
         return ResponseEntity.ok(postService.updatePost(uuid, postDTO));
+    }
+
+    @PostMapping("/posts/{post-uuid}/users/{user-uuid}/react")
+    public ResponseEntity<UserReactionToPostMessageDTO> addUserReactionToPost(@PathVariable("post-uuid") UUID postUUID,
+                                                                              @PathVariable("user-uuid") UUID userUUID) {
+        return ResponseEntity.ok(postService.addUserReactionToPost(userUUID, postUUID));
     }
 
 }

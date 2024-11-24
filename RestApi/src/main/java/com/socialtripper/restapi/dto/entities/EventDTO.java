@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
 
-public record EventDTO(UUID uuid, String destination, String description, String rules,
+public record EventDTO(UUID uuid, String name, String destination, String description, String rules,
                        Boolean isPublic, LocalDate dateOfCreation, LocalDateTime eventStartTime, LocalDateTime eventEndTime, int numberOfParticipants,
                        int actualNumberOfParticipants, int maxNumberOfParticipants, BigDecimal startLongitude,
                        BigDecimal startLatitude, BigDecimal stopLongitude, BigDecimal stopLatitude,

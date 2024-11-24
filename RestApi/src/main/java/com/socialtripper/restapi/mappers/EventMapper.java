@@ -39,6 +39,7 @@ public class EventMapper {
         if (eventDTO == null) return null;
         return new Event(
                 eventDTO.uuid(),
+                eventDTO.name(),
                 eventDTO.destination(),
                 eventDTO.description(),
                 eventDTO.rules(),
@@ -68,6 +69,7 @@ public class EventMapper {
         if (event == null) return null;
         return new EventDTO(
                 event.getUuid(),
+                event.getName(),
                 event.getDescription(),
                 event.getDescription(),
                 event.getRules(),

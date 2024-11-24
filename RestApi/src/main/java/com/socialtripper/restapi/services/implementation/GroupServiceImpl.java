@@ -7,25 +7,23 @@ import com.socialtripper.restapi.entities.Group;
 import com.socialtripper.restapi.entities.GroupActivity;
 import com.socialtripper.restapi.entities.GroupLanguage;
 import com.socialtripper.restapi.entities.GroupParticipant;
+import com.socialtripper.restapi.entities.enums.LocationScopes;
 import com.socialtripper.restapi.exceptions.GroupNotFoundException;
 import com.socialtripper.restapi.exceptions.AccountNotFoundException;
 import com.socialtripper.restapi.mappers.GroupMapper;
 import com.socialtripper.restapi.mappers.GroupThumbnailMapper;
 import com.socialtripper.restapi.nodes.GroupNode;
 import com.socialtripper.restapi.repositories.graph.GroupNodeRepository;
-import com.socialtripper.restapi.repositories.relational.GroupActivityRepository;
-import com.socialtripper.restapi.repositories.relational.GroupLanguageRepository;
-import com.socialtripper.restapi.repositories.relational.GroupParticipantRepository;
-import com.socialtripper.restapi.repositories.relational.GroupRepository;
+import com.socialtripper.restapi.repositories.relational.*;
 import com.socialtripper.restapi.services.*;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -35,6 +33,7 @@ public class GroupServiceImpl implements GroupService {
     private final GroupActivityRepository groupActivityRepository;
     private final GroupLanguageRepository groupLanguageRepository;
     private final GroupParticipantRepository groupParticipantRepository;
+    private final LocationScopeRepository locationScopeRepository;
     private final GroupMapper groupMapper;
     private final GroupThumbnailMapper groupThumbnailMapper;
     private final AccountService accountService;
@@ -49,7 +48,8 @@ public class GroupServiceImpl implements GroupService {
                             LanguageService languageService, GroupLanguageRepository groupLanguageRepository,
                             GroupActivityRepository groupActivityRepository, GroupParticipantRepository groupParticipantRepository,
                             GroupThumbnailMapper groupThumbnailMapper, GroupNodeRepository groupNodeRepository,
-                            MultimediaService multimediaService, UserService userService) {
+                            MultimediaService multimediaService, UserService userService,
+                            LocationScopeRepository locationScopeRepository) {
         this.groupRepository = groupRepository;
         this.groupMapper = groupMapper;
         this.accountService = accountService;
@@ -62,6 +62,7 @@ public class GroupServiceImpl implements GroupService {
         this.groupNodeRepository = groupNodeRepository;
         this.multimediaService = multimediaService;
         this.userService = userService;
+        this.locationScopeRepository = locationScopeRepository;
     }
 
     @Override
@@ -95,6 +96,13 @@ public class GroupServiceImpl implements GroupService {
         group.setUuid(UUID.randomUUID());
         group.setDateOfCreation(LocalDate.now());
         group.setOwner(accountService.getAccountReference(groupDTO.owner().uuid()));
+        group.setHomePageUrl("http://group/" + group.getUuid());
+        group.setIsPublic(groupDTO.isPublic());
+        group.setLocationScope(locationScopeRepository.getReferenceById(
+                Objects.requireNonNull(
+                        LocationScopes.fromScope(
+                                groupDTO.locationScope().name()).orElse(null)).getId()
+        ));
         return group;
     }
 
@@ -146,7 +154,7 @@ public class GroupServiceImpl implements GroupService {
                                 .add(setLanguage(savedGroup.getUuid(), language));
                 }
         );
-        saveInGraphDB(savedGroup);
+        //saveInGraphDB(savedGroup);
         return groupMapper.toDTO(savedGroup);
     }
 

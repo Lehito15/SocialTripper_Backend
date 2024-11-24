@@ -73,8 +73,6 @@ public class UserMapper {
                 user.getName(),
                 user.getSurname(),
                 user.getAccount().getNickname(),
-                user.getAccount().isPublic(),
-                user.getAccount().isLocked(),
                 user.getAccount().getProfilePictureUrl(),
                 user.getUserLanguages().stream().map(
                         userLanguage -> userLanguage.getLanguage().getName()).collect(Collectors.toSet()),

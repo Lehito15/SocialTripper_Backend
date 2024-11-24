@@ -54,6 +54,14 @@ public class FaultController {
     }
 
     @ResponseBody
+    @ExceptionHandler(CommentNotFoundException.class)
+    @ResponseStatus(value = HttpStatus.NOT_FOUND)
+    ResponseEntity<ErrorDTO> commentNotFoundExceptionHandler(CommentNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ErrorDTO(HttpURLConnection.HTTP_NOT_FOUND,HttpStatus.NOT_FOUND, e.getMessage()));
+    }
+
+    @ResponseBody
     @ExceptionHandler(UsernameAlreadyTakenException.class)
     @ResponseStatus(value = HttpStatus.CONFLICT)
     ResponseEntity<ErrorDTO> usernameTakenExceptionHandler(UsernameAlreadyTakenException e) {

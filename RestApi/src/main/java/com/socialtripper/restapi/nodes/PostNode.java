@@ -4,11 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.data.neo4j.core.schema.GeneratedValue;
 import org.springframework.data.neo4j.core.schema.Id;
 import org.springframework.data.neo4j.core.schema.Node;
 import org.springframework.data.neo4j.core.schema.Relationship;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
@@ -32,11 +32,11 @@ public class PostNode {
     @Relationship(type = "POSTED_IN_EVENT")
     private EventNode event;
 
-    @Relationship(type = "REACTION_BY")
+    @Relationship(type = "REACTION_TO_POST_BY")
     private Set<UserNode> reactingUsers;
 
-    @Relationship(type = "COMMENTED")
-    private Set<Comment> comments;
+    @Relationship(type = "POST_COMMENTED")
+    private Set<CommentNode> comments;
 
     @Relationship(type = "POSTED_BY")
     private UserNode author;
@@ -46,6 +46,9 @@ public class PostNode {
         this.uuid = uuid;
         this.content = content;
         this.postTime = postTime;
+        this.multimediaUrls = new HashSet<>();
+        this.reactingUsers = new HashSet<>();
+        this.comments = new HashSet<>();
     }
 
     public int getCommentsNumber() {

@@ -18,7 +18,6 @@ import com.socialtripper.restapi.nodes.EventMultimediaNode;
 import com.socialtripper.restapi.nodes.EventNode;
 import com.socialtripper.restapi.nodes.EventMembership;
 import com.socialtripper.restapi.nodes.UserNode;
-import com.socialtripper.restapi.repositories.graph.EventMembershipRepository;
 import com.socialtripper.restapi.repositories.graph.EventMultimediaNodeRepository;
 import com.socialtripper.restapi.repositories.graph.EventNodeRepository;
 import com.socialtripper.restapi.repositories.relational.*;
@@ -42,7 +41,6 @@ public class EventServiceImpl implements EventService {
     private final EventActivityRepository eventActivityRepository;
     private final EventLanguageRepository eventLanguageRepository;
     private final EventMultimediaNodeRepository eventMultimediaRepository;
-    private final EventMembershipRepository eventMembershipRepository;
     private final EventMapper eventMapper;
     private final GroupEventMapper groupEventMapper;
     private final EventMultimediaMapper eventMultimediaMapper;
@@ -64,7 +62,7 @@ public class EventServiceImpl implements EventService {
                             EventLanguageRepository eventLanguageRepository, EventParticipantRepository eventParticipantRepository,
                             EventNodeRepository eventNodeRepository, MultimediaService multimediaService,
                             UserService userService, EventMultimediaNodeRepository eventMultimediaRepository,
-                            EventMultimediaMapper eventMultimediaMapper, EventMembershipRepository eventMembershipRepository) {
+                            EventMultimediaMapper eventMultimediaMapper) {
         this.eventRepository = eventRepository;
         this.eventMapper = eventMapper;
         this.accountService = accountService;
@@ -82,7 +80,6 @@ public class EventServiceImpl implements EventService {
         this.userService = userService;
         this.eventMultimediaRepository = eventMultimediaRepository;
         this.eventMultimediaMapper = eventMultimediaMapper;
-        this.eventMembershipRepository = eventMembershipRepository;
     }
 
     @Override

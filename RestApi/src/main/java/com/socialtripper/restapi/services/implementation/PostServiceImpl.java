@@ -6,10 +6,12 @@ import com.socialtripper.restapi.dto.entities.PostDTO;
 import com.socialtripper.restapi.dto.messages.PostExpiredMessageDTO;
 import com.socialtripper.restapi.dto.messages.UserPostsExpiredMessageDTO;
 import com.socialtripper.restapi.dto.messages.UserPostsLockedMessageDTO;
+import com.socialtripper.restapi.dto.messages.UserReactionToPostMessageDTO;
 import com.socialtripper.restapi.entities.*;
 import com.socialtripper.restapi.exceptions.PostNotFoundException;
 import com.socialtripper.restapi.mappers.*;
 import com.socialtripper.restapi.nodes.PostNode;
+import com.socialtripper.restapi.nodes.UserNode;
 import com.socialtripper.restapi.repositories.graph.PostNodeRepository;
 import com.socialtripper.restapi.repositories.relational.EventPostRepository;
 import com.socialtripper.restapi.repositories.relational.GroupPostRepository;
@@ -25,7 +27,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 public class PostServiceImpl implements PostService {
@@ -85,8 +86,8 @@ public class PostServiceImpl implements PostService {
                 .stream().map(post -> postMapper.toDTO(
                         post,
                         postNodeRepository.findPostByUuid(
-                                post.getUuid().toString()).getMultimediaUrls()))
-                .collect(Collectors.toList());
+                                post.getUuid().toString()))
+                ).toList();
     }
 
     @Override
@@ -96,6 +97,13 @@ public class PostServiceImpl implements PostService {
                         () -> new PostNotFoundException(uuid)
                 ),
                 postNodeRepository.findPostByUuid(uuid.toString()));
+    }
+
+    @Override
+    public PostNode findPostNodeByUUID(UUID uuid) {
+        return postNodeRepository.findPostNodeByUuid(uuid).orElseThrow(
+                () -> new PostNotFoundException(uuid)
+        );
     }
 
     @Override
@@ -175,7 +183,7 @@ public class PostServiceImpl implements PostService {
         Set<String> multimediaUrls = uploadPostMultimedia(
                 "post/" + savedPost.getPost().getUuid() + "/",
                 multimedia);
-        PostNode savedPostNode = saveToGraphDB(savedPost.getPost(), multimediaUrls,
+        PostNode savedPostNode = saveInGraphDB(savedPost.getPost(), multimediaUrls,
                 null, null);
         return postMapper.toDTO(savedPost.getPost(), savedPostNode);
     }
@@ -191,8 +199,8 @@ public class PostServiceImpl implements PostService {
                         "/posts" + savedPost.getPost().getUuid() + "/",
                 multimedia
         );
-        saveToGraphDB(savedPost.getPost(), multimediaUrls,
-                savedPost.getGroup().getUuid(), null);
+        //saveInGraphDB(savedPost.getPost(), multimediaUrls,
+        //        savedPost.getGroup().getUuid(), null);
         return groupPostMapper.toDTO(savedPost);
     }
 
@@ -206,28 +214,9 @@ public class PostServiceImpl implements PostService {
                 "events/" + savedPost.getEvent().getUuid() +
                         "/posts" + savedPost.getPost().getUuid()+ "/",
                 multimedia);
-        saveToGraphDB(savedPost.getPost(), multimediaUrls,
+        saveInGraphDB(savedPost.getPost(), multimediaUrls,
                 null, savedPost.getEvent().getUuid());
         return eventPostMapper.toDTO(savedPost);
-    }
-
-    private PostNode saveToGraphDB(Post post, Set<String> multimediaUrls,
-                                   UUID groupUUID, UUID eventUUID) {
-        PostNode postToSave = postMapper.toNode(post);
-        postToSave.setMultimediaUrls(multimediaUrls);
-        postToSave.setAuthor(
-                userService.findUserNodeByUUID(
-                        post.getAccount().getUuid()));
-        if (groupUUID != null) {
-            postToSave.setGroup(
-                    groupService.findGroupNodeByUUID(groupUUID));
-        }
-        if (eventUUID != null) {
-            postToSave.setEvent(
-                    eventService.findEventNodeByUUID(eventUUID)
-            );
-        }
-        return postNodeRepository.save(postToSave);
     }
 
     @Override
@@ -264,5 +253,37 @@ public class PostServiceImpl implements PostService {
         return postMapper.toDTO(postRepository.save(postToUpdate));
     }
 
+    @Override
+    public UserReactionToPostMessageDTO addUserReactionToPost(UUID userUUID, UUID postUUID) {
+        PostNode post = findPostNodeByUUID(postUUID);
+        UserNode reactingUser = userService.findUserNodeByUUID(userUUID);
+        post.getReactingUsers().add(reactingUser);
+
+        postNodeRepository.save(post);
+        return new UserReactionToPostMessageDTO(
+                userUUID,
+                postUUID,
+                "user reacted to post"
+        );
+    }
+
+    private PostNode saveInGraphDB(Post post, Set<String> multimediaUrls,
+                                   UUID groupUUID, UUID eventUUID) {
+        PostNode postToSave = postMapper.toNode(post);
+        postToSave.setMultimediaUrls(multimediaUrls);
+        postToSave.setAuthor(
+                userService.findUserNodeByUUID(
+                        post.getAccount().getUuid()));
+        if (groupUUID != null) {
+            postToSave.setGroup(
+                    groupService.findGroupNodeByUUID(groupUUID));
+        }
+        if (eventUUID != null) {
+            postToSave.setEvent(
+                    eventService.findEventNodeByUUID(eventUUID)
+            );
+        }
+        return postNodeRepository.save(postToSave);
+    }
 
 }

@@ -12,7 +12,6 @@ import java.util.UUID;
 @Repository
 public interface EventMultimediaNodeRepository extends Neo4jRepository<EventMultimediaNode, String> {
     @Query(value = "match (em:EVENT_MULTIMEDIA)-[:IS_EVENT_MULTIMEDIA]->(e:EVENT)," +
-            "(em)-[:IS_PRODUCED_BY]->(u:USER)" +
             "where e.uuid = $eventUUID " +
             "return em {.*}")
     List<EventMultimediaNode> findEventMultimediaByUUID(@Param("eventUUID") UUID eventUUID);

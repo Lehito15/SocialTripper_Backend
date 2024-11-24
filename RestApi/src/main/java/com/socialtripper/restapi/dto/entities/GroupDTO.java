@@ -7,10 +7,10 @@ import java.time.LocalDate;
 import java.util.Set;
 import java.util.UUID;
 
-public record GroupDTO (UUID uuid, String name, Integer numberOfMembers,
+public record GroupDTO (UUID uuid, String name, int numberOfMembers,
                         Boolean isPublic, String description, String rules,
                         LocalDate dateOfCreation, String homePageUrl, BigDecimal locationLongitude,
-                        BigDecimal locationLatitude, LocationScope locationScope, AccountThumbnailDTO owner,
+                        BigDecimal locationLatitude, LocationScopeDTO locationScope, AccountThumbnailDTO owner,
                         String iconUrl, Set<ActivityDTO> activities, Set<LanguageDTO> languages
 ) {
 }

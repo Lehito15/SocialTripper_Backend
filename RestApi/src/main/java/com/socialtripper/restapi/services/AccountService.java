@@ -14,7 +14,8 @@ public interface AccountService {
     Account getAccountReference(UUID uuid);
     Account getNewAccountWithReferences(AccountDTO accountDTO);
     Long getAccountIdByUUID(UUID uuid);
-    AccountThumbnailDTO findAccountByUUID(UUID uuid);
+    AccountThumbnailDTO findAccountThumbnailByUUID(UUID uuid);
+    AccountDTO findAccountByUUID(UUID uuid);
     AccountThumbnailDTO updateAccount(UUID uuid, AccountDTO accountDTO);
     AccountThumbnailDTO createAccount(AccountDTO accountDTO, MultipartFile profilePicture);
     UserStartsFollowingMessageDTO followUser(FollowDTO followDTO);

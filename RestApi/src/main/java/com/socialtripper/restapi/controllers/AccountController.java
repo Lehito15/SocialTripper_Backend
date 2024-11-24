@@ -26,7 +26,7 @@ public class AccountController {
 
     @GetMapping("/accounts/{uuid}")
     public ResponseEntity<AccountThumbnailDTO> getAccountByUUID(@PathVariable UUID uuid) {
-        return ResponseEntity.ok(accountService.findAccountByUUID(uuid));
+        return ResponseEntity.ok(accountService.findAccountThumbnailByUUID(uuid));
     }
 
     @PostMapping("/accounts")

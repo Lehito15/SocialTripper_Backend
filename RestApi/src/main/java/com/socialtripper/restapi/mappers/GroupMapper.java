@@ -12,6 +12,7 @@ public class GroupMapper {
     private AccountThumbnailMapper accountThumbnailMapper;
     private ActivityMapper activityMapper;
     private LanguageMapper languageMapper;
+    private LocationScopeMapper locationScopeMapper;
 
     @Autowired
     public void setActivityMapper(ActivityMapper activityMapper) {
@@ -26,6 +27,11 @@ public class GroupMapper {
     @Autowired
     public void setAccountThumbnailMapper(AccountThumbnailMapper accountThumbnailMapper) {
         this.accountThumbnailMapper = accountThumbnailMapper;
+    }
+
+    @Autowired
+    public void setLocationScopeMapper(LocationScopeMapper locationScopeMapper) {
+        this.locationScopeMapper = locationScopeMapper;
     }
 
     public Group toEntity(GroupDTO groupDTO) {
@@ -57,7 +63,7 @@ public class GroupMapper {
                 group.getHomePageUrl(),
                 group.getLocationLongitude(),
                 group.getLocationLatitude(),
-                group.getLocationScope(),
+                locationScopeMapper.toDTO(group.getLocationScope()),
                 accountThumbnailMapper.toDTO(group.getOwner()),
                 group.getIconUrl(),
                 group.getGroupActivities().stream().map(
@@ -88,7 +94,7 @@ public class GroupMapper {
         if (groupDTO == null) return null;
         if (groupDTO.uuid() != null) group.setUuid(groupDTO.uuid());
         if (groupDTO.name() != null) group.setName(groupDTO.name());
-        if (groupDTO.numberOfMembers() != null) group.setNumberOfMembers(groupDTO.numberOfMembers());
+        group.setNumberOfMembers(groupDTO.numberOfMembers());
         if (groupDTO.isPublic() != null) group.setIsPublic(groupDTO.isPublic());
         if (groupDTO.description() != null) group.setDescription(groupDTO.description());
         if (groupDTO.rules() != null) group.setRules(groupDTO.rules());

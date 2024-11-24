@@ -46,10 +46,17 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public AccountThumbnailDTO findAccountByUUID(UUID uuid) {
+    public AccountThumbnailDTO findAccountThumbnailByUUID(UUID uuid) {
         return accountThumbnailMapper.toDTO(
                 accountRepository.findByUuid(uuid)
                                     .orElseThrow(() -> new AccountNotFoundException(uuid)));
+    }
+
+    @Override
+    public AccountDTO findAccountByUUID(UUID uuid) {
+        return accountMapper.toDTO(accountRepository.findByUuid(uuid)
+                .orElseThrow(() -> new AccountNotFoundException(uuid))
+        );
     }
 
     @Override

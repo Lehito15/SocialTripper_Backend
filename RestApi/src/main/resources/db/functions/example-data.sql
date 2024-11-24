@@ -1,5 +1,7 @@
 INSERT INTO activities (id, name) VALUES (1, 'running'), (2, 'hiking'), (3, 'walking'), (4, 'cycling');
 
+INSERT INTO locations_scopes (id, name) VALUES (1, 'city'), (2, 'country');
+
 INSERT INTO languages (name) VALUES
                                  -- Języki narodowe europejskie
                                  ('English'),

@@ -5,8 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.DynamicUpdate;
-
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -21,7 +19,7 @@ import java.util.UUID;
 @Getter
 @Setter
 public class Event {
-    public Event(UUID uuid, String destination, String description, String rules, Boolean isPublic, LocalDate dateOfCreation,
+    public Event(UUID uuid, String name, String destination, String description, String rules, Boolean isPublic, LocalDate dateOfCreation,
                  LocalDateTime eventStartTime, LocalDateTime eventEndTime, int numberOfParticipants, int actualNumberOfParticipants,
                  int maxNumberOfParticipants, BigDecimal startLongitude, BigDecimal startLatitude, BigDecimal stopLongitude,
                  BigDecimal stopLatitude, BigDecimal destinationLongitude, BigDecimal destinationLatitude, String homePageUrl,
@@ -59,6 +57,9 @@ public class Event {
 
     @Column(nullable = false)
     private UUID uuid;
+
+    @Column(nullable = false, length = 100)
+    private String name;
 
     @Column(length = 100)
     private String destination;

@@ -21,5 +21,4 @@ public class AccountThumbnailMapper {
                 account.getProfilePictureUrl()
         );
     }
-
 }

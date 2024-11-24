@@ -24,20 +24,6 @@ public class PostMapper {
                         postDTO.content());
     }
 
-    public PostDTO toDTO(Post post, Set<String> multimediaUrls) {
-        if (post == null) return null;
-        return new PostDTO(
-                post.getUuid(),
-                post.getContent(),
-                post.getDateOfPost(),
-                post.isExpired(),
-                post.isLocked(),
-                post.getCommentsNumber(),
-                post.getReactionsNumber(),
-                accountThumbnailMapper.toDTO(post.getAccount()),
-                multimediaUrls
-        );
-    }
 
     public PostDTO toDTO(Post post) {
         if (post == null) return null;
