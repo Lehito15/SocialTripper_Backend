@@ -3,6 +3,7 @@ package com.socialtripper.restapi.services;
 import com.socialtripper.restapi.dto.entities.*;
 import com.socialtripper.restapi.dto.messages.*;
 import com.socialtripper.restapi.dto.requests.UserRequestGroupDTO;
+import com.socialtripper.restapi.dto.thumbnails.AccountThumbnailDTO;
 import com.socialtripper.restapi.dto.thumbnails.GroupThumbnailDTO;
 import com.socialtripper.restapi.entities.Group;
 import com.socialtripper.restapi.entities.GroupActivity;
@@ -28,5 +29,7 @@ public interface GroupService {
     GroupDTO updateGroup(UUID uuid, GroupDTO groupDTO);
     GroupNode findGroupNodeByUUID(UUID uuid);
     UserRequestGroupDTO addUserRequestGroup(UUID userUUID, UUID groupUUID);
-    boolean isUserInGroup(UUID userUUID, UUID groupUUID);
+    List<AccountThumbnailDTO> getGroupMembers(UUID groupUUID);
+    Boolean isGroupRequestSent(UUID userUUID, UUID groupUUID);
+    Boolean isUserInGroup(UUID userUUID, UUID groupUUID);
 }

@@ -49,4 +49,10 @@ public class CommentController {
                                                                                        @PathVariable("user-uuid") UUID userUUID) {
         return ResponseEntity.ok(commentService.removeUserReactionToComment(userUUID, commentUUID));
     }
+
+    @GetMapping("/comments/{comment-uuid}/users/{user-uuid}/did-react")
+    public ResponseEntity<Boolean> didUserReactToComment(@PathVariable("user-uuid") UUID userUuid,
+                                                         @PathVariable("comment-uuid") UUID commentUUID) {
+        return ResponseEntity.ok(commentService.didUserReactToComment(userUuid, commentUUID));
+    }
 }

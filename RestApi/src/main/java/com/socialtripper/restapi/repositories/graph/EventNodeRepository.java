@@ -44,4 +44,12 @@ public interface EventNodeRepository extends Neo4jRepository<EventNode, String> 
     @Query(value = "match (u: USER {uuid: $userUuid})-[r:IS_EVENT_MEMBER]->(e: EVENT {uuid: $eventUuid})" +
             " return count(r) > 0 as isMember")
     boolean isEventMember(@Param("userUuid") String userUuid, @Param("eventUuid") String eventUuid);
+
+    @Query(value = "match (u: USER)-[:IS_EVENT_MEMBER]->(e: EVENT {uuid: $eventUuid})" +
+            " return u {.*}")
+    List<UserNode> findEventMembers(@Param("eventUuid") String eventUuid);
+
+    @Query(value = "match (u: USER {uuid: $userUuid})-[r: APPLIES_FOR_EVENT]->(e: EVENT {uuid: $eventUuid})" +
+            " return count(r) > 0 as isRequestSent")
+    boolean isEventRequestSent(@Param("userUuid") String userUuid, @Param("eventUuid") String eventUuid);
 }

@@ -94,4 +94,9 @@ public class UserController {
     public ResponseEntity<List<AccountThumbnailDTO>> getFollowRequests(@PathVariable UUID uuid) {
         return ResponseEntity.ok(userService.getUserFollowRequests(uuid));
     }
+
+    @GetMapping("/users/is-follow-requested")
+    public ResponseEntity<Boolean> isFollowRequested(@RequestBody FollowDTO follow) {
+        return ResponseEntity.ok(userService.isFollowRequestSent(follow));
+    }
 }

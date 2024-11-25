@@ -4,6 +4,7 @@ import com.socialtripper.restapi.dto.entities.GroupDTO;
 import com.socialtripper.restapi.dto.messages.UserJoinsGroupMessageDTO;
 import com.socialtripper.restapi.dto.messages.UserLeavesGroupMessageDTO;
 import com.socialtripper.restapi.dto.requests.UserRequestGroupDTO;
+import com.socialtripper.restapi.dto.thumbnails.AccountThumbnailDTO;
 import com.socialtripper.restapi.dto.thumbnails.GroupThumbnailDTO;
 import com.socialtripper.restapi.services.GroupService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,5 +76,16 @@ public class GroupController {
                 groupService.addUserRequestGroup(userRequestGroup.userUUID(),
                         userRequestGroup.groupUUID())
         );
+    }
+
+    @GetMapping("/groups/{uuid}/members")
+    public ResponseEntity<List<AccountThumbnailDTO>> getGroupMembers(@PathVariable UUID uuid) {
+        return ResponseEntity.ok(groupService.getGroupMembers(uuid));
+    }
+
+    @GetMapping("/groups/{group-uuid}/users/{user-uuid}/is-group-requested")
+    public ResponseEntity<Boolean> isGroupRequested(@PathVariable("group-uuid") UUID groupUUID,
+                                                    @PathVariable("user-uuid") UUID userUUID) {
+        return ResponseEntity.ok(groupService.isGroupRequestSent(userUUID, groupUUID));
     }
 }

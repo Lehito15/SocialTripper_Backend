@@ -136,4 +136,15 @@ public class EventController {
         return ResponseEntity.ok(eventService.isEventMember(userUUID, eventUUID));
     }
 
+    @GetMapping("/events/{uuid}/members")
+    public ResponseEntity<List<AccountThumbnailDTO>> getEventMembers(@PathVariable UUID uuid) {
+        return ResponseEntity.ok(eventService.getEventMembers(uuid));
+    }
+
+    @GetMapping("/events/{event-uuid}/users/{user-uuid}/is-event-requested")
+    public ResponseEntity<Boolean> isEventRequested(@PathVariable("event-uuid") UUID eventUUID,
+                                                    @PathVariable("user-uuid") UUID userUUID) {
+        return ResponseEntity.ok(eventService.isEventRequestSent(userUUID, eventUUID));
+    }
+
 }

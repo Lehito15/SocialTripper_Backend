@@ -2,7 +2,6 @@ package com.socialtripper.restapi.mappers;
 
 import com.socialtripper.restapi.dto.thumbnails.AccountThumbnailDTO;
 import com.socialtripper.restapi.entities.Account;
-import com.socialtripper.restapi.nodes.UserNode;
 import org.springframework.stereotype.Component;
 
 @Component

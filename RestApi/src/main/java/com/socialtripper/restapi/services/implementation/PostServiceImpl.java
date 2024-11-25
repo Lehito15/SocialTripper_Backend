@@ -84,8 +84,10 @@ public class PostServiceImpl implements PostService {
         return postRepository.findAll()
                 .stream().map(post -> postMapper.toDTO(
                         post,
-                        postNodeRepository.findPostByUuid(
-                                post.getUuid().toString()))
+                        postNodeRepository.findPostNodeByUuid((
+                                post.getUuid())).orElseThrow(
+                                        () -> new PostNotFoundException(post.getUuid())
+                        ))
                 ).toList();
     }
 
@@ -95,7 +97,9 @@ public class PostServiceImpl implements PostService {
                 postRepository.findByUuid(uuid).orElseThrow(
                         () -> new PostNotFoundException(uuid)
                 ),
-                postNodeRepository.findPostByUuid(uuid.toString()));
+                postNodeRepository.findPostNodeByUuid(uuid).orElseThrow(
+                        () -> new PostNotFoundException(uuid))
+                );
     }
 
     @Override
@@ -110,7 +114,9 @@ public class PostServiceImpl implements PostService {
         return postRepository.findPostsByUserUUID(uuid).stream()
                 .map(post -> postMapper.toDTO(
                         post,
-                        postNodeRepository.findPostByUuid(post.getUuid().toString())))
+                        postNodeRepository.findPostNodeByUuid(post.getUuid()).orElseThrow(
+                                () -> new PostNotFoundException(post.getUuid())
+                        )))
                 .toList();
     }
 
@@ -120,7 +126,9 @@ public class PostServiceImpl implements PostService {
                 .stream()
                 .map(post -> postMapper.toDTO(
                         post,
-                        postNodeRepository.findPostByUuid(post.getUuid().toString())))
+                        postNodeRepository.findPostNodeByUuid(post.getUuid()).orElseThrow(
+                                () -> new PostNotFoundException(post.getUuid())
+                        )))
                 .toList();
     }
 
@@ -130,7 +138,9 @@ public class PostServiceImpl implements PostService {
                 .stream()
                 .map(post -> postMapper.toDTO(
                         post,
-                        postNodeRepository.findPostByUuid(post.getUuid().toString())))
+                        postNodeRepository.findPostNodeByUuid((post.getUuid())).orElseThrow(
+                                () -> new PostNotFoundException(post.getUuid()))
+                        ))
                 .toList();
     }
 
@@ -140,7 +150,9 @@ public class PostServiceImpl implements PostService {
                 .stream()
                 .map(post -> postMapper.toDTO(
                         post,
-                        postNodeRepository.findPostByUuid(post.getUuid().toString())))
+                        postNodeRepository.findPostNodeByUuid(post.getUuid()).orElseThrow(
+                                () -> new PostNotFoundException(post.getUuid())
+                        )))
                 .toList();
     }
 

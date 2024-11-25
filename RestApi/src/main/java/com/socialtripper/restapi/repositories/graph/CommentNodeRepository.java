@@ -25,4 +25,8 @@ public interface CommentNodeRepository extends Neo4jRepository<CommentNode, Stri
     @Query(value = "match (u: USER {uuid: $userUuid})<-[r:REACTION_TO_COMMENT_BY]-(c: COMMENT {uuid: $commentUuid}) " +
             "delete r")
     void removeCommentReaction(@Param("userUuid") String userUuid, @Param("commentUuid") String commentUuid);
+
+    @Query(value = "match (u: USER {uuid: $userUuid})<-[r: REACTION_TO_COMMENT_BY]-(c: COMMENT {uuid: $commentUuid})" +
+            " return count(r) > 0 as didReact")
+    boolean didUserReact(@Param("userUuid") String userUuid, @Param("commentUuid") String commentUuid);
 }

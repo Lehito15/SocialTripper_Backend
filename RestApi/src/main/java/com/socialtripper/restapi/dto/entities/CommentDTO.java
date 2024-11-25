@@ -1,7 +1,11 @@
 package com.socialtripper.restapi.dto.entities;
 
-import java.time.LocalDateTime;
+import com.socialtripper.restapi.dto.thumbnails.AccountThumbnailDTO;
 
-public record CommentDTO(String content, LocalDateTime timestamp, int reactionsNumber,
-                         PostDTO commentedPost) {
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+public record CommentDTO(UUID uuid, String content, LocalDateTime timestamp,
+                         int reactionsNumber, PostDTO commentedPost,
+                         AccountThumbnailDTO account) {
 }

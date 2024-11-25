@@ -26,7 +26,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -239,13 +238,18 @@ public class UserServiceImpl implements com.socialtripper.restapi.services.UserS
                 ).toList();
     }
 
+    @Override
+    public Boolean isFollowRequestSent(FollowDTO followDTO) {
+        return userNodeRepository.isFollowRequestSent(
+                followDTO.followed().uuid().toString(),
+                followDTO.follower().uuid().toString()
+        );
+    }
+
     public void saveUserInGraphDB(User user) {
         UserNode userToSave = userMapper.toNode(user);
         userToSave.setUuid(user.getAccount().getUuid());
         userNodeRepository.save(userToSave);
     }
 
-    public void saveUserInGraphDB(UserNode userNode) {
-        userNodeRepository.save(userNode);
-    }
 }

@@ -53,8 +53,12 @@ public class CommentServiceImpl implements CommentService {
         PostDTO commentedPost = postService.findPostByUUID(
                 comment.getCommentedPost().getUuid()
         );
+        AccountThumbnailDTO account = accountService.findAccountThumbnailByUUID(
+                comment.getCommentAuthor().getUuid()
+        );
+
         return commentMapper.toDTO(findCommentNodeByUUID(uuid),
-                commentedPost);
+                commentedPost, account);
     }
 
     @Override
@@ -72,11 +76,6 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public UserReactionToCommentMessageDTO addUserReactionToComment(UUID userUUID, UUID commentUUID) {
-//        CommentNode comment = findCommentNodeByUUID(commentUUID);
-//        UserNode reactingUser = userService.findUserNodeByUUID(userUUID);
-//
-//        comment.getReactingUsers().add(reactingUser);
-//        commentNodeRepository.save(comment);
         commentNodeRepository.addCommentReaction(
                 userUUID.toString(),
                 commentUUID.toString()
@@ -90,13 +89,6 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public UserReactionToCommentMessageDTO removeUserReactionToComment(UUID userUUID, UUID commentUUID) {
-//        CommentNode comment = findCommentNodeByUUID(commentUUID);
-//
-//        comment.getReactingUsers().removeIf(
-//                reactingUser -> reactingUser.getUuid().equals(userUUID)
-//        );
-//
-//        commentNodeRepository.save(comment);
         commentNodeRepository.removeCommentReaction(
                 userUUID.toString(),
                 commentUUID.toString());
@@ -115,5 +107,13 @@ public class CommentServiceImpl implements CommentService {
                     comment -> comments.add(findCommentByUUID(comment.getUuid()))
         );
         return comments;
+    }
+
+    @Override
+    public Boolean didUserReactToComment(UUID userUUID, UUID commentUUID) {
+        return commentNodeRepository.didUserReact(
+                userUUID.toString(),
+                commentUUID.toString()
+        );
     }
 }

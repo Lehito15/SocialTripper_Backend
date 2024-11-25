@@ -12,20 +12,15 @@ import java.util.UUID;
 public interface PostNodeRepository extends Neo4jRepository<PostNode, String> {
     Optional<PostNode> findPostNodeByUuid(UUID uuid);
 
-    @Query(value = "match (p:POST) " +
-            "where p.uuid = $postUuid " +
-            "return p {.*}")
-    PostNode findPostByUuid(@Param("postUuid") String postUuid);
-
     @Query(value = "match (u: USER {uuid: $userUuid}), (p: POST {uuid: $postUuid})" +
-            " create (u)-[:REACTS_TO_POST]->(p)")
+            " create (u)<-[:REACTION_TO_POST_BY]-(p)")
     void addPostReaction(@Param("userUuid") String userUuid, @Param("postUuid") String postUuid);
 
-    @Query(value = "match (u: USER {uuid: $userUuid})-[r:REACTS_TO_POST]->(p: POST {uuid: $postUuid})" +
+    @Query(value = "match (u: USER {uuid: $userUuid})<-[r:REACTION_TO_POST_BY]-(p: POST {uuid: $postUuid})" +
             " delete r")
     void removePostReaction(@Param("userUuid") String userUuid, @Param("postUuid") String postUuid);
 
-    @Query(value = "match (u: USER {uuid: $userUuid})-[r:REACTS_TO_POST]->(p: POST {uuid: $postUuid})" +
+    @Query(value = "match (u: USER {uuid: $userUuid})<-[r:REACTION_TO_POST_BY]-(p: POST {uuid: $postUuid})" +
             " return count(r) > 0 as isMember")
     boolean didUserReact(@Param("userUuid") String userUuid, @Param("postUuid") String postUuid);
 }

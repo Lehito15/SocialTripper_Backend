@@ -413,6 +413,23 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
+    public List<AccountThumbnailDTO> getEventMembers(UUID eventUUID) {
+        return eventNodeRepository.findEventMembers(eventUUID.toString())
+                .stream()
+                .map(member ->
+                        accountService.findAccountThumbnailByUUID(member.getUuid()))
+                .toList();
+    }
+
+    @Override
+    public Boolean isEventRequestSent(UUID userUUID, UUID eventUUID) {
+        return eventNodeRepository.isEventRequestSent(
+                userUUID.toString(),
+                eventUUID.toString()
+        );
+    }
+
+    @Override
     public Boolean isEventMember(UUID userUUID, UUID eventUUID) {
         return eventNodeRepository.isEventMember(
                 userUUID.toString(),

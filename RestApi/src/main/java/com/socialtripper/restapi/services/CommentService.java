@@ -13,4 +13,5 @@ public interface CommentService {
     UserReactionToCommentMessageDTO addUserReactionToComment(UUID userUUID, UUID commentUUID);
     UserReactionToCommentMessageDTO removeUserReactionToComment(UUID userUUID, UUID commentUUID);
     List<CommentDTO> findPostComments(UUID postUUID);
+    Boolean didUserReactToComment(UUID userUUID, UUID commentUUID);
 }

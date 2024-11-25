@@ -3,6 +3,7 @@ package com.socialtripper.restapi.services.implementation;
 import com.socialtripper.restapi.dto.entities.*;
 import com.socialtripper.restapi.dto.messages.*;
 import com.socialtripper.restapi.dto.requests.UserRequestGroupDTO;
+import com.socialtripper.restapi.dto.thumbnails.AccountThumbnailDTO;
 import com.socialtripper.restapi.dto.thumbnails.GroupThumbnailDTO;
 import com.socialtripper.restapi.entities.Group;
 import com.socialtripper.restapi.entities.GroupActivity;
@@ -228,7 +229,23 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
-    public boolean isUserInGroup(UUID userUUID, UUID groupUUID) {
+    public List<AccountThumbnailDTO> getGroupMembers(UUID groupUUID) {
+        return groupNodeRepository.findGroupMembers(groupUUID.toString())
+                .stream()
+                .map(member ->
+                        accountService.findAccountThumbnailByUUID(member.getUuid()))
+                .toList();
+    }
+
+    @Override
+    public Boolean isGroupRequestSent(UUID userUUID, UUID groupUUID) {
+        return groupNodeRepository.isGroupRequestSent(
+                userUUID.toString(),
+                groupUUID.toString());
+    }
+
+    @Override
+    public Boolean isUserInGroup(UUID userUUID, UUID groupUUID) {
         return groupNodeRepository.isUserInGroup(
                 userUUID.toString(),
                 groupUUID.toString()

@@ -35,6 +35,6 @@ public interface UserService {
     List<AccountThumbnailDTO> getFollowedAccounts(UUID uuid);
     Boolean isFollowingUser(FollowDTO followDTO);
     List<AccountThumbnailDTO> getUserFollowRequests(UUID uuid);
+    Boolean isFollowRequestSent(FollowDTO followDTO);
     void saveUserInGraphDB(User user);
-    void saveUserInGraphDB(UserNode userNode);
 }
