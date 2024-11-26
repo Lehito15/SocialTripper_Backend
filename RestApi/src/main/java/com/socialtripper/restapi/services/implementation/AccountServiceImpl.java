@@ -4,7 +4,6 @@ import com.socialtripper.restapi.dto.entities.AccountDTO;
 import com.socialtripper.restapi.dto.entities.FollowDTO;
 import com.socialtripper.restapi.dto.messages.UserEndsFollowingMessageDTO;
 import com.socialtripper.restapi.dto.messages.UserStartsFollowingMessageDTO;
-import com.socialtripper.restapi.dto.requests.UserRequestFollowDTO;
 import com.socialtripper.restapi.dto.thumbnails.AccountThumbnailDTO;
 import com.socialtripper.restapi.entities.Account;
 import com.socialtripper.restapi.entities.Follow;
@@ -143,7 +142,10 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public AccountDTO findAccountByEmail(String email) {
+        Account account = accountRepository.findByEmail(email).orElseThrow(() ->
+                new AccountNotFoundException(email));
         return accountMapper.toDTO(
-                accountRepository.findByEmail(email).orElse(null));
+                account
+        );
     }
 }

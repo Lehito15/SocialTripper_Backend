@@ -52,6 +52,9 @@ public class UserNode {
     @Relationship(type = "FOLLOWS")
     private Set<UserNode> follows;
 
+    @Relationship(type = "FOLLOWS", direction = Relationship.Direction.INCOMING)
+    private Set<UserNode> followedBy;
+
     public UserNode(UUID uuid, String name, String surname,
                     String nickname, String profileUrl,
                     Set<String> languages, Set<String> activities) {
@@ -67,6 +70,11 @@ public class UserNode {
         this.ownedEvents = new HashSet<>();
         this.events = new HashSet<>();
         this.posts = new HashSet<>();
+        this.groups = new HashSet<>();
+        this.appliedGroups = new HashSet<>();
+        this.requestedFollows = new HashSet<>();
+        this.follows = new HashSet<>();
+        this.followedBy = new HashSet<>();
     }
 
 }

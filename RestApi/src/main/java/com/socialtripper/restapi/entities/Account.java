@@ -72,6 +72,8 @@ public class Account {
     @Column(name = "profile_picture_url")
     private String profilePictureUrl;
 
+    @OneToOne(mappedBy = "account")
+    private User user;
 
     public Account(UUID uuid, String nickname, String email, boolean isPublic,
                    String salt, String phone, String role, boolean isExpired, boolean isLocked,
