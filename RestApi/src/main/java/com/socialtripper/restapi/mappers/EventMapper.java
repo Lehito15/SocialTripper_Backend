@@ -65,7 +65,7 @@ public class EventMapper {
                 new HashSet<>());
     }
 
-    public EventDTO toDTO(Event event) {
+    public EventDTO toDTO(Event event, EventNode eventNode) {
         if (event == null) return null;
         return new EventDTO(
                 event.getUuid(),
@@ -77,7 +77,7 @@ public class EventMapper {
                 event.getDateOfCreation(),
                 event.getEventStartTime(),
                 event.getEventEndTime(),
-                event.getNumberOfParticipants(),
+                eventNode.getMembers().size(),
                 event.getActualNumberOfParticipants(),
                 event.getMaxNumberOfParticipants(),
                 event.getStartLongitude(),

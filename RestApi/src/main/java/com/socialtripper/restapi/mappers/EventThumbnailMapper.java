@@ -3,6 +3,7 @@ package com.socialtripper.restapi.mappers;
 import com.socialtripper.restapi.dto.entities.EventDTO;
 import com.socialtripper.restapi.dto.thumbnails.EventThumbnailDTO;
 import com.socialtripper.restapi.entities.Event;
+import com.socialtripper.restapi.nodes.EventNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -22,12 +23,12 @@ public class EventThumbnailMapper {
         this.eventLanguageMapper = eventLanguageMapper;
     }
 
-    public EventThumbnailDTO toDTO(Event event) {
+    public EventThumbnailDTO toDTO(Event event, EventNode eventNode) {
         if (event == null) return null;
         return new EventThumbnailDTO(
                 event.getUuid(),
                 event.getDescription(),
-                event.getNumberOfParticipants(),
+                eventNode.getMembers().size(),
                 event.getHomePageUrl(),
                 eventStatusMapper.toDTO(event.getEventStatus()),
                 event.getIconUrl(),

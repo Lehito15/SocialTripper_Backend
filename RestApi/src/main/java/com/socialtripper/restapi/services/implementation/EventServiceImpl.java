@@ -88,14 +88,22 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public List<EventDTO> findAllEvents() {
-        return eventRepository.findAll().stream().map(eventMapper::toDTO).toList();
+        return eventRepository.findAll()
+                .stream()
+                .map(event ->
+                        eventMapper.toDTO(
+                                event,
+                                findEventNodeByUUID(event.getUuid())
+                        ))
+                .toList();
     }
 
     @Override
     public EventDTO findEventByUUID(UUID uuid) {
         return eventMapper.toDTO(
                 eventRepository.findByUuid(uuid)
-                        .orElseThrow(() -> new EventNotFoundException(uuid)));
+                        .orElseThrow(() -> new EventNotFoundException(uuid)),
+                findEventNodeByUUID(uuid));
     }
 
     @Override
@@ -160,7 +168,9 @@ public class EventServiceImpl implements EventService {
                 savedEvent.getOwner().getUuid(),
                 savedEvent.getUuid());
 
-        return eventMapper.toDTO(eventToSave);
+        return eventMapper.toDTO(
+                eventToSave,
+                findEventNodeByUUID(savedEvent.getUuid()));
     }
 
     @Override
@@ -194,7 +204,9 @@ public class EventServiceImpl implements EventService {
         addUserToEvent(
                 savedEvent.getEvent().getOwner().getUuid(),
                 savedEvent.getEvent().getUuid());
-        return groupEventMapper.toDTO(savedEvent);
+        return groupEventMapper.toDTO(
+                savedEvent,
+                findEventNodeByUUID(savedEvent.getEvent().getUuid()));
     }
 
     @Override
@@ -210,7 +222,9 @@ public class EventServiceImpl implements EventService {
     @Override
     public EventDTO updateEvent(UUID uuid, EventDTO eventDTO) {
         Event event = eventMapper.copyNonNullValues(getEventReference(uuid), eventDTO);
-        return eventMapper.toDTO(eventRepository.save(event));
+        return eventMapper.toDTO(
+                eventRepository.save(event),
+                findEventNodeByUUID(uuid));
     }
 
     @Override
@@ -235,12 +249,26 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public List<EventThumbnailDTO> findUserEventsHistory(UUID uuid) {
-        return eventParticipantRepository.findUserEvents(uuid).stream().map(eventThumbnailMapper::toDTO).toList();
+        return eventParticipantRepository.findUserEvents(uuid)
+                .stream()
+                .map(event ->
+                        eventThumbnailMapper.toDTO(
+                                event,
+                                findEventNodeByUUID(uuid)
+                        ))
+                .toList();
     }
 
     @Override
     public List<EventThumbnailDTO> findUserUpcomingEvents(UUID uuid) {
-        return eventParticipantRepository.findUserUpcomingEvents(uuid).stream().map(eventThumbnailMapper::toDTO).toList();
+        return eventParticipantRepository.findUserUpcomingEvents(uuid)
+                .stream()
+                .map(event ->
+                        eventThumbnailMapper.toDTO(
+                                event,
+                                findEventNodeByUUID(uuid)
+                        ))
+                .toList();
     }
 
     @Override

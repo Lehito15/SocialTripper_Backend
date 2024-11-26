@@ -2,6 +2,7 @@ package com.socialtripper.restapi.mappers;
 
 import com.socialtripper.restapi.dto.entities.GroupEventDTO;
 import com.socialtripper.restapi.entities.GroupEvent;
+import com.socialtripper.restapi.nodes.EventNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -20,10 +21,10 @@ public class GroupEventMapper {
         );
     }
 
-    public GroupEventDTO toDTO(GroupEvent groupEvent) {
+    public GroupEventDTO toDTO(GroupEvent groupEvent, EventNode eventNode) {
         return new GroupEventDTO(
                 groupEvent.getEvent().getUuid(),
-                eventMapper.toDTO(groupEvent.getEvent())
+                eventMapper.toDTO(groupEvent.getEvent(), eventNode)
         );
     }
 }

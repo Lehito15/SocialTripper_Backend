@@ -8,6 +8,7 @@ import org.springframework.data.neo4j.core.schema.Id;
 import org.springframework.data.neo4j.core.schema.Node;
 import org.springframework.data.neo4j.core.schema.Relationship;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
@@ -37,6 +38,9 @@ public class EventNode {
     @Relationship(type = "IS_GROUP_EVENT")
     private GroupNode group;
 
+    @Relationship(type = "IS_EVENT_MEMBER", direction = Relationship.Direction.INCOMING)
+    private Set<UserNode> members;
+
     public EventNode(UUID uuid, String name, boolean isPublic,
                      String iconUrl, LocalDateTime startTime, LocalDateTime endTime,
                      String destination, String eventUrl, Set<String> languages,
@@ -52,5 +56,6 @@ public class EventNode {
         this.homePageUrl = eventUrl;
         this.languages = languages;
         this.activities = activities;
+        this.members = new HashSet<>();
     }
 }

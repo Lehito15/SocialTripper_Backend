@@ -227,7 +227,9 @@ public class PostServiceImpl implements PostService {
                 multimedia);
         saveInGraphDB(savedPost.getPost(), multimediaUrls,
                 null, savedPost.getEvent().getUuid());
-        return eventPostMapper.toDTO(savedPost);
+        return eventPostMapper.toDTO(
+                savedPost,
+                eventService.findEventNodeByUUID(eventPostDTO.event().uuid()));
     }
 
     @Override

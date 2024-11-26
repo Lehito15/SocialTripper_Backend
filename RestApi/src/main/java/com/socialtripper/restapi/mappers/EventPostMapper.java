@@ -2,6 +2,7 @@ package com.socialtripper.restapi.mappers;
 
 import com.socialtripper.restapi.dto.entities.EventPostDTO;
 import com.socialtripper.restapi.entities.EventPost;
+import com.socialtripper.restapi.nodes.EventNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -23,11 +24,11 @@ public class EventPostMapper {
         );
     }
 
-    public EventPostDTO toDTO(EventPost eventPost) {
+    public EventPostDTO toDTO(EventPost eventPost, EventNode eventNode) {
         if (eventPost == null) return null;
         return new EventPostDTO(
                 postMapper.toDTO(eventPost.getPost()),
-                eventThumbnailMapper.toDTO(eventPost.getEvent())
+                eventThumbnailMapper.toDTO(eventPost.getEvent(), eventNode)
         );
     }
 }
