@@ -94,7 +94,7 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     public Group getNewGroupWithReferences(GroupDTO groupDTO) {
-        Group group = groupMapper.toEntity(groupDTO);
+        Group group = groupMapper.toNewEntity(groupDTO);
         group.setUuid(UUID.randomUUID());
         group.setDateOfCreation(LocalDate.now());
         group.setOwner(accountService.getAccountReference(groupDTO.owner().uuid()));
@@ -169,6 +169,7 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
+    @Transactional
     public UserJoinsGroupMessageDTO addUserToGroup(UUID userUUID, UUID groupUUID) {
         groupParticipantRepository.save(
                 new GroupParticipant(getGroupReference(groupUUID),
@@ -185,6 +186,12 @@ public class GroupServiceImpl implements GroupService {
                 userUUID.toString(),
                 groupUUID.toString()
         );
+
+        Group group = groupRepository.findByUuid(groupUUID).orElseThrow(() ->
+                new GroupNotFoundException(groupUUID));
+
+        groupRepository.save(group);
+
         return new UserJoinsGroupMessageDTO(
                 userUUID,
                 groupUUID,

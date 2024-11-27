@@ -13,6 +13,7 @@ import com.socialtripper.restapi.exceptions.PhoneNumberAlreadyInUseException;
 import com.socialtripper.restapi.exceptions.UsernameAlreadyTakenException;
 import com.socialtripper.restapi.mappers.AccountMapper;
 import com.socialtripper.restapi.mappers.AccountThumbnailMapper;
+import com.socialtripper.restapi.repositories.graph.UserNodeRepository;
 import com.socialtripper.restapi.repositories.relational.AccountRepository;
 import com.socialtripper.restapi.repositories.relational.FollowRepository;
 import com.socialtripper.restapi.services.AccountService;
@@ -37,7 +38,7 @@ public class AccountServiceImpl implements AccountService {
     @Autowired
     public AccountServiceImpl(AccountRepository accountRepository, AccountMapper accountMapper,
                               AccountThumbnailMapper accountThumbnailMapper, FollowRepository followRepository,
-                              MultimediaService multimediaService) {
+                              MultimediaService multimediaService, UserNodeRepository userNodeRepository) {
         this.accountRepository = accountRepository;
         this.accountMapper = accountMapper;
         this.accountThumbnailMapper = accountThumbnailMapper;
@@ -71,7 +72,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public Account getNewAccountWithReferences(AccountDTO accountDTO) {
-        Account account = accountMapper.toEntity(accountDTO);
+        Account account = accountMapper.toNewEntity(accountDTO);
         account.setUuid(UUID.randomUUID());
         account.setHomePageUrl("http://users/" + account.getUuid());
         account.setCreatedAt(LocalDate.now());
@@ -114,20 +115,52 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    @Transactional
     public UserStartsFollowingMessageDTO followUser(FollowDTO followDTO) {
         followRepository.save(
                 new Follow(getAccountReference(followDTO.follower().uuid()),
                             getAccountReference(followDTO.followed().uuid()),
                             LocalDate.now())
         );
+
+        Account follower = accountRepository.findByUuid(
+                followDTO.follower().uuid()).orElseThrow(() ->
+                new AccountNotFoundException(followDTO.follower().uuid()));
+        Account followed = accountRepository.findByUuid(
+                followDTO.followed().uuid()).orElseThrow(() ->
+                new AccountNotFoundException(followDTO.followed().uuid()));
+
+        follower.setFollowingNumber(follower.getFollowingNumber() + 1);
+        followed.setFollowersNumber(followed.getFollowersNumber() + 1);
+
+        accountRepository.save(follower);
+        accountRepository.save(followed);
+
         return new UserStartsFollowingMessageDTO(followDTO.follower().uuid(),
                                                     followDTO.followed().uuid(),
                                             "user starts following");
     }
 
     @Override
+    @Transactional
     public UserEndsFollowingMessageDTO unfollowUser(FollowDTO followDTO) {
-        followRepository.userEndsFollowing(followDTO.follower().uuid(), followDTO.followed().uuid());
+        followRepository.userEndsFollowing(
+                followDTO.follower().uuid(),
+                followDTO.followed().uuid());
+
+        Account follower = accountRepository.findByUuid(
+                followDTO.follower().uuid()).orElseThrow(() ->
+                new AccountNotFoundException(followDTO.follower().uuid()));
+        Account followed = accountRepository.findByUuid(
+                followDTO.followed().uuid()).orElseThrow(() ->
+                new AccountNotFoundException(followDTO.followed().uuid()));
+
+        follower.setFollowingNumber(follower.getFollowingNumber() - 1);
+        followed.setFollowersNumber(followed.getFollowersNumber() - 1);
+
+        accountRepository.save(follower);
+        accountRepository.save(followed);
+
         return new UserEndsFollowingMessageDTO(followDTO.follower().uuid(),
                                                 followDTO.followed().uuid(),
                                                 "user ends following");
@@ -144,8 +177,6 @@ public class AccountServiceImpl implements AccountService {
     public AccountDTO findAccountByEmail(String email) {
         Account account = accountRepository.findByEmail(email).orElseThrow(() ->
                 new AccountNotFoundException(email));
-        return accountMapper.toDTO(
-                account
-        );
+        return accountMapper.toDTO(account);
     }
 }

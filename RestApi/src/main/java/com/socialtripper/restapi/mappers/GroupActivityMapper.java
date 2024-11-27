@@ -19,7 +19,7 @@ public class GroupActivityMapper {
     public GroupActivity toEntity(GroupActivityDTO groupActivityDTO) {
         if (groupActivityDTO == null) return null;
         return new GroupActivity(
-                groupMapper.toEntity(groupActivityDTO.group()),
+                groupMapper.toNewEntity(groupActivityDTO.group()),
                 activityMapper.toEntity(groupActivityDTO.activity())
         );
     }

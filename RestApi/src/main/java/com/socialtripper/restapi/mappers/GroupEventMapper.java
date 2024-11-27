@@ -17,7 +17,7 @@ public class GroupEventMapper {
 
     public GroupEvent toEntity(GroupEventDTO groupEventDTO) {
         return new GroupEvent(
-               eventMapper.toEntity(groupEventDTO.eventDTO())
+               eventMapper.toNewEntity(groupEventDTO.eventDTO())
         );
     }
 

@@ -19,7 +19,7 @@ public class GroupLanguageMapper {
     public GroupLanguage toEntity(GroupLanguageDTO groupLanguageDTO) {
         if (groupLanguageDTO == null) return null;
         return new GroupLanguage(
-                groupMapper.toEntity(groupLanguageDTO.group()),
+                groupMapper.toNewEntity(groupLanguageDTO.group()),
                 languageMapper.toEntity(groupLanguageDTO.language())
         );
     }

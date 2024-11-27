@@ -35,7 +35,7 @@ public class EventMapper {
         this.accountThumbnailMapper = accountThumbnailMapper;
     }
 
-    public Event toEntity(EventDTO eventDTO) {
+    public Event toNewEntity(EventDTO eventDTO) {
         if (eventDTO == null) return null;
         return new Event(
                 eventDTO.uuid(),
@@ -47,8 +47,8 @@ public class EventMapper {
                 eventDTO.dateOfCreation(),
                 eventDTO.eventStartTime(),
                 eventDTO.eventEndTime(),
-                eventDTO.numberOfParticipants(),
-                eventDTO.actualNumberOfParticipants(),
+                0,
+                0,
                 eventDTO.maxNumberOfParticipants(),
                 eventDTO.startLongitude(),
                 eventDTO.startLatitude(),
@@ -121,9 +121,9 @@ public class EventMapper {
         if (eventDTO.isPublic() != null) event.setIsPublic(eventDTO.isPublic());
         if (eventDTO.eventStartTime() != null) event.setEventStartTime(eventDTO.eventStartTime());
         if (eventDTO.eventEndTime() != null) event.setEventEndTime(eventDTO.eventEndTime());
-        event.setNumberOfParticipants(eventDTO.numberOfParticipants());
-        event.setActualNumberOfParticipants(eventDTO.actualNumberOfParticipants());
-        event.setMaxNumberOfParticipants(eventDTO.maxNumberOfParticipants());
+        if (eventDTO.numberOfParticipants() != null) event.setNumberOfParticipants(eventDTO.numberOfParticipants());
+        if (eventDTO.actualNumberOfParticipants() != null) event.setActualNumberOfParticipants(eventDTO.actualNumberOfParticipants());
+        if (eventDTO.maxNumberOfParticipants() != null) event.setMaxNumberOfParticipants(eventDTO.maxNumberOfParticipants());
         if (eventDTO.startLongitude() != null) event.setStartLatitude(eventDTO.startLongitude());
         if (eventDTO.startLatitude() != null) event.setStartLatitude(eventDTO.startLatitude());
         if (eventDTO.stopLongitude() != null) event.setStopLatitude(eventDTO.stopLongitude());

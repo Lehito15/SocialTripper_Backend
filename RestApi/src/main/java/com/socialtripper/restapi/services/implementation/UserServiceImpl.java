@@ -192,6 +192,7 @@ public class UserServiceImpl implements com.socialtripper.restapi.services.UserS
     }
 
     @Override
+    @Transactional
     public UserStartsFollowingMessageDTO followUser(FollowDTO followDTO) {
         userNodeRepository.addUserFollow(
                 followDTO.follower().uuid().toString(),
@@ -207,6 +208,7 @@ public class UserServiceImpl implements com.socialtripper.restapi.services.UserS
     }
 
     @Override
+    @Transactional
     public UserEndsFollowingMessageDTO unfollowUser(FollowDTO followDTO) {
         userNodeRepository.removeUserFollow(
                 followDTO.follower().uuid().toString(),

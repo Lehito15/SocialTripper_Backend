@@ -8,7 +8,6 @@ import com.socialtripper.restapi.dto.messages.UserEndsFollowingMessageDTO;
 import com.socialtripper.restapi.dto.messages.UserStartsFollowingMessageDTO;
 import com.socialtripper.restapi.dto.requests.UserRequestFollowDTO;
 import com.socialtripper.restapi.dto.thumbnails.AccountThumbnailDTO;
-import com.socialtripper.restapi.entities.Account;
 import com.socialtripper.restapi.entities.User;
 import com.socialtripper.restapi.entities.UserActivity;
 import com.socialtripper.restapi.entities.UserLanguage;

@@ -14,7 +14,7 @@ public class AccountMapper {
         this.userThumbnailMapper = userThumbnailMapper;
     }
 
-    public Account toEntity(AccountDTO accountDTO) {
+    public Account toNewEntity(AccountDTO accountDTO) {
         if (accountDTO == null) return null;
         return new Account(
                 accountDTO.uuid(),
@@ -29,9 +29,9 @@ public class AccountMapper {
                 accountDTO.createdAt(),
                 accountDTO.homePageUrl(),
                 accountDTO.description(),
-                accountDTO.followersNumber(),
-                accountDTO.followingNumber(),
-                accountDTO.numberOfTrips(),
+                0,
+                0,
+                0,
                 accountDTO.profilePictureUrl()
         );
     }
@@ -67,14 +67,14 @@ public class AccountMapper {
         if (accountDTO.salt() != null) account.setSalt(accountDTO.salt());
         if (accountDTO.phone() != null) account.setPhone(accountDTO.phone());
         if (accountDTO.role() != null) account.setRole(accountDTO.role());
-        account.setPublic(accountDTO.isPublic());
-        account.setExpired(accountDTO.isExpired());
-        account.setLocked(accountDTO.isLocked());
+        if (accountDTO.isPublic() != null) account.setPublic(accountDTO.isPublic());
+        if (accountDTO.isExpired() != null) account.setExpired(accountDTO.isExpired());
+        if (accountDTO.isLocked() != null) account.setLocked(accountDTO.isLocked());
         if (accountDTO.createdAt() != null) account.setCreatedAt(accountDTO.createdAt());
         if (accountDTO.homePageUrl() != null) account.setHomePageUrl(accountDTO.homePageUrl());
-        account.setFollowersNumber(accountDTO.followersNumber());
-        account.setFollowingNumber(accountDTO.followingNumber());
-        account.setNumberOfTrips(accountDTO.numberOfTrips());
+        if (accountDTO.followersNumber() != null) account.setFollowersNumber(accountDTO.followersNumber());
+        if (accountDTO.followingNumber() != null) account.setFollowingNumber(accountDTO.followingNumber());
+        if (accountDTO.numberOfTrips() != null) account.setNumberOfTrips(accountDTO.numberOfTrips());
         return account;
     }
 }

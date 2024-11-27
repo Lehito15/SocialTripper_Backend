@@ -125,7 +125,7 @@ public class EventServiceImpl implements EventService {
 
 
     private Event getNewEventWithReferences(EventDTO eventDTO, UUID userUUID) {
-        Event event = eventMapper.toEntity(eventDTO);
+        Event event = eventMapper.toNewEntity(eventDTO);
         event.setUuid(UUID.randomUUID());
         event.setName(eventDTO.name());
         event.setDateOfCreation(LocalDate.now());
@@ -287,6 +287,15 @@ public class EventServiceImpl implements EventService {
         eventNodeRepository.removeEventRequest(
                 userUUID.toString(),
                 eventUUID.toString()
+        );
+
+        AccountDTO newMember = accountService.findAccountByUUID(userUUID);
+        accountService.updateAccount(
+                newMember.uuid(),
+                AccountDTO.builder()
+                        .uuid(newMember.uuid())
+                        .numberOfTrips(newMember.numberOfTrips())
+                        .build()
         );
 
         return new UserJoinsEventMessageDTO(
