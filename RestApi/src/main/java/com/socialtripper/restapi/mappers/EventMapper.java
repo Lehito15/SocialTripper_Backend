@@ -49,7 +49,7 @@ public class EventMapper {
                 eventDTO.eventEndTime(),
                 0,
                 0,
-                eventDTO.maxNumberOfParticipants(),
+                -1,
                 eventDTO.startLongitude(),
                 eventDTO.startLatitude(),
                 eventDTO.stopLongitude(),
@@ -99,7 +99,7 @@ public class EventMapper {
         if (event == null) return null;
         return new EventNode(
                 event.getUuid(),
-                event.getDescription(),
+                event.getName(),
                 event.getIsPublic(),
                 event.getIconUrl(),
                 event.getEventStartTime(),

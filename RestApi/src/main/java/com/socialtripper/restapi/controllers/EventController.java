@@ -147,4 +147,9 @@ public class EventController {
         return ResponseEntity.ok(eventService.isEventRequestSent(userUUID, eventUUID));
     }
 
+    @GetMapping("/events/by-name")
+    public ResponseEntity<List<EventThumbnailDTO>> getEventsByName(@RequestParam("name") String eventName) {
+        return ResponseEntity.ok(eventService.getEventsByNameSubstring(eventName));
+    }
+
 }

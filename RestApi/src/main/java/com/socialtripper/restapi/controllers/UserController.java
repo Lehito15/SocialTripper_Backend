@@ -81,8 +81,9 @@ public class UserController {
     }
 
     @GetMapping("/users/is-following")
-    public ResponseEntity<Boolean> isFollowing(@RequestBody FollowDTO follow) {
-        return ResponseEntity.ok(userService.isFollowingUser(follow));
+    public ResponseEntity<Boolean> isFollowing(@RequestParam UUID followerUUID,
+                                               @RequestParam UUID followedUUID) {
+        return ResponseEntity.ok(userService.isFollowingUser(followerUUID, followedUUID));
     }
 
     @GetMapping("/users/{uuid}/follows")
@@ -101,7 +102,8 @@ public class UserController {
     }
 
     @GetMapping("/users/is-follow-requested")
-    public ResponseEntity<Boolean> isFollowRequested(@RequestBody FollowDTO follow) {
-        return ResponseEntity.ok(userService.isFollowRequestSent(follow));
+    public ResponseEntity<Boolean> isFollowRequested(@RequestParam UUID followerUUID,
+                                                     @RequestParam UUID followedUUID) {
+        return ResponseEntity.ok(userService.isFollowRequestSent(followerUUID, followedUUID));
     }
 }

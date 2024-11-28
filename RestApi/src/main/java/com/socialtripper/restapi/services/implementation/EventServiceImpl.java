@@ -294,7 +294,7 @@ public class EventServiceImpl implements EventService {
                 newMember.uuid(),
                 AccountDTO.builder()
                         .uuid(newMember.uuid())
-                        .numberOfTrips(newMember.numberOfTrips())
+                        .numberOfTrips(newMember.numberOfTrips() + 1)
                         .build()
         );
 
@@ -472,6 +472,16 @@ public class EventServiceImpl implements EventService {
                 userUUID.toString(),
                 eventUUID.toString()
         );
+    }
+
+    @Override
+    public List<EventThumbnailDTO> getEventsByNameSubstring(String eventNameSubstring) {
+        if (eventNameSubstring.isEmpty()) return Collections.emptyList();
+        return eventRepository.getEventsByNameSubstring(eventNameSubstring)
+                .stream()
+                .map(event ->
+                        findEventThumbnailByUUID(event.getUuid()))
+                .toList();
     }
 
     private void saveInGraphDB(Event event, UUID groupUUID) {

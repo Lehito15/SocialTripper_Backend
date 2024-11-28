@@ -229,10 +229,10 @@ public class UserServiceImpl implements com.socialtripper.restapi.services.UserS
     }
 
     @Override
-    public Boolean isFollowingUser(FollowDTO followDTO) {
+    public Boolean isFollowingUser(UUID followerUUID, UUID followedUUID) {
         return userNodeRepository.isFollowingUser(
-                followDTO.follower().uuid().toString(),
-                followDTO.followed().uuid().toString()
+                followerUUID.toString(),
+                followedUUID.toString()
         );
     }
 
@@ -246,10 +246,10 @@ public class UserServiceImpl implements com.socialtripper.restapi.services.UserS
     }
 
     @Override
-    public Boolean isFollowRequestSent(FollowDTO followDTO) {
+    public Boolean isFollowRequestSent(UUID followerUUID, UUID followedUUID) {
         return userNodeRepository.isFollowRequestSent(
-                followDTO.followed().uuid().toString(),
-                followDTO.follower().uuid().toString()
+                followedUUID.toString(),
+                followedUUID.toString()
         );
     }
 
