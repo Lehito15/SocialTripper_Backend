@@ -294,6 +294,15 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    public List<PostDTO> findFollowedUsersPosts(UUID uuid) {
+        return postNodeRepository.findFollowedUsersPosts(uuid.toString())
+                .stream()
+                .map(post ->
+                        findPostByUUID(post.getUuid()))
+                .toList();
+    }
+
+    @Override
     public Boolean didUserReactToPost(UUID userUUID, UUID postUUID) {
         return postNodeRepository.didUserReact(
                 userUUID.toString(),

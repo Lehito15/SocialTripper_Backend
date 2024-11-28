@@ -169,9 +169,19 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public List<AccountThumbnailDTO> getFollowedAccounts(UUID uuid) {
         return followRepository.findAccountsFollowedBy(uuid)
-                                .stream().map(accountThumbnailMapper::toDTO)
+                                .stream()
+                                .map(accountThumbnailMapper::toDTO)
                                 .toList();
     }
+
+    @Override
+    public List<AccountThumbnailDTO> getFollowingAccounts(UUID uuid) {
+        return followRepository.findAccountsFollowingBy(uuid)
+                                .stream()
+                                .map(accountThumbnailMapper::toDTO)
+                                .toList();
+    }
+
 
     @Override
     public AccountDTO findAccountByEmail(String email) {

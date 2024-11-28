@@ -65,14 +65,14 @@ public class PostController {
     }
 
     @PostMapping("/posts/group-post")
-    public ResponseEntity<GroupPostDTO> createGroupPost(@RequestBody GroupPostDTO postDTO,
+    public ResponseEntity<GroupPostDTO> createGroupPost(@RequestPart GroupPostDTO postDTO,
                                                         @RequestPart(required = false) MultipartFile[] multimedia) {
         return ResponseEntity.status(HttpURLConnection.HTTP_CREATED)
                                 .body(postService.saveGroupPost(postDTO, multimedia));
     }
 
     @PostMapping("/posts/event-post")
-    public ResponseEntity<EventPostDTO> createEventPost(@RequestBody EventPostDTO postDTO,
+    public ResponseEntity<EventPostDTO> createEventPost(@RequestPart EventPostDTO postDTO,
                                                         @RequestPart(required = false) MultipartFile[] multimedia) {
         return ResponseEntity.status(HttpURLConnection.HTTP_CREATED)
                 .body(postService.saveEventPost(postDTO, multimedia));
@@ -118,6 +118,11 @@ public class PostController {
     public ResponseEntity<Boolean> didUserReactToPost(@PathVariable("post-uuid") UUID postUUID,
                                                       @PathVariable("user-uuid") UUID userUUID) {
         return ResponseEntity.ok(postService.didUserReactToPost(userUUID, postUUID));
+    }
+
+    @GetMapping("/users/{uuid}/followed-users-posts")
+    public ResponseEntity<List<PostDTO>> getFollowedUsersPostsByUserUUID(@PathVariable UUID uuid) {
+        return ResponseEntity.ok(postService.findFollowedUsersPosts(uuid));
     }
 
 }

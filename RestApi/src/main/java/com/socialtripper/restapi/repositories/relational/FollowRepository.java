@@ -17,7 +17,13 @@ public interface FollowRepository extends JpaRepository<Follow, Long> {
 
     @Query(
             "select f.followed from Follow f " +
-                    "where f.follower.uuid = :followerUuid and f.followingTo is not null"
+                    "where f.follower.uuid = :followerUuid and f.followingTo is null"
     )
     List<Account> findAccountsFollowedBy(@Param("followerUuid") UUID followerUuid);
+
+    @Query(
+            "select f.follower from Follow f " +
+                    "where f.followed.uuid = :followedUuid and f.followingTo is null"
+    )
+    List<Account> findAccountsFollowingBy(@Param("followedUuid") UUID followedUuid);
 }

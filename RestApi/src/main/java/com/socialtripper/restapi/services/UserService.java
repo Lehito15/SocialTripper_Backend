@@ -32,6 +32,9 @@ public interface UserService {
     UserStartsFollowingMessageDTO followUser(FollowDTO followDTO);
     UserEndsFollowingMessageDTO unfollowUser(FollowDTO followDTO);
     List<AccountThumbnailDTO> getFollowedAccounts(UUID uuid);
+
+    List<AccountThumbnailDTO> getFollowingAccounts(UUID uuid);
+
     Boolean isFollowingUser(FollowDTO followDTO);
     List<AccountThumbnailDTO> getUserFollowRequests(UUID uuid);
     Boolean isFollowRequestSent(FollowDTO followDTO);

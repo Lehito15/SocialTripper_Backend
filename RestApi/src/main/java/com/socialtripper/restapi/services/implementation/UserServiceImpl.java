@@ -224,6 +224,11 @@ public class UserServiceImpl implements com.socialtripper.restapi.services.UserS
     }
 
     @Override
+    public List<AccountThumbnailDTO> getFollowingAccounts(UUID uuid) {
+        return accountService.getFollowingAccounts(uuid);
+    }
+
+    @Override
     public Boolean isFollowingUser(FollowDTO followDTO) {
         return userNodeRepository.isFollowingUser(
                 followDTO.follower().uuid().toString(),

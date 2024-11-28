@@ -90,6 +90,11 @@ public class UserController {
         return ResponseEntity.ok(userService.getFollowedAccounts(uuid));
     }
 
+    @GetMapping("/users/{uuid}/followed-by")
+    public ResponseEntity<List<AccountThumbnailDTO>> getFollowingAccounts(@PathVariable UUID uuid) {
+        return ResponseEntity.ok(userService.getFollowingAccounts(uuid));
+    }
+
     @GetMapping("/users/{uuid}/follow-requests")
     public ResponseEntity<List<AccountThumbnailDTO>> getFollowRequests(@PathVariable UUID uuid) {
         return ResponseEntity.ok(userService.getUserFollowRequests(uuid));

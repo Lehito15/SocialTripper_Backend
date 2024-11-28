@@ -37,8 +37,8 @@ public class UserNode {
     @Relationship(type = "IS_EVENT_MEMBER")
     private Set<EventMembership> events;
 
-    @Relationship(type = "POSTS")
-    private Set<PostNode> posts;
+//    @Relationship(type = "POSTS")
+//    private Set<PostNode> posts;
 
     @Relationship(type = "IS_GROUP_MEMBER")
     private Set<GroupNode> groups;
@@ -69,7 +69,7 @@ public class UserNode {
         this.appliedEvents = new HashSet<>();
         this.ownedEvents = new HashSet<>();
         this.events = new HashSet<>();
-        this.posts = new HashSet<>();
+        //this.posts = new HashSet<>();
         this.groups = new HashSet<>();
         this.appliedGroups = new HashSet<>();
         this.requestedFollows = new HashSet<>();
