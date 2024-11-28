@@ -3,7 +3,10 @@ package com.socialtripper.restapi.mappers;
 import com.socialtripper.restapi.dto.entities.AccountDTO;
 import com.socialtripper.restapi.entities.Account;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Component;
+
+import java.time.LocalDate;
 
 @Component
 public class AccountMapper {
@@ -24,9 +27,9 @@ public class AccountMapper {
                 accountDTO.salt(),
                 accountDTO.phone(),
                 accountDTO.role(),
-                accountDTO.isExpired(),
-                accountDTO.isLocked(),
-                accountDTO.createdAt(),
+                false,
+                false,
+                LocalDate.now(),
                 accountDTO.homePageUrl(),
                 accountDTO.description(),
                 0,
