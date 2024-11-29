@@ -15,7 +15,7 @@ public interface EventParticipantRepository extends JpaRepository<EventParticipa
     @Query(
             "select e from Event e " +
                     "join EventParticipant ep on ep.event = e " +
-                    "join ep.participant a " +
+                    "join ep.participant a on ep.participant = a " +
                     "where a.uuid = :userUuid and ep.leftAt is null order by e.eventStartTime desc"
     )
     List<Event> findUserEvents(@Param("userUuid") UUID uuid);
