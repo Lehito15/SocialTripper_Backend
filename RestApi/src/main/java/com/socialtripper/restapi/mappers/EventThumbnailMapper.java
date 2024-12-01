@@ -27,6 +27,7 @@ public class EventThumbnailMapper {
         if (event == null) return null;
         return new EventThumbnailDTO(
                 event.getUuid(),
+                event.getName(),
                 event.getDescription(),
                 eventNode.getMembers().size(),
                 event.getHomePageUrl(),
@@ -41,6 +42,7 @@ public class EventThumbnailMapper {
         if (eventDTO == null) return null;
         return new EventThumbnailDTO(
                 eventDTO.uuid(),
+                eventDTO.name(),
                 eventDTO.description(),
                 eventDTO.numberOfParticipants(),
                 eventDTO.homePageUrl(),
