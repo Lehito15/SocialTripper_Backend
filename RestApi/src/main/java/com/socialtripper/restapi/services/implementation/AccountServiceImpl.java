@@ -5,6 +5,7 @@ import com.socialtripper.restapi.dto.entities.FollowDTO;
 import com.socialtripper.restapi.dto.messages.UserEndsFollowingMessageDTO;
 import com.socialtripper.restapi.dto.messages.UserStartsFollowingMessageDTO;
 import com.socialtripper.restapi.dto.thumbnails.AccountThumbnailDTO;
+import com.socialtripper.restapi.dto.thumbnails.MultimediaDTO;
 import com.socialtripper.restapi.entities.Account;
 import com.socialtripper.restapi.entities.Follow;
 import com.socialtripper.restapi.exceptions.AccountNotFoundException;
@@ -182,11 +183,37 @@ public class AccountServiceImpl implements AccountService {
                                 .toList();
     }
 
+    @Override
+    public MultimediaDTO updateProfilePicture(UUID uuid, MultipartFile profilePicture) {
+        Account account = accountRepository.findByUuid(uuid).orElseThrow(() ->
+                new AccountNotFoundException(uuid));
+        if (profilePicture != null) {
+            try {
+                account.setProfilePictureUrl(
+                        multimediaService.uploadMultimedia(
+                                profilePicture,
+                                "users/" + account.getUuid() + "/" + UUID.randomUUID()));
+            } catch (IOException e) {
+                System.err.println(e.getMessage());
+            }
+        }
+        accountRepository.save(account);
+        return new MultimediaDTO(account.getProfilePictureUrl());
+    }
+
 
     @Override
     public AccountDTO findAccountByEmail(String email) {
         Account account = accountRepository.findByEmail(email).orElseThrow(() ->
                 new AccountNotFoundException(email));
         return accountMapper.toDTO(account);
+    }
+
+    @Override
+    public List<AccountThumbnailDTO> findAccountsByNicknameSubstring(String nickname) {
+        return accountRepository.findByNicknameSubstring(nickname)
+                .stream()
+                .map(accountThumbnailMapper::toDTO)
+                .toList();
     }
 }

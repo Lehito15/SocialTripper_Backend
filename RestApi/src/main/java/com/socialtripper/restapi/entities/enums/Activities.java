@@ -6,10 +6,13 @@ import java.util.Optional;
 
 @Getter
 public enum Activities {
-    RUNNING(1L, "running"),
-    HIKING(2L, "hiking"),
-    WALKING(3L, "walking"),
-    CYCLING(4L, "cycling");
+    WATER(1L, "water"),
+    WALKING(2L, "walking"),
+    SPORT(3L, "sport"),
+    RUNNING(4L, "running"),
+    RIDE(5L, "ride"),
+    HIKING(6L, "hiking"),
+    CYCLING(7L, "camping");
 
     private final Long id;
     private final String name;
