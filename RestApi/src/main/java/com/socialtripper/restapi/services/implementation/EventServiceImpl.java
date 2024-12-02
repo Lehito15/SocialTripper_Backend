@@ -254,7 +254,7 @@ public class EventServiceImpl implements EventService {
                 .map(event ->
                         eventThumbnailMapper.toDTO(
                                 event,
-                                findEventNodeByUUID(uuid)
+                                findEventNodeByUUID(event.getUuid())
                         ))
                 .toList();
     }
@@ -478,6 +478,17 @@ public class EventServiceImpl implements EventService {
     public List<EventThumbnailDTO> getEventsByNameSubstring(String eventNameSubstring) {
         if (eventNameSubstring.isEmpty()) return Collections.emptyList();
         return eventRepository.getEventsByNameSubstring(eventNameSubstring)
+                .stream()
+                .map(event ->
+                        findEventThumbnailByUUID(event.getUuid()))
+                .toList();
+    }
+
+    @Override
+    public List<EventThumbnailDTO> getUserAccomplishedEvents(UUID userUUID, int numberOfEvents) {
+        return eventParticipantRepository.findUserAccomplishedEvents(
+                userUUID,
+                numberOfEvents)
                 .stream()
                 .map(event ->
                         findEventThumbnailByUUID(event.getUuid()))

@@ -20,5 +20,4 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     @Query(value = "select e from Event e " +
             "where e.name like %:event_name%")
     List<Event> getEventsByNameSubstring(@Param("event_name") String eventName);
-
 }

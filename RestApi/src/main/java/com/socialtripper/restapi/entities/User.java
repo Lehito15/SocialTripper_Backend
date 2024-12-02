@@ -51,6 +51,10 @@ public class User {
     @NotNull
     private BigDecimal height;
 
+    @Column(nullable = false, precision = 4, scale = 2)
+    @NotNull
+    private BigDecimal bmi;
+
     @Column(nullable = false, precision = 3, scale = 1)
     private BigDecimal physicality;
 
@@ -69,7 +73,8 @@ public class User {
     private Set<UserActivity> userActivities;
 
     public User(UUID uuid, String name, String surname, Character gender,
-                LocalDate dateOfBirth, BigDecimal weight, BigDecimal height, BigDecimal physicality) {
+                LocalDate dateOfBirth, BigDecimal weight, BigDecimal height,
+                BigDecimal bmi, BigDecimal physicality) {
         this.uuid = uuid;
         this.name = name;
         this.surname = surname;
@@ -77,6 +82,7 @@ public class User {
         this.dateOfBirth = dateOfBirth;
         this.weight = weight;
         this.height = height;
+        this.bmi = bmi;
         this.physicality = physicality;
         this.userActivities = new HashSet<>();
         this.userLanguages = new HashSet<>();

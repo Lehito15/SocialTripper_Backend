@@ -44,6 +44,7 @@ public class UserMapper {
                 userDTO.dateOfBirth(),
                 userDTO.weight(),
                 userDTO.height(),
+                userDTO.bmi(),
                 userDTO.physicality()
         );
     }
@@ -58,6 +59,7 @@ public class UserMapper {
                 user.getDateOfBirth(),
                 user.getWeight(),
                 user.getHeight(),
+                user.getBmi(),
                 user.getPhysicality(),
                 accountMapper.toDTO(user.getAccount()),
                 countryMapper.toDTO(user.getCountry()),

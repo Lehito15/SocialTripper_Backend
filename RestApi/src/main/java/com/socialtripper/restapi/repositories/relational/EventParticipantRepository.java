@@ -28,6 +28,16 @@ public interface EventParticipantRepository extends JpaRepository<EventParticipa
     )
     List<Event> findUserUpcomingEvents(@Param("userUuid") UUID uuid);
 
+    @Query(
+            "select e from Event e" +
+                    " join EventParticipant ep on ep.event = e " +
+                    " join ep.participant a on ep.participant = a " +
+                    " where a.uuid = :userUuid and e.eventEndTime < current_timestamp and ep.leftAt is null " +
+                    " order by e.eventEndTime desc limit :eventsNumber"
+
+    )
+    List<Event> findUserAccomplishedEvents(@Param("userUuid") UUID uuid, @Param("eventsNumber") int eventsNumber);
+
     @Procedure(name = "userLeftEvent")
     void userLeftEvent(@Param("user_uuid") UUID userUUID, @Param("event_uuid") UUID eventUUID);
 }

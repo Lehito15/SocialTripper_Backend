@@ -152,4 +152,10 @@ public class EventController {
         return ResponseEntity.ok(eventService.getEventsByNameSubstring(eventName));
     }
 
+    @GetMapping("/users/{uuid}/accomplished-events")
+    public ResponseEntity<List<EventThumbnailDTO>> getAccomplishedEvents(@PathVariable UUID uuid,
+                                                                         @RequestParam int numberOfEvents) {
+        return ResponseEntity.ok(eventService.getUserAccomplishedEvents(uuid, numberOfEvents));
+    }
+
 }

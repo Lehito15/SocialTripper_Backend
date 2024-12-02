@@ -1,5 +1,5 @@
 server:
-  port: 80
+  port: 8080
 
 spring:
   main:
@@ -28,12 +28,12 @@ spring:
 #    uri: ${SPRING_NEO4J_URI}
     #uri: bolt://neo4j:7687
     authentication:
-      username: neo4j
-      password: neo4j
-      #username: ${SPRING_NEO4J_AUTHENTICATION_USERNAME}
-      #password: ${SPRING_NEO4J_AUTHENTICATION_PASSWORD}
 #      username: neo4j
-#      password: neo-db-passwd
+#      password: neo4j
+#      username: ${SPRING_NEO4J_AUTHENTICATION_USERNAME}
+#      password: ${SPRING_NEO4J_AUTHENTICATION_PASSWORD}
+      username: neo4j
+      password: neo-db-passwd
   servlet:
     multipart:
       max-file-size: 300MB

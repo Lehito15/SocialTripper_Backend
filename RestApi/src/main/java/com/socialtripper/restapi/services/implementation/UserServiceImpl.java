@@ -26,6 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.UUID;
 
@@ -86,6 +87,7 @@ public class UserServiceImpl implements com.socialtripper.restapi.services.UserS
     public User getNewUserWithReferences(UserDTO userDTO, MultipartFile profilePicture) {
         User user = userMapper.toEntity(userDTO);
         user.setUuid(UUID.randomUUID());
+        user.setBmi(userDTO.weight().divide(userDTO.height().pow(2), 2, RoundingMode.HALF_UP));
         user.setCountry(countryService.getCountryReference(userDTO.country().name()));
         user.setAccount(
                 accountService.getAccountReference(
