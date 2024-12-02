@@ -75,7 +75,7 @@ public class AccountServiceImpl implements AccountService {
     public Account getNewAccountWithReferences(AccountDTO accountDTO) {
         Account account = accountMapper.toNewEntity(accountDTO);
         account.setUuid(UUID.randomUUID());
-        account.setHomePageUrl("http://users/" + account.getUuid());
+        account.setHomePageUrl("/users/" + account.getUuid());
         account.setCreatedAt(LocalDate.now());
         account.setFollowersNumber(0);
         account.setFollowingNumber(0);

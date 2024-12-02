@@ -44,3 +44,15 @@ spring:
         blob:
           connection-string:  BlobEndpoint=https://socialtripperstorage.blob.core.windows.net/;QueueEndpoint=https://socialtripperstorage.queue.core.windows.net/;FileEndpoint=https://socialtripperstorage.file.core.windows.net/;TableEndpoint=https://socialtripperstorage.table.core.windows.net/;SharedAccessSignature=sv=2022-11-02&ss=bfqt&srt=o&sp=rwdlacupiytfx&se=2024-12-31T00:15:14Z&st=2024-11-16T16:15:14Z&spr=https&sig=k6LwTX0JP3UZLx9wZuYa5RNkHAecckcfXdiApF9ZxWE%3D
           container-name: blob
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_wzWATk9X1"
+          jwk-set-uri: "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_wzWATk9X1/.well-known/jwks.json"
+
+
+cognito:
+  userPoolId: us-east-1_wzWATk9X1
+  clientId: 3un0a9e1ti72pie1cc7ekh3qo2
+  region: us-east-1

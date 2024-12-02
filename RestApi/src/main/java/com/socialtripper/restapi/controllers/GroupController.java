@@ -6,6 +6,7 @@ import com.socialtripper.restapi.dto.messages.UserLeavesGroupMessageDTO;
 import com.socialtripper.restapi.dto.requests.UserRequestGroupDTO;
 import com.socialtripper.restapi.dto.thumbnails.AccountThumbnailDTO;
 import com.socialtripper.restapi.dto.thumbnails.GroupThumbnailDTO;
+import com.socialtripper.restapi.dto.thumbnails.MultimediaDTO;
 import com.socialtripper.restapi.services.GroupService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -87,5 +88,11 @@ public class GroupController {
     public ResponseEntity<Boolean> isGroupRequested(@PathVariable("group-uuid") UUID groupUUID,
                                                     @PathVariable("user-uuid") UUID userUUID) {
         return ResponseEntity.ok(groupService.isGroupRequestSent(userUUID, groupUUID));
+    }
+
+    @PatchMapping("/groups/{uuid}/profile-picture")
+    public ResponseEntity<MultimediaDTO> updateGroupPicture(@PathVariable UUID uuid,
+                                                            @RequestPart MultipartFile icon) {
+        return ResponseEntity.ok(groupService.updateGroupPicture(uuid, icon));
     }
 }

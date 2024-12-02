@@ -129,7 +129,7 @@ public class EventServiceImpl implements EventService {
         event.setUuid(UUID.randomUUID());
         event.setName(eventDTO.name());
         event.setDateOfCreation(LocalDate.now());
-        event.setHomePageUrl("http://events/" + event.getUuid());
+        event.setHomePageUrl("/events/" + event.getUuid());
         event.setOwner(accountService.getAccountReference(userUUID));
         event.setEventStatus(eventStatusService.getEventStatusReference(EventStatuses.CREATED.getCode()));
         return event;

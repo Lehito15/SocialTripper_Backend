@@ -5,6 +5,7 @@ import com.socialtripper.restapi.dto.messages.*;
 import com.socialtripper.restapi.dto.requests.UserRequestGroupDTO;
 import com.socialtripper.restapi.dto.thumbnails.AccountThumbnailDTO;
 import com.socialtripper.restapi.dto.thumbnails.GroupThumbnailDTO;
+import com.socialtripper.restapi.dto.thumbnails.MultimediaDTO;
 import com.socialtripper.restapi.entities.Group;
 import com.socialtripper.restapi.entities.GroupActivity;
 import com.socialtripper.restapi.entities.GroupLanguage;
@@ -98,7 +99,7 @@ public class GroupServiceImpl implements GroupService {
         group.setUuid(UUID.randomUUID());
         group.setDateOfCreation(LocalDate.now());
         group.setOwner(accountService.getAccountReference(groupDTO.owner().uuid()));
-        group.setHomePageUrl("http://group/" + group.getUuid());
+        group.setHomePageUrl("/groups/" + group.getUuid());
         group.setIsPublic(groupDTO.isPublic());
         group.setLocationScope(locationScopeRepository.getReferenceById(
                 Objects.requireNonNull(
@@ -257,6 +258,23 @@ public class GroupServiceImpl implements GroupService {
                 userUUID.toString(),
                 groupUUID.toString()
         );
+    }
+
+    @Override
+    public MultimediaDTO updateGroupPicture(UUID uuid, MultipartFile icon) {
+        Group group = groupRepository.findByUuid(uuid).orElseThrow(() ->
+                new GroupNotFoundException(uuid));
+        if (icon != null) {
+            try {
+                group.setIconUrl(
+                        multimediaService.uploadMultimedia(
+                                icon,
+                                "groups/" + group.getUuid() + "/" + UUID.randomUUID()));
+            } catch (IOException e) {
+                System.err.println(e.getMessage());
+            }
+        }
+        return new MultimediaDTO(group.getIconUrl());
     }
 
     private void saveInGraphDB(Group group) {

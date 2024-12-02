@@ -5,6 +5,7 @@ import com.socialtripper.restapi.dto.messages.*;
 import com.socialtripper.restapi.dto.requests.UserRequestGroupDTO;
 import com.socialtripper.restapi.dto.thumbnails.AccountThumbnailDTO;
 import com.socialtripper.restapi.dto.thumbnails.GroupThumbnailDTO;
+import com.socialtripper.restapi.dto.thumbnails.MultimediaDTO;
 import com.socialtripper.restapi.entities.Group;
 import com.socialtripper.restapi.entities.GroupActivity;
 import com.socialtripper.restapi.entities.GroupLanguage;
@@ -32,4 +33,5 @@ public interface GroupService {
     List<AccountThumbnailDTO> getGroupMembers(UUID groupUUID);
     Boolean isGroupRequestSent(UUID userUUID, UUID groupUUID);
     Boolean isUserInGroup(UUID userUUID, UUID groupUUID);
+    MultimediaDTO updateGroupPicture(UUID uuid, MultipartFile icon);
 }
