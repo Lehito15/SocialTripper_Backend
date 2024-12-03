@@ -485,13 +485,13 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public List<EventThumbnailDTO> getUserAccomplishedEvents(UUID userUUID, int numberOfEvents) {
+    public List<EventDTO> getUserAccomplishedEvents(UUID userUUID, int numberOfEvents) {
         return eventParticipantRepository.findUserAccomplishedEvents(
                 userUUID,
                 numberOfEvents)
                 .stream()
                 .map(event ->
-                        findEventThumbnailByUUID(event.getUuid()))
+                        findEventByUUID(event.getUuid()))
                 .toList();
     }
 

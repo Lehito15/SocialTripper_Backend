@@ -70,7 +70,7 @@ public class EventMapper {
         return new EventDTO(
                 event.getUuid(),
                 event.getName(),
-                event.getDescription(),
+                event.getDestination(),
                 event.getDescription(),
                 event.getRules(),
                 event.getIsPublic(),

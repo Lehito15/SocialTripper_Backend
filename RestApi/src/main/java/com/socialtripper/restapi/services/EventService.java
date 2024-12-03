@@ -46,6 +46,6 @@ public interface EventService {
     Boolean isEventRequestSent(UUID userUUID, UUID eventUUID);
     Boolean isEventMember(UUID userUUID, UUID eventUUID);
     List<EventThumbnailDTO> getEventsByNameSubstring(String eventNameSubstring);
-    List<EventThumbnailDTO> getUserAccomplishedEvents(UUID userUUID, int numberOfEvents);
+    List<EventDTO> getUserAccomplishedEvents(UUID userUUID, int numberOfEvents);
 
 }
