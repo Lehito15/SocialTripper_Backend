@@ -8,8 +8,8 @@ import java.util.Set;
 import java.util.UUID;
 
 public record EventDTO(UUID uuid, String name, String destination, String description, String rules,
-                       Boolean isPublic, LocalDate dateOfCreation, LocalDateTime eventStartTime, LocalDateTime eventEndTime, Integer numberOfParticipants,
-                       Integer actualNumberOfParticipants, Integer maxNumberOfParticipants, BigDecimal startLongitude,
+                       Boolean isPublic, LocalDate dateOfCreation, LocalDateTime eventStartTime, LocalDateTime eventEndTime,
+                       Integer numberOfParticipants, Integer maxNumberOfParticipants, BigDecimal startLongitude,
                        BigDecimal startLatitude, BigDecimal stopLongitude, BigDecimal stopLatitude,
                        BigDecimal destinationLongitude, BigDecimal destinationLatitude, String homePageUrl,
                        EventStatusDTO eventStatus, AccountThumbnailDTO owner,

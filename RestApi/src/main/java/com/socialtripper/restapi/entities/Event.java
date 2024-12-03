@@ -20,12 +20,13 @@ import java.util.UUID;
 @Setter
 public class Event {
     public Event(UUID uuid, String name, String destination, String description, String rules, Boolean isPublic, LocalDate dateOfCreation,
-                 LocalDateTime eventStartTime, LocalDateTime eventEndTime, int numberOfParticipants, int actualNumberOfParticipants,
+                 LocalDateTime eventStartTime, LocalDateTime eventEndTime, int numberOfParticipants,
                  int maxNumberOfParticipants, BigDecimal startLongitude, BigDecimal startLatitude, BigDecimal stopLongitude,
                  BigDecimal stopLatitude, BigDecimal destinationLongitude, BigDecimal destinationLatitude, String homePageUrl,
-                 EventStatus eventStatus, Relation relation, Account owner, String iconUrl, Set<EventActivity> eventActivities,
+                 EventStatus eventStatus, Account owner, String iconUrl, Set<EventActivity> eventActivities,
                  Set<EventLanguage> eventLanguages) {
         this.uuid = uuid;
+        this.name = name;
         this.destination = destination;
         this.description = description;
         this.rules = rules;
@@ -34,7 +35,6 @@ public class Event {
         this.eventStartTime = eventStartTime;
         this.eventEndTime = eventEndTime;
         this.numberOfParticipants = numberOfParticipants;
-        this.actualNumberOfParticipants = actualNumberOfParticipants;
         this.maxNumberOfParticipants = maxNumberOfParticipants;
         this.startLongitude = startLongitude;
         this.startLatitude = startLatitude;
@@ -44,7 +44,6 @@ public class Event {
         this.destinationLatitude = destinationLatitude;
         this.homePageUrl = homePageUrl;
         this.eventStatus = eventStatus;
-        this.relation = relation;
         this.owner = owner;
         this.iconUrl = iconUrl;
         this.eventActivities = eventActivities;
@@ -87,9 +86,6 @@ public class Event {
     @NotNull
     private int numberOfParticipants;
 
-    @Column(name = "actual_number_of_participants")
-    private int actualNumberOfParticipants;
-
     @Column(name = "max_number_of_participants")
     private int maxNumberOfParticipants;
 
@@ -120,10 +116,6 @@ public class Event {
     @NotNull
     private EventStatus eventStatus;
 
-    @OneToOne
-    @JoinColumn(name = "relation_id")
-    private Relation relation;
-
     @ManyToOne
     @JoinColumn(name = "owner_id", nullable = false)
     @NotNull
@@ -137,5 +129,7 @@ public class Event {
 
     @OneToMany(mappedBy = "event")
     private Set<EventLanguage> eventLanguages;
+
+
 
 }

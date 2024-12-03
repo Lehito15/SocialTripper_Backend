@@ -48,7 +48,6 @@ public class EventMapper {
                 eventDTO.eventStartTime(),
                 eventDTO.eventEndTime(),
                 0,
-                0,
                 -1,
                 eventDTO.startLongitude(),
                 eventDTO.startLatitude(),
@@ -56,7 +55,6 @@ public class EventMapper {
                 eventDTO.stopLatitude(),
                 eventDTO.destinationLongitude(),
                 eventDTO.destinationLatitude(),
-                eventDTO.homePageUrl(),
                 null,
                 null,
                 null,
@@ -78,7 +76,6 @@ public class EventMapper {
                 event.getEventStartTime(),
                 event.getEventEndTime(),
                 eventNode.getMembers().size(),
-                event.getActualNumberOfParticipants(),
                 event.getMaxNumberOfParticipants(),
                 event.getStartLongitude(),
                 event.getStartLatitude(),
@@ -122,7 +119,6 @@ public class EventMapper {
         if (eventDTO.eventStartTime() != null) event.setEventStartTime(eventDTO.eventStartTime());
         if (eventDTO.eventEndTime() != null) event.setEventEndTime(eventDTO.eventEndTime());
         if (eventDTO.numberOfParticipants() != null) event.setNumberOfParticipants(eventDTO.numberOfParticipants());
-        if (eventDTO.actualNumberOfParticipants() != null) event.setActualNumberOfParticipants(eventDTO.actualNumberOfParticipants());
         if (eventDTO.maxNumberOfParticipants() != null) event.setMaxNumberOfParticipants(eventDTO.maxNumberOfParticipants());
         if (eventDTO.startLongitude() != null) event.setStartLatitude(eventDTO.startLongitude());
         if (eventDTO.startLatitude() != null) event.setStartLatitude(eventDTO.startLatitude());
