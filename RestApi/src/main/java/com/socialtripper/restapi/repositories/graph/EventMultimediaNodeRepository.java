@@ -11,14 +11,14 @@ import java.util.UUID;
 
 @Repository
 public interface EventMultimediaNodeRepository extends Neo4jRepository<EventMultimediaNode, String> {
-    @Query(value = "match (em:EVENT_MULTIMEDIA)-[:IS_EVENT_MULTIMEDIA]->(e:EVENT)," +
-            "where e.uuid = $eventUUID " +
-            "return em {.*}")
+    @Query(value = "match (em:EVENT_MULTIMEDIA)-[:IS_EVENT_MULTIMEDIA]->(e:EVENT)" +
+            " where e.uuid = $eventUUID " +
+            " return em {.*}")
     List<EventMultimediaNode> findEventMultimediaByUUID(@Param("eventUUID") UUID eventUUID);
 
     @Query(value = "match (em:EVENT_MULTIMEDIA)-[:IS_EVENT_MULTIMEDIA]->(e:EVENT)," +
-            "(em)-[:IS_PRODUCED_BY]->(u:USER)" +
-            "where e.uuid = $eventUUID and u.uuid = $userUUID return em {.*}")
+            " (em)-[:IS_PRODUCED_BY]->(u:USER)" +
+            " where e.uuid = $eventUUID and u.uuid = $userUUID return em {.*}")
     List<EventMultimediaNode> findUserMultimediaInEvent(@Param("userUUID") UUID  userUUID, @Param("eventUUID") UUID eventUUID);
 
     @Query(value = "match (em:EVENT_MULTIMEDIA)-[:IS_PRODUCED_BY]->(u:USER) " +

@@ -21,7 +21,7 @@ public interface GroupNodeRepository extends Neo4jRepository<GroupNode, String> 
     boolean isUserInGroup(@Param("userUuid") String userUuid, @Param("groupUuid") String groupUuid);
 
     @Query(value = "match (u: USER {uuid: $userUuid}), (g: GROUP {uuid: $groupUuid})" +
-            " create (u)-[:IS_GROUP_MEMBER]->(g)")
+            " merge (u)-[:IS_GROUP_MEMBER]->(g)")
     void addUserToGroup(@Param("userUuid") String userUuid, @Param("groupUuid") String groupUuid);
 
     @Query(value = "match (u:USER {uuid: $userUuid})-[r: IS_GROUP_MEMBER]->(g:GROUP {uuid: $groupUuid})" +
@@ -29,7 +29,7 @@ public interface GroupNodeRepository extends Neo4jRepository<GroupNode, String> 
     void removeUserFromGroup(@Param("userUuid") String userUuid, @Param("groupUuid") String groupUuid);
 
     @Query(value = "match (u: USER {uuid: $userUuid}), (g: GROUP {uuid: $groupUuid})" +
-            " create (u)-[:APPLIES_FOR_GROUP]->(g)")
+            " merge (u)-[:APPLIES_FOR_GROUP]->(g)")
     void addUserApplyForGroup(@Param("userUuid") String userUuid, @Param("groupUuid") String groupUuid);
 
     @Query(value = "match (u:USER {uuid: $userUuid})-[r: APPLIES_FOR_GROUP]->(g:GROUP {uuid: $groupUuid})" +

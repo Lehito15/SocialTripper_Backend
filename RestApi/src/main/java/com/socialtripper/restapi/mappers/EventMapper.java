@@ -48,7 +48,7 @@ public class EventMapper {
                 eventDTO.eventStartTime(),
                 eventDTO.eventEndTime(),
                 0,
-                -1,
+                eventDTO.maxNumberOfParticipants(),
                 eventDTO.startLongitude(),
                 eventDTO.startLatitude(),
                 eventDTO.stopLongitude(),

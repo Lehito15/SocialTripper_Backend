@@ -12,27 +12,32 @@ import com.socialtripper.restapi.dto.thumbnails.EventThumbnailDTO;
 import com.socialtripper.restapi.dto.thumbnails.UserJourneyInEventDTO;
 import com.socialtripper.restapi.entities.*;
 import com.socialtripper.restapi.entities.enums.EventStatuses;
+import com.socialtripper.restapi.exceptions.EventMembersLimitException;
 import com.socialtripper.restapi.exceptions.EventNotFoundException;
 import com.socialtripper.restapi.mappers.EventMapper;
 import com.socialtripper.restapi.mappers.EventMultimediaMapper;
 import com.socialtripper.restapi.mappers.EventThumbnailMapper;
 import com.socialtripper.restapi.mappers.GroupEventMapper;
+import com.socialtripper.restapi.nodes.EventMembership;
 import com.socialtripper.restapi.nodes.EventMultimediaNode;
 import com.socialtripper.restapi.nodes.EventNode;
-import com.socialtripper.restapi.nodes.EventMembership;
 import com.socialtripper.restapi.repositories.graph.EventMultimediaNodeRepository;
 import com.socialtripper.restapi.repositories.graph.EventNodeRepository;
 import com.socialtripper.restapi.repositories.relational.*;
 import com.socialtripper.restapi.services.*;
 import jakarta.transaction.Transactional;
+import org.neo4j.driver.Values;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.geo.Point;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 
 @Service
@@ -266,37 +271,48 @@ public class EventServiceImpl implements EventService {
                 .map(event ->
                         eventThumbnailMapper.toDTO(
                                 event,
-                                findEventNodeByUUID(uuid)
+                                findEventNodeByUUID(event.getUuid())
                         ))
                 .toList();
     }
 
     @Override
     public UserJoinsEventMessageDTO addUserToEvent(UUID userUUID, UUID eventUUID) {
-        eventParticipantRepository.save(
-                new EventParticipant(getEventReference(eventUUID),
-                        accountService.getAccountReference(userUUID),
-                        LocalDate.now())
-        );
+        if (!isEventMember(userUUID, eventUUID)) {
+            Event event = eventRepository.findByUuid(eventUUID).orElseThrow(() ->
+                    new EventNotFoundException(eventUUID));
 
-        eventNodeRepository.addUserToEvent(
-                userUUID.toString(),
-                eventUUID.toString()
-        );
+            if (event.getMaxNumberOfParticipants() == -1 ||
+                    event.getMaxNumberOfParticipants() >= event.getNumberOfParticipants() + 1) {
+                event.setNumberOfParticipants(event.getNumberOfParticipants() + 1);
+                eventRepository.save(event);
 
-        eventNodeRepository.removeEventRequest(
-                userUUID.toString(),
-                eventUUID.toString()
-        );
+                eventParticipantRepository.save(
+                        new EventParticipant(getEventReference(eventUUID),
+                                accountService.getAccountReference(userUUID),
+                                LocalDate.now())
+                );
 
-        AccountDTO newMember = accountService.findAccountByUUID(userUUID);
-        accountService.updateAccount(
-                newMember.uuid(),
-                AccountDTO.builder()
-                        .uuid(newMember.uuid())
-                        .numberOfTrips(newMember.numberOfTrips() + 1)
-                        .build()
-        );
+                eventNodeRepository.addUserToEvent(
+                        userUUID.toString(),
+                        eventUUID.toString()
+                );
+
+                eventNodeRepository.removeEventRequest(
+                        userUUID.toString(),
+                        eventUUID.toString()
+                );
+
+                AccountDTO newMember = accountService.findAccountByUUID(userUUID);
+                accountService.updateAccount(
+                        newMember.uuid(),
+                        AccountDTO.builder()
+                                .uuid(newMember.uuid())
+                                .numberOfTrips(newMember.numberOfTrips() + 1)
+                                .build()
+                );
+            } else throw new EventMembersLimitException();
+        }
 
         return new UserJoinsEventMessageDTO(
                 userUUID,
@@ -331,12 +347,14 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public UserPathPointsDTO addUserPathPoints(UserPathPointsDTO userPathPointsDTO) {
-        for(List<Double> coordinate: userPathPointsDTO.pathPoints()) {
-            eventNodeRepository.updatePathPoints(
-                    userPathPointsDTO.userUUID().toString(),
-                    userPathPointsDTO.eventUUID().toString(),
-                    coordinate);
-        }
+        List<Double> coordinates = userPathPointsDTO.pathPoints()
+                .stream()
+                .flatMap(point -> Stream.of(point.latitude(), point.longitude()))
+                .toList();
+        eventNodeRepository.updatePathPoints(
+                userPathPointsDTO.userUUID().toString(),
+                userPathPointsDTO.eventUUID().toString(),
+                coordinates);
         return userPathPointsDTO;
     }
 
@@ -412,24 +430,23 @@ public class EventServiceImpl implements EventService {
     @Override
     public UserJourneyInEventDTO getUserJourneyInEvent(UUID userUUID, UUID eventUUID) {
         EventMembership membership = userService.findUserNodeByUUID(
-                userUUID).getEvents()
+                        userUUID).getEvents()
                 .stream()
                 .filter(event ->
                         event.getEvent().getUuid().equals(eventUUID))
                 .findFirst()
                 .orElse(null);
 
-        List<Point> coordinates = null;
+        List<PointDTO> coordinates = null;
         if(membership != null) {
             coordinates =
                     IntStream.range(0, membership.getPathPoints().size() / 2)
-                            .mapToObj(i -> new Point(
-                                    membership.getPathPoints().get(2 * i).intValue(), // x
-                                    membership.getPathPoints().get(2 * i + 1).intValue() // y
+                            .mapToObj(i -> new PointDTO(
+                                    membership.getPathPoints().get(2 * i), // x
+                                    membership.getPathPoints().get(2 * i + 1) // y
                             ))
                             .toList();
         }
-
         return new UserJourneyInEventDTO(
                 coordinates,
                 eventMultimediaRepository.findUserMultimediaInEvent(userUUID,eventUUID)

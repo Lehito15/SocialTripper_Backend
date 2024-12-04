@@ -15,7 +15,7 @@ public interface EventNodeRepository extends Neo4jRepository<EventNode, String> 
     Optional<EventNode> findEventNodeByUuid(UUID uuid);
 
     @Query(value = "match (u: USER {uuid: $userUuid}), (e: EVENT {uuid: $eventUuid})" +
-            " create (u)-[:APPLIES_FOR_EVENT]->(e)")
+            " merge (u)-[:APPLIES_FOR_EVENT]->(e)")
     void createEventRequest(@Param("userUuid") String userUuid, @Param("eventUuid") String eventUuid);
 
     @Query(value = "match(u:USER {uuid: $userUuid})-[a:APPLIES_FOR_EVENT]->(e:EVENT {uuid: $eventUuid}) " +
@@ -23,7 +23,8 @@ public interface EventNodeRepository extends Neo4jRepository<EventNode, String> 
     void removeEventRequest(@Param("userUuid") String userUuid, @Param("eventUuid") String eventUuid);
 
     @Query(value = "match (u: USER {uuid: $userUuid}), (e: EVENT {uuid: $eventUuid})" +
-            " create (u)-[:IS_EVENT_MEMBER]->(e)")
+            " merge (u)-[r:IS_EVENT_MEMBER]->(e)" +
+            " set r.pathPoints = []")
     void addUserToEvent(@Param("userUuid") String userUuid, @Param("eventUuid") String eventUuid);
 
     @Query(value = "match(u:USER {uuid: $userUuid})-[a:IS_EVENT_MEMBER]->(e:EVENT {uuid: $eventUuid}) " +
@@ -33,9 +34,16 @@ public interface EventNodeRepository extends Neo4jRepository<EventNode, String> 
     @Query(value = "match (u:USER)-[:APPLIES_FOR_EVENT]->(e:EVENT {uuid: $eventUuid}) return u {.*}")
     List<UserNode> findEventRequests(@Param("eventUuid") String eventUuid);
 
-    @Query(value = "match (u:USER {uuid: $userUuid})-[m:IS_EVENT_MEMBER]->(e:EVENT {uuid: $eventUuid})" +
-            "set m.pathPoints = m.pathPoints + $pathPoints")
+    @Query(value = "match (u:USER {uuid: $userUuid})-[m:IS_EVENT_MEMBER]->(e:EVENT {uuid: $eventUuid}) " +
+            "set m.pathPoints = case " +
+            "when m.pathPoints is null then $pathPoints " +
+            "else m.pathPoints + $pathPoints " +
+            "end")
     void updatePathPoints(@Param("userUuid") String userUuid, @Param("eventUuid") String eventUuid, @Param("pathPoints") List<Double> pathPoints);
+
+    @Query(value = "match (u:USER {uuid: $userUuid})-[m:IS_EVENT_MEMBER]->(e:EVENT {uuid: $eventUuid}) " +
+            " return m.pathPoints")
+    List<Double> getPathPoints(@Param("userUuid") String userUuid, @Param("eventUuid") String eventUuid);
 
     @Query(value = "match (e: EVENT)-[:IS_GROUP_EVENT]->(g: GROUP {uuid: $groupUuid})" +
             " return e {.*}")

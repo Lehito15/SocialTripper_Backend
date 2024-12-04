@@ -85,4 +85,12 @@ public class FaultController {
                 .body(new ErrorDTO(HttpURLConnection.HTTP_CONFLICT,HttpStatus.CONFLICT, e.getMessage()));
     }
 
+    @ResponseBody
+    @ExceptionHandler(EventMembersLimitException.class)
+    @ResponseStatus(value = HttpStatus.CONFLICT)
+    ResponseEntity<ErrorDTO> eventMembersLimitReachedExceptionHandler(EventMembersLimitException e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(new ErrorDTO(HttpURLConnection.HTTP_CONFLICT,HttpStatus.CONFLICT, e.getMessage()));
+    }
+
 }

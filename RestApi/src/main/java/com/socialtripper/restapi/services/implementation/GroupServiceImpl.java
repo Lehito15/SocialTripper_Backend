@@ -172,26 +172,28 @@ public class GroupServiceImpl implements GroupService {
     @Override
     @Transactional
     public UserJoinsGroupMessageDTO addUserToGroup(UUID userUUID, UUID groupUUID) {
-        groupParticipantRepository.save(
-                new GroupParticipant(getGroupReference(groupUUID),
-                        accountService.getAccountReference(userUUID),
-                        LocalDate.now())
-        );
+        if (!isUserInGroup(userUUID, groupUUID)) {
+            groupParticipantRepository.save(
+                    new GroupParticipant(getGroupReference(groupUUID),
+                            accountService.getAccountReference(userUUID),
+                            LocalDate.now())
+            );
 
-        groupNodeRepository.addUserToGroup(
-                userUUID.toString(),
-                groupUUID.toString()
-        );
+            groupNodeRepository.addUserToGroup(
+                    userUUID.toString(),
+                    groupUUID.toString()
+            );
 
-        groupNodeRepository.removeUserApplyForGroup(
-                userUUID.toString(),
-                groupUUID.toString()
-        );
+            groupNodeRepository.removeUserApplyForGroup(
+                    userUUID.toString(),
+                    groupUUID.toString()
+            );
 
-        Group group = groupRepository.findByUuid(groupUUID).orElseThrow(() ->
-                new GroupNotFoundException(groupUUID));
-
-        groupRepository.save(group);
+            Group group = groupRepository.findByUuid(groupUUID).orElseThrow(() ->
+                    new GroupNotFoundException(groupUUID));
+            group.setNumberOfMembers(group.getNumberOfMembers() + 1);
+            groupRepository.save(group);
+        }
 
         return new UserJoinsGroupMessageDTO(
                 userUUID,
@@ -207,7 +209,17 @@ public class GroupServiceImpl implements GroupService {
                 userUUID.toString(),
                 groupUUID.toString()
         );
-        return new UserLeavesGroupMessageDTO(userUUID, groupUUID, "user has left group");
+
+        Group group = groupRepository.findByUuid(groupUUID).orElseThrow(() ->
+                new GroupNotFoundException(groupUUID));
+        group.setNumberOfMembers(group.getNumberOfMembers() -1);
+
+        groupRepository.save(group);
+
+        return new UserLeavesGroupMessageDTO(
+                userUUID,
+                groupUUID,
+                "user has left group");
     }
 
     @Override
@@ -274,6 +286,7 @@ public class GroupServiceImpl implements GroupService {
                 System.err.println(e.getMessage());
             }
         }
+        groupRepository.save(group);
         return new MultimediaDTO(group.getIconUrl());
     }
 

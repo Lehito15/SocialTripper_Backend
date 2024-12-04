@@ -66,6 +66,7 @@ public class AccountMapper {
         if (accountDTO == null) return null;
         if (accountDTO.uuid() != null) account.setUuid(accountDTO.uuid());
         if (accountDTO.nickname() != null) account.setNickname(accountDTO.nickname());
+        if (accountDTO.description() != null) account.setDescription(accountDTO.description());
         if (accountDTO.email() != null) account.setEmail(accountDTO.email());
         if (accountDTO.salt() != null) account.setSalt(accountDTO.salt());
         if (accountDTO.phone() != null) account.setPhone(accountDTO.phone());
