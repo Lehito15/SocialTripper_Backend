@@ -33,4 +33,6 @@ public interface PostService {
     UserReactionToPostMessageDTO removeUserReactionToPost(UUID userUUID, UUID postUUID);
     List<PostDTO> findFollowedUsersPosts(UUID uuid);
     Boolean didUserReactToPost(UUID userUUID, UUID postUUID);
+    List<PostDTO> findTrendingPosts(int numberOfPosts, int daysBound);
+    void addCommentToPost(UUID postUUID);
 }

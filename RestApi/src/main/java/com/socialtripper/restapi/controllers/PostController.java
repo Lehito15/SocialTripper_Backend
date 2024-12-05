@@ -125,4 +125,12 @@ public class PostController {
         return ResponseEntity.ok(postService.findFollowedUsersPosts(uuid));
     }
 
+    @GetMapping("/posts/trending")
+    public ResponseEntity<List<PostDTO>> getTrendingPosts(@RequestParam(value = "numberOfPosts", required = false) int numberOfPosts,
+                                                          @RequestParam(value = "daysBound", required = false) int daysBound) {
+        if (numberOfPosts <= 0) numberOfPosts = 10;
+        if (daysBound <= 0) daysBound = 7;
+        return ResponseEntity.ok(postService.findTrendingPosts(numberOfPosts, daysBound));
+    }
+
 }

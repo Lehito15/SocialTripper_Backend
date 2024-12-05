@@ -5,6 +5,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -15,6 +18,12 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     @Query(value = "select p.id from posts p where p.uuid = :post_uuid;", nativeQuery = true)
     Optional<Long> findIdByUuid(@Param("post_uuid") UUID post_uuid);
+
+    @Query(value = "select p from Post p " +
+            "where p.isPublic = true and p.dateOfPost >= :boundDate" +
+            " order by p.reactionsNumber desc" +
+            " limit :numberOfPosts")
+    List<Post> findTrendingPosts(@Param("numberOfPosts") int numberOfPosts, @Param("boundDate") LocalDateTime boundDate);
 
     @Query(value = "select * from find_user_posts(:user_uuid);", nativeQuery = true)
     List<Post> findPostsByUserUUID(@Param("user_uuid") UUID user_uuid);

@@ -20,7 +20,8 @@ public class PostMapper {
         if (postDTO == null) return null;
         return new Post(
                         postDTO.uuid(),
-                        postDTO.content());
+                        postDTO.content(),
+                        postDTO.isPublic());
     }
 
 
@@ -29,6 +30,7 @@ public class PostMapper {
         return new PostDTO(
                 post.getUuid(),
                 post.getContent(),
+                post.isPublic(),
                 post.getDateOfPost(),
                 post.isExpired(),
                 post.isLocked(),
@@ -44,6 +46,7 @@ public class PostMapper {
         return new PostDTO(
                 postNode.getUuid(),
                 postNode.getContent(),
+                postNode.isPublic(),
                 postNode.getPostTime(),
                 post.isExpired(),
                 post.isLocked(),
@@ -67,6 +70,7 @@ public class PostMapper {
         if (postDTO == null) return null;
         if (postDTO.uuid() != null) post.setUuid(postDTO.uuid());
         if (postDTO.content() != null) post.setContent(postDTO.content());
+        if (postDTO.isPublic() != null) post.setPublic(postDTO.isPublic());
         if (postDTO.isExpired() != null)  post.setExpired(postDTO.isExpired());
         if (postDTO.isLocked() != null)  post.setLocked(postDTO.isLocked());
         if (postDTO.commentsNumber() != null) post.setCommentsNumber(postDTO.commentsNumber());

@@ -9,6 +9,7 @@ import com.socialtripper.restapi.dto.requests.UserPathPointsDTO;
 import com.socialtripper.restapi.dto.requests.UserRequestEventDTO;
 import com.socialtripper.restapi.dto.thumbnails.AccountThumbnailDTO;
 import com.socialtripper.restapi.dto.thumbnails.EventThumbnailDTO;
+import com.socialtripper.restapi.dto.thumbnails.MultimediaDTO;
 import com.socialtripper.restapi.dto.thumbnails.UserJourneyInEventDTO;
 import com.socialtripper.restapi.entities.Event;
 import com.socialtripper.restapi.entities.EventActivity;
@@ -30,8 +31,8 @@ public interface EventService {
     EventDTO updateEvent(UUID uuid, EventDTO eventDTO);
     EventActivity setActivity(UUID uuid, EventActivityDTO eventActivityDTO);
     EventLanguage setLanguage(UUID uuid, EventLanguageDTO eventLanguageDTO);
-    List<EventThumbnailDTO> findUserEventsHistory(UUID uuid);
-    List<EventThumbnailDTO> findUserUpcomingEvents(UUID uuid);
+    List<EventDTO> findUserEventsHistory(UUID uuid);
+    List<EventDTO> findUserUpcomingEvents(UUID uuid);
     UserJoinsEventMessageDTO addUserToEvent(UUID userUUID, UUID eventUUID);
     UserLeavesEventMessageDTO removeUserFromEvent(UUID userUUID, UUID eventUUID);
     EventNode findEventNodeByUUID(UUID uuid);
@@ -41,11 +42,11 @@ public interface EventService {
     UserRequestEventDTO userAppliesForEvent(UserRequestEventDTO userRequestEventDTO);
     List<AccountThumbnailDTO> findEventRequest(UUID uuid);
     UserJourneyInEventDTO getUserJourneyInEvent(UUID userUUID, UUID eventUUID);
-    List<EventThumbnailDTO> getGroupEvents(UUID groupUUID);
+    List<EventDTO> getGroupEvents(UUID groupUUID);
     List<AccountThumbnailDTO> getEventMembers(UUID eventUUID);
     Boolean isEventRequestSent(UUID userUUID, UUID eventUUID);
     Boolean isEventMember(UUID userUUID, UUID eventUUID);
     List<EventThumbnailDTO> getEventsByNameSubstring(String eventNameSubstring);
     List<EventDTO> getUserAccomplishedEvents(UUID userUUID, int numberOfEvents);
-
+    MultimediaDTO updateEventIcon(UUID eventUUID, MultipartFile icon);
 }

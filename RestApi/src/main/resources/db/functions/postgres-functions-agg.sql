@@ -3,6 +3,23 @@ CREATE INDEX groups_uuid_index ON groups USING btree (uuid);
 CREATE INDEX events_uuid_index ON events USING btree (uuid);
 CREATE INDEX accounts_uuid_index ON accounts USING btree (uuid);
 
+CREATE OR REPLACE FUNCTION update_bmi()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF NEW.height > 0 THEN
+    NEW.bmi := NEW.weight / (NEW.height * NEW.height);
+ELSE
+    NEW.bmi := NULL;
+END IF;
+RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER recalculate_bmi
+BEFORE UPDATE OF height, weight ON users
+FOR EACH ROW
+EXECUTE FUNCTION update_bmi();
+
 CREATE OR REPLACE FUNCTION find_user_posts(user_uuid UUID)
 RETURNS SETOF posts AS $$
 BEGIN

@@ -27,6 +27,9 @@ public class Post {
     @Column(length = 2220)
     private String content;
 
+    @Column(name = "is_public", nullable = false)
+    private boolean isPublic;
+
     @Column(name = "date_of_post", nullable = false)
     private LocalDateTime dateOfPost;
 
@@ -38,7 +41,7 @@ public class Post {
     @NotNull
     private boolean isLocked;
 
-    @Column(name = "commments_number", nullable = false)
+    @Column(name = "comments_number", nullable = false)
     @NotNull
     private int commentsNumber;
 
@@ -52,8 +55,9 @@ public class Post {
     private Account account;
 
 
-    public Post(UUID uuid, String content) {
+    public Post(UUID uuid, String content, boolean isPublic) {
         this.uuid = uuid;
         this.content = content;
+        this.isPublic = isPublic;
     }
 }

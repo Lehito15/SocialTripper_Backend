@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
 
-public record PostDTO(UUID uuid, String content, LocalDateTime dateOfPost,
+public record PostDTO(UUID uuid, String content, Boolean isPublic, LocalDateTime dateOfPost,
                       Boolean isExpired, Boolean isLocked, Integer commentsNumber,
                       Integer reactionsNumber, AccountThumbnailDTO account,
                       Set<String> postMultimediaUrls) {

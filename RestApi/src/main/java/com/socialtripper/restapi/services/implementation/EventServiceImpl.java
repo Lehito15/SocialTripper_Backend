@@ -9,6 +9,7 @@ import com.socialtripper.restapi.dto.requests.UserPathPointsDTO;
 import com.socialtripper.restapi.dto.requests.UserRequestEventDTO;
 import com.socialtripper.restapi.dto.thumbnails.AccountThumbnailDTO;
 import com.socialtripper.restapi.dto.thumbnails.EventThumbnailDTO;
+import com.socialtripper.restapi.dto.thumbnails.MultimediaDTO;
 import com.socialtripper.restapi.dto.thumbnails.UserJourneyInEventDTO;
 import com.socialtripper.restapi.entities.*;
 import com.socialtripper.restapi.entities.enums.EventStatuses;
@@ -26,16 +27,13 @@ import com.socialtripper.restapi.repositories.graph.EventNodeRepository;
 import com.socialtripper.restapi.repositories.relational.*;
 import com.socialtripper.restapi.services.*;
 import jakarta.transaction.Transactional;
-import org.neo4j.driver.Values;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.geo.Point;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -253,11 +251,11 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public List<EventThumbnailDTO> findUserEventsHistory(UUID uuid) {
+    public List<EventDTO> findUserEventsHistory(UUID uuid) {
         return eventParticipantRepository.findUserEvents(uuid)
                 .stream()
                 .map(event ->
-                        eventThumbnailMapper.toDTO(
+                        eventMapper.toDTO(
                                 event,
                                 findEventNodeByUUID(event.getUuid())
                         ))
@@ -265,11 +263,11 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public List<EventThumbnailDTO> findUserUpcomingEvents(UUID uuid) {
+    public List<EventDTO> findUserUpcomingEvents(UUID uuid) {
         return eventParticipantRepository.findUserUpcomingEvents(uuid)
                 .stream()
                 .map(event ->
-                        eventThumbnailMapper.toDTO(
+                        eventMapper.toDTO(
                                 event,
                                 findEventNodeByUUID(event.getUuid())
                         ))
@@ -458,10 +456,10 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public List<EventThumbnailDTO> getGroupEvents(UUID groupUUID) {
+    public List<EventDTO> getGroupEvents(UUID groupUUID) {
         return eventNodeRepository.getGroupEvents(groupUUID.toString())
                 .stream()
-                .map(event -> findEventThumbnailByUUID(
+                .map(event -> findEventByUUID(
                         event.getUuid()
                 )).toList();
     }
@@ -510,6 +508,25 @@ public class EventServiceImpl implements EventService {
                 .map(event ->
                         findEventByUUID(event.getUuid()))
                 .toList();
+    }
+
+    @Override
+    public MultimediaDTO updateEventIcon(UUID eventUUID, MultipartFile icon) {
+        Event event = eventRepository.findByUuid(eventUUID).orElseThrow(() ->
+                new EventNotFoundException(eventUUID));
+
+        if (icon != null) {
+            try {
+                event.setIconUrl(
+                        multimediaService.uploadMultimedia(
+                                icon,
+                                "events/" + event.getUuid() + "/" + UUID.randomUUID()));
+            } catch (IOException e) {
+                System.err.println(e.getMessage());
+            }
+        }
+        eventRepository.save(event);
+        return new MultimediaDTO(event.getIconUrl());
     }
 
     private void saveInGraphDB(Event event, UUID groupUUID) {

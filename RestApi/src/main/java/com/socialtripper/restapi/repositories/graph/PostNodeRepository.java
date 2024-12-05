@@ -15,7 +15,7 @@ public interface PostNodeRepository extends Neo4jRepository<PostNode, String> {
     Optional<PostNode> findPostNodeByUuid(UUID uuid);
 
     @Query(value = "match (u: USER {uuid: $userUuid}), (p: POST {uuid: $postUuid})" +
-            " create (u)<-[:REACTION_TO_POST_BY]-(p)")
+            " merge (u)<-[:REACTION_TO_POST_BY]-(p)")
     void addPostReaction(@Param("userUuid") String userUuid, @Param("postUuid") String postUuid);
 
     @Query(value = "match (u: USER {uuid: $userUuid})<-[r:REACTION_TO_POST_BY]-(p: POST {uuid: $postUuid})" +

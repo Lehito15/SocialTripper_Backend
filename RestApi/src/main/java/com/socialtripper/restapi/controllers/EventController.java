@@ -9,6 +9,7 @@ import com.socialtripper.restapi.dto.requests.UserPathPointsDTO;
 import com.socialtripper.restapi.dto.requests.UserRequestEventDTO;
 import com.socialtripper.restapi.dto.thumbnails.AccountThumbnailDTO;
 import com.socialtripper.restapi.dto.thumbnails.EventThumbnailDTO;
+import com.socialtripper.restapi.dto.thumbnails.MultimediaDTO;
 import com.socialtripper.restapi.dto.thumbnails.UserJourneyInEventDTO;
 import com.socialtripper.restapi.services.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,12 +79,12 @@ public class EventController {
     }
 
     @GetMapping("/users/{uuid}/events")
-    public ResponseEntity<List<EventThumbnailDTO>> getUserEvents(@PathVariable UUID uuid) {
+    public ResponseEntity<List<EventDTO>> getUserEvents(@PathVariable UUID uuid) {
         return ResponseEntity.ok(eventService.findUserEventsHistory(uuid));
     }
 
     @GetMapping("/users/{uuid}/events/upcoming")
-    public ResponseEntity<List<EventThumbnailDTO>> getUpcomingEvents(@PathVariable UUID uuid) {
+    public ResponseEntity<List<EventDTO>> getUpcomingEvents(@PathVariable UUID uuid) {
         return ResponseEntity.ok(eventService.findUserUpcomingEvents(uuid));
     }
 
@@ -126,7 +127,7 @@ public class EventController {
     }
 
     @GetMapping("/groups/{uuid}/events")
-    public ResponseEntity<List<EventThumbnailDTO>> getGroupEvents(@PathVariable UUID uuid) {
+    public ResponseEntity<List<EventDTO>> getGroupEvents(@PathVariable UUID uuid) {
         return ResponseEntity.ok(eventService.getGroupEvents(uuid));
     }
 
@@ -156,6 +157,12 @@ public class EventController {
     public ResponseEntity<List<EventDTO>> getAccomplishedEvents(@PathVariable UUID uuid,
                                                                 @RequestParam int numberOfEvents) {
         return ResponseEntity.ok(eventService.getUserAccomplishedEvents(uuid, numberOfEvents));
+    }
+
+    @PatchMapping("/events/{uuid}/profile-picture")
+    public ResponseEntity<MultimediaDTO> updateEventIcon(@PathVariable UUID uuid,
+                                                         @RequestPart MultipartFile icon) {
+        return ResponseEntity.ok(eventService.updateEventIcon(uuid, icon));
     }
 
 }

@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
@@ -268,11 +269,17 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public UserReactionToPostMessageDTO addUserReactionToPost(UUID userUUID, UUID postUUID) {
-        postNodeRepository.addPostReaction(
-                userUUID.toString(),
-                postUUID.toString()
-        );
+        if (!didUserReactToPost(userUUID, postUUID)) {
+            postNodeRepository.addPostReaction(
+                    userUUID.toString(),
+                    postUUID.toString()
+            );
 
+            Post post = postRepository.findByUuid(postUUID).orElseThrow(() ->
+                    new PostNotFoundException(postUUID));
+            post.setReactionsNumber(post.getReactionsNumber() + 1);
+            postRepository.save(post);
+        }
         return new UserReactionToPostMessageDTO(
                 userUUID,
                 postUUID,
@@ -282,10 +289,17 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public UserReactionToPostMessageDTO removeUserReactionToPost(UUID userUUID, UUID postUUID) {
-        postNodeRepository.removePostReaction(
-                userUUID.toString(),
-                postUUID.toString()
-        );
+        if(didUserReactToPost(userUUID, postUUID)) {
+            postNodeRepository.removePostReaction(
+                    userUUID.toString(),
+                    postUUID.toString()
+            );
+
+            Post post = postRepository.findByUuid(postUUID).orElseThrow(() ->
+                    new PostNotFoundException(postUUID));
+            post.setReactionsNumber(post.getReactionsNumber() - 1);
+            postRepository.save(post);
+        }
         return new UserReactionToPostMessageDTO(
                 userUUID,
                 postUUID,
@@ -310,6 +324,25 @@ public class PostServiceImpl implements PostService {
         );
     }
 
+    @Override
+    public List<PostDTO> findTrendingPosts(int numberOfPosts, int daysBound) {
+        return postRepository.findTrendingPosts(numberOfPosts, LocalDateTime.now().minusDays(daysBound))
+                .stream()
+                .map(post ->
+                        postMapper.toDTO(
+                                post,
+                                findPostNodeByUUID(post.getUuid()))
+                )
+                .toList();
+    }
+
+    @Override
+    public void addCommentToPost(UUID postUUID) {
+        Post post = postRepository.findByUuid(postUUID).orElseThrow(() ->
+                new PostNotFoundException(postUUID));
+        post.setCommentsNumber(post.getCommentsNumber() + 1);
+        postRepository.save(post);
+    }
 
     private PostNode saveInGraphDB(Post post, Set<String> multimediaUrls,
                                    UUID groupUUID, UUID eventUUID) {

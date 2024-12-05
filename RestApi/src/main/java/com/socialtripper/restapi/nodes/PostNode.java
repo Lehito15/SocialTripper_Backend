@@ -23,6 +23,7 @@ public class PostNode {
 
     private UUID uuid;
     private String content;
+    private boolean isPublic;
     private LocalDateTime postTime;
     private Set<String> multimediaUrls;
 

@@ -71,6 +71,7 @@ public class CommentServiceImpl implements CommentService {
                         postService.findPostNodeByUUID(postUUID)
                 )
         );
+        postService.addCommentToPost(postUUID);
         return findCommentByUUID(comment.getUuid());
     }
 
