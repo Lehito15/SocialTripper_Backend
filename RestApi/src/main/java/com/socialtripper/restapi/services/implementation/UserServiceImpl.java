@@ -19,6 +19,7 @@ import com.socialtripper.restapi.nodes.UserNode;
 import com.socialtripper.restapi.repositories.graph.UserNodeRepository;
 import com.socialtripper.restapi.repositories.relational.UserActivityRepository;
 import com.socialtripper.restapi.repositories.relational.UserLanguageRepository;
+import com.socialtripper.restapi.repositories.relational.UserRecommendationRepository;
 import com.socialtripper.restapi.repositories.relational.UserRepository;
 import com.socialtripper.restapi.services.*;
 import jakarta.transaction.Transactional;
@@ -36,6 +37,7 @@ public class UserServiceImpl implements com.socialtripper.restapi.services.UserS
     private final UserNodeRepository userNodeRepository;
     private final UserLanguageRepository userLanguageRepository;
     private final UserActivityRepository userActivityRepository;
+    private final UserRecommendationRepository userRecommendationRepository;
     private final UserMapper userMapper;
     private final UserActivityMapper userActivityMapper;
     private final UserLanguageMapper userLanguageMapper;
@@ -50,7 +52,7 @@ public class UserServiceImpl implements com.socialtripper.restapi.services.UserS
                            LanguageService languageService, ActivityService activityService,
                            UserActivityRepository userActivityRepository, UserLanguageRepository userLanguageRepository,
                            UserActivityMapper userActivityMapper, UserLanguageMapper userLanguageMapper,
-                           UserNodeRepository userNodeRepository) {
+                           UserNodeRepository userNodeRepository, UserRecommendationRepository userRecommendationRepository) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
         this.countryService = countryService;
@@ -62,6 +64,7 @@ public class UserServiceImpl implements com.socialtripper.restapi.services.UserS
         this.userActivityMapper = userActivityMapper;
         this.userLanguageMapper = userLanguageMapper;
         this.userNodeRepository = userNodeRepository;
+        this.userRecommendationRepository = userRecommendationRepository;
     }
 
     @Override
@@ -194,6 +197,18 @@ public class UserServiceImpl implements com.socialtripper.restapi.services.UserS
     }
 
     @Override
+    public UserRequestFollowDTO removeFollowRequest(FollowDTO followDTO) {
+        userNodeRepository.removeFollowRequest(
+                followDTO.follower().uuid().toString(),
+                followDTO.followed().uuid().toString());
+
+        return new UserRequestFollowDTO(
+                followDTO.follower().uuid(),
+                followDTO.followed().uuid(),
+                "user follow request removed");
+    }
+
+    @Override
     @Transactional
     public UserStartsFollowingMessageDTO followUser(FollowDTO followDTO) {
         userNodeRepository.addUserFollow(
@@ -251,8 +266,18 @@ public class UserServiceImpl implements com.socialtripper.restapi.services.UserS
     public Boolean isFollowRequestSent(UUID followerUUID, UUID followedUUID) {
         return userNodeRepository.isFollowRequestSent(
                 followedUUID.toString(),
-                followedUUID.toString()
+                followerUUID.toString()
         );
+    }
+
+    @Override
+    public List<AccountThumbnailDTO> getRecommendedUsers(UUID uuid) {
+        return userRecommendationRepository.findUserRecommendedAccounts(uuid)
+                .stream()
+                .filter(user -> !isFollowingUser(uuid, user.getAccount().getUuid()))
+                .map(recommendedUser ->
+                        accountService.findAccountThumbnailByUUID(recommendedUser.getAccount().getUuid()))
+                .toList();
     }
 
     public void saveUserInGraphDB(User user) {

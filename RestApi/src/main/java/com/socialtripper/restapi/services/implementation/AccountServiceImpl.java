@@ -14,9 +14,9 @@ import com.socialtripper.restapi.exceptions.PhoneNumberAlreadyInUseException;
 import com.socialtripper.restapi.exceptions.UsernameAlreadyTakenException;
 import com.socialtripper.restapi.mappers.AccountMapper;
 import com.socialtripper.restapi.mappers.AccountThumbnailMapper;
-import com.socialtripper.restapi.repositories.graph.UserNodeRepository;
 import com.socialtripper.restapi.repositories.relational.AccountRepository;
 import com.socialtripper.restapi.repositories.relational.FollowRepository;
+import com.socialtripper.restapi.repositories.relational.UserRecommendationRepository;
 import com.socialtripper.restapi.services.AccountService;
 import com.socialtripper.restapi.services.MultimediaService;
 import jakarta.transaction.Transactional;
@@ -39,7 +39,7 @@ public class AccountServiceImpl implements AccountService {
     @Autowired
     public AccountServiceImpl(AccountRepository accountRepository, AccountMapper accountMapper,
                               AccountThumbnailMapper accountThumbnailMapper, FollowRepository followRepository,
-                              MultimediaService multimediaService, UserNodeRepository userNodeRepository) {
+                              MultimediaService multimediaService) {
         this.accountRepository = accountRepository;
         this.accountMapper = accountMapper;
         this.accountThumbnailMapper = accountThumbnailMapper;

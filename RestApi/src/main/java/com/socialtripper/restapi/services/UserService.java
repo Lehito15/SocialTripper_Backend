@@ -29,14 +29,14 @@ public interface UserService {
     UserLanguageDTO setUserLanguage(UUID uuid, UserLanguageDTO userLanguageDTO);
     UserNode findUserNodeByUUID(UUID uuid);
     UserRequestFollowDTO addFollowRequest(FollowDTO followDTO);
+    UserRequestFollowDTO removeFollowRequest(FollowDTO followDTO);
     UserStartsFollowingMessageDTO followUser(FollowDTO followDTO);
     UserEndsFollowingMessageDTO unfollowUser(FollowDTO followDTO);
     List<AccountThumbnailDTO> getFollowedAccounts(UUID uuid);
-
     List<AccountThumbnailDTO> getFollowingAccounts(UUID uuid);
-
     Boolean isFollowingUser(UUID followerUUID, UUID followedUUID);
     List<AccountThumbnailDTO> getUserFollowRequests(UUID uuid);
     Boolean isFollowRequestSent(UUID followerUUID, UUID followedUUID);
+    List<AccountThumbnailDTO> getRecommendedUsers(UUID uuid);
     void saveUserInGraphDB(User user);
 }

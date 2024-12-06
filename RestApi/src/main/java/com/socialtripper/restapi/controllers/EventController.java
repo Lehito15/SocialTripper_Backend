@@ -110,6 +110,11 @@ public class EventController {
         );
     }
 
+    @DeleteMapping("/events/request")
+    public ResponseEntity<UserRequestEventDTO> removeUserApplyForEvent(@RequestBody UserRequestEventDTO userRequestEventDTO) {
+        return ResponseEntity.ok(eventService.removeUserApplyForEvent(userRequestEventDTO));
+    }
+
     @GetMapping("/events/{uuid}/requests")
     public ResponseEntity<List<AccountThumbnailDTO>> getEventRequests(@PathVariable UUID uuid) {
         return ResponseEntity.ok(eventService.findEventRequest(uuid));
@@ -163,6 +168,11 @@ public class EventController {
     public ResponseEntity<MultimediaDTO> updateEventIcon(@PathVariable UUID uuid,
                                                          @RequestPart MultipartFile icon) {
         return ResponseEntity.ok(eventService.updateEventIcon(uuid, icon));
+    }
+
+    @GetMapping("/users/{uuid}/recommended-events")
+    public ResponseEntity<List<EventDTO>> getRecommendedEvents(@PathVariable UUID uuid) {
+        return ResponseEntity.ok(eventService.getUserRecommendedEvents(uuid));
     }
 
 }

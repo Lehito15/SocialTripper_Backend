@@ -249,6 +249,19 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
+    public UserRequestGroupDTO removeUserRequestGroup(UUID userUUID, UUID groupUUID) {
+        groupNodeRepository.removeUserApplyForGroup(
+                userUUID.toString(),
+                groupUUID.toString()
+        );
+        return new UserRequestGroupDTO(
+                userUUID,
+                groupUUID,
+                "user refused to join the group"
+        );
+    }
+
+    @Override
     public List<AccountThumbnailDTO> getGroupMembers(UUID groupUUID) {
         return groupNodeRepository.findGroupMembers(groupUUID.toString())
                 .stream()

@@ -66,6 +66,11 @@ public class UserController {
         );
     }
 
+    @DeleteMapping("/users/follow-request")
+    public ResponseEntity<UserRequestFollowDTO> removeFollowRequest(@RequestBody FollowDTO followRequest) {
+        return ResponseEntity.ok(userService.removeFollowRequest(followRequest));
+    }
+
     @PostMapping("/users/follow")
     public ResponseEntity<UserStartsFollowingMessageDTO> addFollow(@RequestBody FollowDTO follow) {
         return ResponseEntity.status(HttpURLConnection.HTTP_CREATED).body(
@@ -105,5 +110,10 @@ public class UserController {
     public ResponseEntity<Boolean> isFollowRequested(@RequestParam UUID followerUUID,
                                                      @RequestParam UUID followedUUID) {
         return ResponseEntity.ok(userService.isFollowRequestSent(followerUUID, followedUUID));
+    }
+
+    @GetMapping("/users/{uuid}/recommended-accounts")
+    public ResponseEntity<List<AccountThumbnailDTO>> getRecommendedAccounts(@PathVariable UUID uuid) {
+        return ResponseEntity.ok(userService.getRecommendedUsers(uuid));
     }
 }

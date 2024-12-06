@@ -40,6 +40,7 @@ public interface EventService {
     EventMultimediaMetadataDTO uploadEventMultimedia(EventMultimediaMetadataDTO multimediaMetadata, MultipartFile multimedia);
     UserPathPointsDTO addUserPathPoints(UserPathPointsDTO userPathPointsDTO);
     UserRequestEventDTO userAppliesForEvent(UserRequestEventDTO userRequestEventDTO);
+    UserRequestEventDTO removeUserApplyForEvent(UserRequestEventDTO userRequestEventDTO);
     List<AccountThumbnailDTO> findEventRequest(UUID uuid);
     UserJourneyInEventDTO getUserJourneyInEvent(UUID userUUID, UUID eventUUID);
     List<EventDTO> getGroupEvents(UUID groupUUID);
@@ -49,4 +50,5 @@ public interface EventService {
     List<EventThumbnailDTO> getEventsByNameSubstring(String eventNameSubstring);
     List<EventDTO> getUserAccomplishedEvents(UUID userUUID, int numberOfEvents);
     MultimediaDTO updateEventIcon(UUID eventUUID, MultipartFile icon);
+    List<EventDTO> getUserRecommendedEvents(UUID userUUID);
 }

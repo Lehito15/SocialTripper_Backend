@@ -79,6 +79,13 @@ public class GroupController {
         );
     }
 
+    @DeleteMapping("/groups/requests")
+    public ResponseEntity<UserRequestGroupDTO> removeUserRequestForGroup(@RequestBody UserRequestGroupDTO userRequestGroup) {
+        return ResponseEntity.ok(groupService.removeUserRequestGroup(
+                userRequestGroup.userUUID(),
+                userRequestGroup.groupUUID()));
+    }
+
     @GetMapping("/groups/{uuid}/members")
     public ResponseEntity<List<AccountThumbnailDTO>> getGroupMembers(@PathVariable UUID uuid) {
         return ResponseEntity.ok(groupService.getGroupMembers(uuid));

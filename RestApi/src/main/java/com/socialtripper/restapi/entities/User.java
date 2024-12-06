@@ -39,7 +39,7 @@ public class User {
     @NotNull
     private Character gender;
 
-    @Column(name = "date_od_birth", nullable = false)
+    @Column(name = "date_of_birth")
     @NotNull
     private LocalDate dateOfBirth;
 

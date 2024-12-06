@@ -57,6 +57,7 @@ public class EventServiceImpl implements EventService {
     private final ActivityService activityService;
     private final LanguageService languageService;
     private final EventParticipantRepository eventParticipantRepository;
+    private final UserRecommendationRepository userRecommendationRepository;
     private final MultimediaService multimediaService;
 
     @Autowired
@@ -68,7 +69,8 @@ public class EventServiceImpl implements EventService {
                             EventLanguageRepository eventLanguageRepository, EventParticipantRepository eventParticipantRepository,
                             EventNodeRepository eventNodeRepository, MultimediaService multimediaService,
                             UserService userService, EventMultimediaNodeRepository eventMultimediaRepository,
-                            EventMultimediaMapper eventMultimediaMapper, EventThumbnailMapper eventThumbnailMapper) {
+                            EventMultimediaMapper eventMultimediaMapper, EventThumbnailMapper eventThumbnailMapper,
+                            UserRecommendationRepository userRecommendationRepository) {
         this.eventRepository = eventRepository;
         this.eventMapper = eventMapper;
         this.accountService = accountService;
@@ -87,6 +89,7 @@ public class EventServiceImpl implements EventService {
         this.eventMultimediaRepository = eventMultimediaRepository;
         this.eventMultimediaMapper = eventMultimediaMapper;
         this.eventThumbnailMapper = eventThumbnailMapper;
+        this.userRecommendationRepository = userRecommendationRepository;
     }
 
     @Override
@@ -370,6 +373,19 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
+    public UserRequestEventDTO removeUserApplyForEvent(UserRequestEventDTO userRequestEventDTO) {
+        eventNodeRepository.removeEventRequest(
+                userRequestEventDTO.userUUID().toString(),
+                userRequestEventDTO.eventUUID().toString()
+        );
+        return new UserRequestEventDTO(
+                userRequestEventDTO.userUUID(),
+                userRequestEventDTO.eventUUID(),
+                "user refused to join the event"
+        );
+    }
+
+    @Override
     public List<AccountThumbnailDTO> findEventRequest(UUID uuid) {
         return eventNodeRepository.findEventRequests(uuid.toString()).stream().map(user ->
                 accountService.findAccountThumbnailByUUID(user.getUuid())).toList();
@@ -527,6 +543,15 @@ public class EventServiceImpl implements EventService {
         }
         eventRepository.save(event);
         return new MultimediaDTO(event.getIconUrl());
+    }
+
+    @Override
+    public List<EventDTO> getUserRecommendedEvents(UUID userUUID) {
+        return userRecommendationRepository.findUserRecommendedEvents(userUUID)
+                .stream()
+                .map(event ->
+                        findEventByUUID(event.getUuid()))
+                .toList();
     }
 
     private void saveInGraphDB(Event event, UUID groupUUID) {

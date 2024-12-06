@@ -30,6 +30,7 @@ public interface GroupService {
     GroupDTO updateGroup(UUID uuid, GroupDTO groupDTO);
     GroupNode findGroupNodeByUUID(UUID uuid);
     UserRequestGroupDTO addUserRequestGroup(UUID userUUID, UUID groupUUID);
+    UserRequestGroupDTO removeUserRequestGroup(UUID userUUID, UUID groupUUID);
     List<AccountThumbnailDTO> getGroupMembers(UUID groupUUID);
     Boolean isGroupRequestSent(UUID userUUID, UUID groupUUID);
     Boolean isUserInGroup(UUID userUUID, UUID groupUUID);

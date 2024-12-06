@@ -37,7 +37,7 @@ public interface UserNodeRepository extends Neo4jRepository<UserNode, String> {
             " return u2 {.*}")
     List<UserNode> getUserFollowRequests(@Param("followedUuid") String followedUuid);
 
-    @Query(value = "match (u1: USER {uuid: $followedUuid})<-[r:REQUESTS_FOLLOW]-(u2: USER {uuid: $followerUuid})" +
+    @Query(value = "match (u1:USER {uuid: $followedUuid})<-[r:REQUESTS_FOLLOW]-(u2:USER {uuid: $followerUuid})" +
             " return count(r) > 0 as isRequestSent")
     boolean isFollowRequestSent(@Param("followedUuid") String followedUuid, @Param("followerUuid") String followerUuid);
 }
