@@ -164,9 +164,9 @@ public class EventMapper {
         if (eventDTO.eventEndTime() != null) event.setEventEndTime(eventDTO.eventEndTime());
         if (eventDTO.numberOfParticipants() != null) event.setNumberOfParticipants(eventDTO.numberOfParticipants());
         if (eventDTO.maxNumberOfParticipants() != null) event.setMaxNumberOfParticipants(eventDTO.maxNumberOfParticipants());
-        if (eventDTO.startLongitude() != null) event.setStartLatitude(eventDTO.startLongitude());
+        if (eventDTO.startLongitude() != null) event.setStartLongitude(eventDTO.startLongitude());
         if (eventDTO.startLatitude() != null) event.setStartLatitude(eventDTO.startLatitude());
-        if (eventDTO.stopLongitude() != null) event.setStopLatitude(eventDTO.stopLongitude());
+        if (eventDTO.stopLongitude() != null) event.setStopLongitude(eventDTO.stopLongitude());
         if (eventDTO.stopLatitude() != null) event.setStopLatitude(eventDTO.stopLatitude());
         if (eventDTO.homePageUrl() != null) event.setHomePageUrl(eventDTO.homePageUrl());
         return event;
