@@ -9,6 +9,10 @@ import lombok.Setter;
 
 import javax.validation.constraints.NotNull;
 
+/**
+ * Encja reprezentująca kraj .
+ * Klasa stanowi mapowanie na tabelę countries w bazie danych.
+ */
 @Entity
 @Table(name = "countries")
 @NoArgsConstructor
@@ -16,15 +20,27 @@ import javax.validation.constraints.NotNull;
 @Getter
 @Setter
 public class Country {
+    /**
+     * Unikalny identyfikator kraju w tabeli.
+     * Automatycznie inkrementowany klucz główny.
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    public Country(String name) {
-        this.name = name;
-    }
-
+    /**
+     * Nazwa kraju.
+     */
     @Column(nullable = false, unique = true, length = 50)
     @NotNull
     private String name;
+
+    /**
+     * Konstruktor tworzący encję na podstawie nazwy kraju.
+     *
+     * @param name nazwa kraju
+     */
+    public Country(String name) {
+        this.name = name;
+    }
 }

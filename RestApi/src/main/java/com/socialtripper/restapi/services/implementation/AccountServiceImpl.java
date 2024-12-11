@@ -16,7 +16,6 @@ import com.socialtripper.restapi.mappers.AccountMapper;
 import com.socialtripper.restapi.mappers.AccountThumbnailMapper;
 import com.socialtripper.restapi.repositories.relational.AccountRepository;
 import com.socialtripper.restapi.repositories.relational.FollowRepository;
-import com.socialtripper.restapi.repositories.relational.UserRecommendationRepository;
 import com.socialtripper.restapi.services.AccountService;
 import com.socialtripper.restapi.services.MultimediaService;
 import jakarta.transaction.Transactional;
@@ -28,14 +27,41 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Implementacja serwisu zarządzającego operacjami na kontach użytkowników.
+ */
 @Service
 public class AccountServiceImpl implements AccountService {
+    /**
+     * Repozytorium zarządzające encjami kont.
+     */
     private final AccountRepository accountRepository;
+    /**
+     * Repozytorium zarządzające danymi obserwacji kont użytkowników.
+     */
     private final FollowRepository followRepository;
+    /**
+     * Komponent mapujący konta.
+     */
     private final AccountMapper accountMapper;
+    /**
+     * Komponent mapujący częściowe informacje na temat kont.
+     */
     private final AccountThumbnailMapper accountThumbnailMapper;
+    /**
+     * Serwis zarządzający multimediami w aplikacji.
+     */
     private final MultimediaService multimediaService;
 
+    /**
+     * Konstruktor wstrzykujący komponenty.
+     *
+     * @param accountRepository repozytorium zarządzające encjami kont
+     * @param accountMapper komponent mapujący konta
+     * @param accountThumbnailMapper komponent mapujący częściowe informacje na temat kont
+     * @param followRepository repozytorium zarządzające encjami obserwacji
+     * @param multimediaService serwis zarządzający multimediami
+     */
     @Autowired
     public AccountServiceImpl(AccountRepository accountRepository, AccountMapper accountMapper,
                               AccountThumbnailMapper accountThumbnailMapper, FollowRepository followRepository,
@@ -47,6 +73,12 @@ public class AccountServiceImpl implements AccountService {
         this.multimediaService = multimediaService;
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     *      W przypadku gdy konto nie zostało odnalezione rzucany jest wyjątek {@link AccountNotFoundException}.
+     * </p>
+     */
     @Override
     public AccountThumbnailDTO findAccountThumbnailByUUID(UUID uuid) {
         return accountThumbnailMapper.toDTO(
@@ -54,6 +86,12 @@ public class AccountServiceImpl implements AccountService {
                                     .orElseThrow(() -> new AccountNotFoundException(uuid)));
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     *      W przypadku gdy konto nie zostało odnalezione rzucany jest wyjątek {@link AccountNotFoundException}.
+     * </p>
+     */
     @Override
     public AccountDTO findAccountByUUID(UUID uuid) {
         return accountMapper.toDTO(accountRepository.findByUuid(uuid)
@@ -61,16 +99,28 @@ public class AccountServiceImpl implements AccountService {
         );
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     *     W przypadku gdy konto nie zostało odnalezione rzucany jest wyjątek {@link AccountNotFoundException}.
+     * </p>
+     */
     @Override
     public Long getAccountIdByUUID(UUID uuid) {
         return accountRepository.findIdByUUID(uuid).orElseThrow(() -> new AccountNotFoundException(uuid));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Account getAccountReference(UUID uuid) {
         return accountRepository.getReferenceById(getAccountIdByUUID(uuid));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Account getNewAccountWithReferences(AccountDTO accountDTO) {
         Account account = accountMapper.toNewEntity(accountDTO);
@@ -83,10 +133,17 @@ public class AccountServiceImpl implements AccountService {
         account.setExpired(false);
         account.setLocked(false);
         account.setRole("USER");
-        account.setSalt(UUID.randomUUID().toString().substring(0, 16));
         return account;
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     *     Sprawdzana jest unikalność pól nazwy użytkownika, adresu email oraz numeru telefonu.
+     *     W przypadku złamania ograniczenia rzucane są odpowiednio wyjątki: {@link UsernameAlreadyTakenException},
+     *     {@link EmailAlreadyInUseException}, {@link PhoneNumberAlreadyInUseException}.
+     * </p>
+     */
     @Override
     @Transactional
     public AccountThumbnailDTO createAccount(AccountDTO accountDTO, MultipartFile profilePicture) {
@@ -109,12 +166,18 @@ public class AccountServiceImpl implements AccountService {
                 accountRepository.save(newAccount));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public AccountThumbnailDTO updateAccount(UUID uuid, AccountDTO accountDTO) {
         Account accountToUpdate = accountMapper.copyNonNullValues(getAccountReference(uuid), accountDTO);
         return accountThumbnailMapper.toDTO(accountRepository.save(accountToUpdate));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @Transactional
     public UserStartsFollowingMessageDTO followUser(FollowDTO followDTO) {
@@ -142,6 +205,9 @@ public class AccountServiceImpl implements AccountService {
                                             "user starts following");
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @Transactional
     public UserEndsFollowingMessageDTO unfollowUser(FollowDTO followDTO) {
@@ -167,6 +233,9 @@ public class AccountServiceImpl implements AccountService {
                                                 "user ends following");
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<AccountThumbnailDTO> getFollowedAccounts(UUID uuid) {
         return followRepository.findAccountsFollowedBy(uuid)
@@ -175,6 +244,9 @@ public class AccountServiceImpl implements AccountService {
                                 .toList();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<AccountThumbnailDTO> getFollowingAccounts(UUID uuid) {
         return followRepository.findAccountsFollowingBy(uuid)
@@ -183,6 +255,9 @@ public class AccountServiceImpl implements AccountService {
                                 .toList();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public MultimediaDTO updateProfilePicture(UUID uuid, MultipartFile profilePicture) {
         Account account = accountRepository.findByUuid(uuid).orElseThrow(() ->
@@ -202,6 +277,9 @@ public class AccountServiceImpl implements AccountService {
     }
 
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public AccountDTO findAccountByEmail(String email) {
         Account account = accountRepository.findByEmail(email).orElseThrow(() ->
@@ -209,6 +287,9 @@ public class AccountServiceImpl implements AccountService {
         return accountMapper.toDTO(account);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<AccountThumbnailDTO> findAccountsByNicknameSubstring(String nickname) {
         return accountRepository.findByNicknameSubstring(nickname)

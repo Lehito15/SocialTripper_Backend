@@ -38,28 +38,111 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 
+/**
+ * Implementacja serwisu zarządzającego operacjami wykonywanymi na wydarzeniach.
+ */
 @Service
 public class EventServiceImpl implements EventService {
+    /**
+     * Repozytorium zarządzające encjami wydarzeń.
+     */
     private final EventRepository eventRepository;
+    /**
+     * Repozytorium zarządzające węzłami wydarzeń.
+     */
     private final EventNodeRepository eventNodeRepository;
+    /**
+     * Repozytorium zarządzające encjami wydarzeń grupowych.
+     */
     private final GroupEventRepository groupEventRepository;
+    /**
+     * Repozytorium zarządzające encjami aktywnościami wydarzeń.
+     */
     private final EventActivityRepository eventActivityRepository;
+    /**
+     * Repozytorium zarządzające encjami językami wydarzeń.
+     */
     private final EventLanguageRepository eventLanguageRepository;
+    /**
+     * Repozytorium zarządzające encjami multimediami wydarzeń.
+     */
     private final EventMultimediaNodeRepository eventMultimediaRepository;
+    /**
+     * Komponent mapujący wydarzenia.
+     */
     private final EventMapper eventMapper;
+    /**
+     * Komponent mapujący wydarzenia grupowe.
+     */
     private final GroupEventMapper groupEventMapper;
+    /**
+     * Komponent mapujący częściowe dane na temat wydarzenia.
+     */
     private final EventThumbnailMapper eventThumbnailMapper;
+    /**
+     * Komponent mapujący multimedia wydarzenia.
+     */
     private final EventMultimediaMapper eventMultimediaMapper;
+    /**
+     * Serwis zarządzający operacjami na kontach użytkowników.
+     */
     private final AccountService accountService;
+    /**
+     * Serwis zarządzający operacjami na użytkownikach.
+     */
     private final UserService userService;
+    /**
+     * Serwis zarządzający operacjami na grupach.
+     */
     private final GroupService groupService;
+    /**
+     * Serwis zarządzający operacjami na statusach wydarzeń.
+     */
     private final EventStatusService eventStatusService;
+    /**
+     * Serwis zarządzający operacjami na aktywnościach.
+     */
     private final ActivityService activityService;
+    /**
+     * Serwis zarządzający operacjami na językach.
+     */
     private final LanguageService languageService;
+    /**
+     * Serwis zarządzający operacjami na członkach wydarzeń.
+     */
     private final EventParticipantRepository eventParticipantRepository;
+    /**
+     * Repozytorium zarządzające encjami rekomendacji użytkowników.
+     */
     private final UserRecommendationRepository userRecommendationRepository;
+    /**
+     * Serwis zarządzający operacjami na multimediach.
+     */
     private final MultimediaService multimediaService;
 
+    /**
+     * Konstruktor wstrzykujący komponenty.
+     *
+     * @param eventRepository repozytorium zarządzające encjami wydarzeń
+     * @param eventMapper komponent mapujący wydarzenia
+     * @param accountService serwis zarządzający operacjami na kontach użytkowników
+     * @param groupService serwis zarządzający operacjami na grupach
+     * @param groupEventMapper komponent mapujący wydarzenia grupowe
+     * @param groupEventRepository repozytorium zarządzające encjami wydarzeń grupowych
+     * @param eventStatusService serwis zarządzający operacjami na statusach wydarzeń
+     * @param activityService serwis zarządzający operacjami na aktywnościach
+     * @param languageService serwis zarządzający operacjami na językach
+     * @param eventActivityRepository repozytorium zarządzające encjami aktywności wydarzeń
+     * @param eventLanguageRepository repozytorium zarządzające encjami języków wydarzeń
+     * @param eventParticipantRepository repozytorium zarządzające encjami członków wydarzeń
+     * @param eventNodeRepository repozytorium zarządzające węzłami wydarzeń
+     * @param multimediaService serwis zarządzający operacjami na multimediach
+     * @param userService serwis zarządzający operacjami na użytkownikach
+     * @param eventMultimediaRepository repozytorium zarządzające encjami multimediów wydarzeń
+     * @param eventMultimediaMapper komponent mapujący multimedia wydarzenia
+     * @param eventThumbnailMapper komponent mapujący częściowe dane wydarzenia
+     * @param userRecommendationRepository repozytorium zarządzające encjami rekomendacji użytkowników
+     */
     @Autowired
     public EventServiceImpl(EventRepository eventRepository, EventMapper eventMapper,
                             AccountService accountService, GroupService groupService,
@@ -92,6 +175,9 @@ public class EventServiceImpl implements EventService {
         this.userRecommendationRepository = userRecommendationRepository;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<EventDTO> findAllEvents() {
         return eventRepository.findAll()
@@ -104,6 +190,12 @@ public class EventServiceImpl implements EventService {
                 .toList();
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     *     W przypadku gdy encja wydarzenia nie istnieje w bazie rzucany jest wyjątek {@link EventNotFoundException}.
+     * </p>
+     */
     @Override
     public EventDTO findEventByUUID(UUID uuid) {
         return eventMapper.toDTO(
@@ -112,6 +204,12 @@ public class EventServiceImpl implements EventService {
                 findEventNodeByUUID(uuid));
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     *     W przypadku gdy encja wydarzenia nie istnieje w bazie rzucany jest wyjątek {@link EventNotFoundException}.
+     * </p>
+     */
     @Override
     public EventThumbnailDTO findEventThumbnailByUUID(UUID uuid) {
         return eventThumbnailMapper.toDTO(
@@ -119,18 +217,34 @@ public class EventServiceImpl implements EventService {
         );
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     *     W przypadku gdy encja wydarzenia nie istnieje w bazie rzucany jest wyjątek {@link EventNotFoundException}.
+     * </p>
+     */
     @Override
     public Long getEventIdByUUID(UUID uuid) {
         return eventRepository.findIdByUUID(uuid).orElseThrow(() -> new EventNotFoundException(uuid));
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     *     W przypadku gdy encja wydarzenia nie istnieje w bazie rzucany jest wyjątek {@link EventNotFoundException}.
+     * </p>
+     */
     @Override
     public Event getEventReference(UUID uuid) {
         return eventRepository.getReferenceById(getEventIdByUUID(uuid));
     }
 
 
-    private Event getNewEventWithReferences(EventDTO eventDTO, UUID userUUID) {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Event getNewEventWithReferences(EventDTO eventDTO, UUID userUUID) {
         Event event = eventMapper.toNewEntity(eventDTO);
         event.setUuid(UUID.randomUUID());
         event.setName(eventDTO.name());
@@ -142,6 +256,9 @@ public class EventServiceImpl implements EventService {
     }
 
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @Transactional
     public EventDTO createEvent(EventDTO eventDTO, MultipartFile icon) {
@@ -179,6 +296,9 @@ public class EventServiceImpl implements EventService {
                 findEventNodeByUUID(savedEvent.getUuid()));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public GroupEventDTO createGroupEvent(GroupEventDTO groupEventDTO, MultipartFile icon) {
         GroupEvent eventToSave = new GroupEvent(getNewEventWithReferences(groupEventDTO.eventDTO(),
@@ -215,6 +335,9 @@ public class EventServiceImpl implements EventService {
                 findEventNodeByUUID(savedEvent.getEvent().getUuid()));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public EventStatusChangedMessageDTO setStatus(UUID uuid, String status) {
         Event event = getEventReference(uuid);
@@ -225,6 +348,9 @@ public class EventServiceImpl implements EventService {
         return new EventStatusChangedMessageDTO(uuid, status);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public EventDTO updateEvent(UUID uuid, EventDTO eventDTO) {
         Event event = eventMapper.copyNonNullValues(getEventReference(uuid), eventDTO);
@@ -233,6 +359,9 @@ public class EventServiceImpl implements EventService {
                 findEventNodeByUUID(uuid));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public EventActivity setActivity(UUID uuid, EventActivityDTO eventActivityDTO) {
         EventActivity eventActivity = new EventActivity(
@@ -242,7 +371,9 @@ public class EventServiceImpl implements EventService {
         return eventActivityRepository.save(eventActivity);
     }
 
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public EventLanguage setLanguage(UUID uuid, EventLanguageDTO eventLanguageDTO) {
         EventLanguage eventLanguage = new EventLanguage(
@@ -253,6 +384,9 @@ public class EventServiceImpl implements EventService {
         return eventLanguageRepository.save(eventLanguage);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<EventDTO> findUserEventsHistory(UUID uuid) {
         return eventParticipantRepository.findUserEvents(uuid)
@@ -265,6 +399,9 @@ public class EventServiceImpl implements EventService {
                 .toList();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<EventDTO> findUserUpcomingEvents(UUID uuid) {
         return eventParticipantRepository.findUserUpcomingEvents(uuid)
@@ -277,6 +414,9 @@ public class EventServiceImpl implements EventService {
                 .toList();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public UserJoinsEventMessageDTO addUserToEvent(UUID userUUID, UUID eventUUID) {
         if (!isEventMember(userUUID, eventUUID)) {
@@ -321,6 +461,9 @@ public class EventServiceImpl implements EventService {
                 "user has joined the event");
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public UserLeavesEventMessageDTO removeUserFromEvent(UUID userUUID, UUID eventUUID) {
         eventParticipantRepository.userLeftEvent(
@@ -338,6 +481,9 @@ public class EventServiceImpl implements EventService {
                 "user has left the event");
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public EventNode findEventNodeByUUID(UUID uuid) {
         return eventNodeRepository.findEventNodeByUuid(uuid)
@@ -346,6 +492,9 @@ public class EventServiceImpl implements EventService {
         );
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public UserPathPointsDTO addUserPathPoints(UserPathPointsDTO userPathPointsDTO) {
         List<Double> coordinates = userPathPointsDTO.pathPoints()
@@ -359,6 +508,9 @@ public class EventServiceImpl implements EventService {
         return userPathPointsDTO;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public UserRequestEventDTO userAppliesForEvent(UserRequestEventDTO userRequestEventDTO) {
         eventNodeRepository.createEventRequest(
@@ -372,6 +524,9 @@ public class EventServiceImpl implements EventService {
                 "user has applied for the event");
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public UserRequestEventDTO removeUserApplyForEvent(UserRequestEventDTO userRequestEventDTO) {
         eventNodeRepository.removeEventRequest(
@@ -385,12 +540,18 @@ public class EventServiceImpl implements EventService {
         );
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public List<AccountThumbnailDTO> findEventRequest(UUID uuid) {
+    public List<AccountThumbnailDTO> findEventRequests(UUID uuid) {
         return eventNodeRepository.findEventRequests(uuid.toString()).stream().map(user ->
                 accountService.findAccountThumbnailByUUID(user.getUuid())).toList();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<EventMultimediaMetadataDTO> findEventMultimedia(UUID eventUUID) {
         List<EventMultimediaMetadataDTO> eventMultimedia = new ArrayList<>();
@@ -411,6 +572,9 @@ public class EventServiceImpl implements EventService {
         return eventMultimedia;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @Transactional
     public EventMultimediaMetadataDTO uploadEventMultimedia(EventMultimediaMetadataDTO multimediaMetadata, MultipartFile multimedia) {
@@ -441,6 +605,9 @@ public class EventServiceImpl implements EventService {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public UserJourneyInEventDTO getUserJourneyInEvent(UUID userUUID, UUID eventUUID) {
         EventMembership membership = userService.findUserNodeByUUID(
@@ -471,6 +638,9 @@ public class EventServiceImpl implements EventService {
         );
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<EventDTO> getGroupEvents(UUID groupUUID) {
         return eventNodeRepository.getGroupEvents(groupUUID.toString())
@@ -480,6 +650,9 @@ public class EventServiceImpl implements EventService {
                 )).toList();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<AccountThumbnailDTO> getEventMembers(UUID eventUUID) {
         return eventNodeRepository.findEventMembers(eventUUID.toString())
@@ -489,6 +662,9 @@ public class EventServiceImpl implements EventService {
                 .toList();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Boolean isEventRequestSent(UUID userUUID, UUID eventUUID) {
         return eventNodeRepository.isEventRequestSent(
@@ -497,6 +673,9 @@ public class EventServiceImpl implements EventService {
         );
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Boolean isEventMember(UUID userUUID, UUID eventUUID) {
         return eventNodeRepository.isEventMember(
@@ -505,6 +684,9 @@ public class EventServiceImpl implements EventService {
         );
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<EventThumbnailDTO> getEventsByNameSubstring(String eventNameSubstring) {
         if (eventNameSubstring.isEmpty()) return Collections.emptyList();
@@ -515,6 +697,9 @@ public class EventServiceImpl implements EventService {
                 .toList();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<EventDTO> getUserAccomplishedEvents(UUID userUUID, int numberOfEvents) {
         return eventParticipantRepository.findUserAccomplishedEvents(
@@ -526,6 +711,9 @@ public class EventServiceImpl implements EventService {
                 .toList();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public MultimediaDTO updateEventIcon(UUID eventUUID, MultipartFile icon) {
         Event event = eventRepository.findByUuid(eventUUID).orElseThrow(() ->
@@ -545,6 +733,9 @@ public class EventServiceImpl implements EventService {
         return new MultimediaDTO(event.getIconUrl());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<EventDTO> getUserRecommendedEvents(UUID userUUID) {
         return userRecommendationRepository.findUserRecommendedEvents(userUUID)
@@ -554,6 +745,12 @@ public class EventServiceImpl implements EventService {
                 .toList();
     }
 
+    /**
+     * Metoda zapisująca encję wydarzenia z bazy relacyjnej do węzła w bazie grafowej.
+     *
+     * @param event encja wydarzenia
+     * @param groupUUID globalny, unikalny identyfikator wydarzenia w systemie
+     */
     private void saveInGraphDB(Event event, UUID groupUUID) {
         EventNode eventToSave = eventMapper.toNode(event);
         eventToSave.setOwner(userService.findUserNodeByUUID(event.getOwner().getUuid()));

@@ -8,6 +8,10 @@ import lombok.Setter;
 
 import javax.validation.constraints.NotNull;
 
+/**
+ * Encja reprezentująca statusy wydarzeń w systemie.
+ * Klasa stanowi mapowanie tabeli events_statuses.
+ */
 @Entity
 @Table(name = "events_statuses")
 @NoArgsConstructor
@@ -15,10 +19,15 @@ import javax.validation.constraints.NotNull;
 @Getter
 @Setter
 public class EventStatus {
+    /**
+     * Unikalny identyfikator statusu wydarzenia w systemie.
+     */
     @Id
     private Long id;
 
+    /**
+     * Nazwa statusu wydarzenia.
+     */
     @Column(nullable = false, unique = true, length = 50)
-    @NotNull
     private String name;
 }

@@ -31,21 +31,76 @@ import java.math.RoundingMode;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Implementacja serwisu zarządzającego operacjami na użytkownikach.
+ */
 @Service
 public class UserServiceImpl implements com.socialtripper.restapi.services.UserService {
+    /**
+     * Repozytorium zarządzające encjami użytkowników.
+     */
     private final UserRepository userRepository;
+    /**
+     * Repozytorium zarządzające węzłami użytkowników.
+     */
     private final UserNodeRepository userNodeRepository;
+    /**
+     * Repozytorium zarządzające encjami językami użytkowników.
+     */
     private final UserLanguageRepository userLanguageRepository;
+    /**
+     * Repozytorium zarządzające encjami aktywności użytkowników.
+     */
     private final UserActivityRepository userActivityRepository;
+    /**
+     * Repozytorium zarządzające encjami rekomendacji użytkowników.
+     */
     private final UserRecommendationRepository userRecommendationRepository;
+    /**
+     * Komponent mapujący użytkowników.
+     */
     private final UserMapper userMapper;
+    /**
+     * Komponent mapujący aktywności użytkowników.
+     */
     private final UserActivityMapper userActivityMapper;
+    /**
+     * Komponent mapujący języki użytkowników.
+     */
     private final UserLanguageMapper userLanguageMapper;
+    /**
+     * Serwis zarządzający operacjami wykonywanymi na encjach krajów.
+     */
     private final CountryService countryService;
+    /**
+     * Serwis zarządzający operacjami wykonywanymi na encjach kont użytkowników.
+     */
     private final AccountService accountService;
+    /**
+     * Serwis zarządzający operacjami wykonywanymi na encjach języków.
+     */
     private final LanguageService languageService;
+    /**
+     * Serwis zarządzający operacjami wykonywanymi na encjach aktywności.
+     */
     private final ActivityService activityService;
 
+    /**
+     * Konstruktor wstrzykujący komponenty.
+     *
+     * @param userRepository repozytorium zarządzające encjami użytkowników
+     * @param userMapper komponent mapujący użytkowników
+     * @param countryService serwis zarządzający operacjami wykonywanymi na encjach krajów
+     * @param accountService serwis zarządzający operacjami wykonywanymi na encjach kont użytkowników
+     * @param languageService serwis zarządzający operacjami wykonywanymi na encjach języków
+     * @param activityService serwis zarządzający operacjami wykonywanymi na encjach aktywności
+     * @param userActivityRepository repozytorium zarządzające encjami aktywności użytkowników
+     * @param userLanguageRepository repozytorium zarządzające encjami języków użytkowników
+     * @param userActivityMapper komponent mapujący aktywności użytkowników
+     * @param userLanguageMapper komponent mapujący języki użytkowników
+     * @param userNodeRepository repozytorium zarządzające węzłami użytkowników
+     * @param userRecommendationRepository repozytorium zarządzające encjami rekomendacji użytkowników
+     */
     @Autowired
     public UserServiceImpl(UserRepository userRepository, UserMapper userMapper,
                            CountryService countryService, AccountService accountService,
@@ -67,6 +122,12 @@ public class UserServiceImpl implements com.socialtripper.restapi.services.UserS
         this.userRecommendationRepository = userRecommendationRepository;
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     *     W przypadku gdy encja użytkownika nie istnieje rzucany jest wyjątek {@link UserNotFoundException}.
+     * </p>
+     */
     @Override
     public UserDTO findUserByUUID(UUID uuid) {
         return userMapper.toDTO(
@@ -77,6 +138,12 @@ public class UserServiceImpl implements com.socialtripper.restapi.services.UserS
     }
 
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     *     W przypadku gdy encja użytkownika nie istnieje rzucany jest wyjątek {@link UserNotFoundException}.
+     * </p>
+     */
     @Override
     public User getUserReference(UUID uuid) {
         return userRepository.getReferenceById(
@@ -86,6 +153,12 @@ public class UserServiceImpl implements com.socialtripper.restapi.services.UserS
         );
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     *     W przypadku gdy encja użytkownika nie istnieje rzucany jest wyjątek {@link UserNotFoundException}.
+     * </p>
+     */
     @Override
     public User getNewUserWithReferences(UserDTO userDTO, MultipartFile profilePicture) {
         User user = userMapper.toEntity(userDTO);
@@ -99,6 +172,9 @@ public class UserServiceImpl implements com.socialtripper.restapi.services.UserS
         return user;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public UserActivity addActivity(UUID uuid, UserActivityDTO userActivityDTO) {
         UserActivity userActivity = new UserActivity(
@@ -108,6 +184,9 @@ public class UserServiceImpl implements com.socialtripper.restapi.services.UserS
         return userActivityRepository.save(userActivity);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public UserLanguage addLanguage(UUID uuid, UserLanguageDTO userLanguageDTO) {
         UserLanguage userLanguage = new UserLanguage(
@@ -118,6 +197,9 @@ public class UserServiceImpl implements com.socialtripper.restapi.services.UserS
         return userLanguageRepository.save(userLanguage);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Transactional
     @Override
     public UserActivityDTO setUserActivity(UUID uuid, UserActivityDTO userActivityDTO) {
@@ -132,6 +214,9 @@ public class UserServiceImpl implements com.socialtripper.restapi.services.UserS
         return userActivityMapper.toDTO(userActivityToSet);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @Transactional
     public UserLanguageDTO setUserLanguage(UUID uuid, UserLanguageDTO userLanguageDTO) {
@@ -146,6 +231,9 @@ public class UserServiceImpl implements com.socialtripper.restapi.services.UserS
         return userLanguageMapper.toDTO(userLanguageToSet);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @Transactional
     public UserDTO createUser(UserDTO userDTO, MultipartFile profilePicture) {
@@ -167,6 +255,9 @@ public class UserServiceImpl implements com.socialtripper.restapi.services.UserS
         return userMapper.toDTO(savedUser);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public UserDTO updateUser(UUID uuid, UserDTO userDTO) {
         User userToUpdate = userMapper.copyNonNullValues(
@@ -176,12 +267,21 @@ public class UserServiceImpl implements com.socialtripper.restapi.services.UserS
         return userMapper.toDTO(userRepository.save(userToUpdate));
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     *     W przypadku gdy encja użytkownika nie istnieje rzucany jest wyjątek {@link UserNotFoundException}.
+     * </p>
+     */
     @Override
     public UserNode findUserNodeByUUID(UUID uuid) {
         return userNodeRepository.findByUuid(uuid)
                 .orElseThrow(() -> new UserNotFoundException(uuid));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public UserRequestFollowDTO addFollowRequest(FollowDTO followDTO) {
         userNodeRepository.createFollowRequest(
@@ -196,6 +296,9 @@ public class UserServiceImpl implements com.socialtripper.restapi.services.UserS
         );
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public UserRequestFollowDTO removeFollowRequest(FollowDTO followDTO) {
         userNodeRepository.removeFollowRequest(
@@ -208,6 +311,9 @@ public class UserServiceImpl implements com.socialtripper.restapi.services.UserS
                 "user follow request removed");
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @Transactional
     public UserStartsFollowingMessageDTO followUser(FollowDTO followDTO) {
@@ -224,6 +330,9 @@ public class UserServiceImpl implements com.socialtripper.restapi.services.UserS
         return accountService.followUser(followDTO);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @Transactional
     public UserEndsFollowingMessageDTO unfollowUser(FollowDTO followDTO) {
@@ -235,16 +344,25 @@ public class UserServiceImpl implements com.socialtripper.restapi.services.UserS
         return accountService.unfollowUser(followDTO);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<AccountThumbnailDTO> getFollowedAccounts(UUID uuid) {
         return accountService.getFollowedAccounts(uuid);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<AccountThumbnailDTO> getFollowingAccounts(UUID uuid) {
         return accountService.getFollowingAccounts(uuid);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Boolean isFollowingUser(UUID followerUUID, UUID followedUUID) {
         return userNodeRepository.isFollowingUser(
@@ -253,6 +371,9 @@ public class UserServiceImpl implements com.socialtripper.restapi.services.UserS
         );
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<AccountThumbnailDTO> getUserFollowRequests(UUID uuid) {
         return userNodeRepository.getUserFollowRequests(uuid.toString())
@@ -262,6 +383,9 @@ public class UserServiceImpl implements com.socialtripper.restapi.services.UserS
                 ).toList();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Boolean isFollowRequestSent(UUID followerUUID, UUID followedUUID) {
         return userNodeRepository.isFollowRequestSent(
@@ -270,6 +394,9 @@ public class UserServiceImpl implements com.socialtripper.restapi.services.UserS
         );
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<AccountThumbnailDTO> getRecommendedUsers(UUID uuid) {
         return userRecommendationRepository.findUserRecommendedAccounts(uuid)
@@ -280,6 +407,10 @@ public class UserServiceImpl implements com.socialtripper.restapi.services.UserS
                 .toList();
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void saveUserInGraphDB(User user) {
         UserNode userToSave = userMapper.toNode(user);
         userToSave.setUuid(user.getAccount().getUuid());

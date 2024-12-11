@@ -3,20 +3,35 @@ package com.socialtripper.restapi.mappers;
 import com.socialtripper.restapi.dto.entities.AccountDTO;
 import com.socialtripper.restapi.entities.Account;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 
+/**
+ * Komponent odpowiedzialny za mapowanie między obiektami typu {@link Account} oraz {@link AccountDTO}.
+ */
 @Component
 public class AccountMapper {
+    /**
+     * Komponent odpowiedzialny za mapowanie częściowych danych użytkownika.
+     */
     private final UserThumbnailMapper userThumbnailMapper;
 
+    /**
+     * Konstruktor wstrzykujący komponent mapujący częściowe dane użytkownika.
+     * @param userThumbnailMapper komponent mapujący częściowe informacje o użytkowniku
+     */
     @Autowired
     public AccountMapper(UserThumbnailMapper userThumbnailMapper) {
         this.userThumbnailMapper = userThumbnailMapper;
     }
 
+    /**
+     * Metoda mapująca data transfer obejct konta do encji nowo zakładanego konta.
+     *
+     * @param accountDTO data transfer object dla konta
+     * @return encja konta
+     */
     public Account toNewEntity(AccountDTO accountDTO) {
         if (accountDTO == null) return null;
         return new Account(
@@ -24,7 +39,6 @@ public class AccountMapper {
                 accountDTO.nickname(),
                 accountDTO.email(),
                 accountDTO.isPublic(),
-                accountDTO.salt(),
                 accountDTO.phone(),
                 accountDTO.role(),
                 false,
@@ -39,6 +53,12 @@ public class AccountMapper {
         );
     }
 
+    /**
+     * Metoda mapująca encję konta do data transfer object konta.
+     *
+     * @param account encja konta
+     * @return data transfer object konta
+     */
     public AccountDTO toDTO(Account account) {
         if (account == null) return null;
         return new AccountDTO(
@@ -46,7 +66,6 @@ public class AccountMapper {
                 account.getNickname(),
                 account.getEmail(),
                 account.isPublic(),
-                account.getSalt(),
                 account.getPhone(),
                 account.getRole(),
                 account.isExpired(),
@@ -62,13 +81,19 @@ public class AccountMapper {
         );
     }
 
+    /**
+     * Metoda kopiująca pola dto, niezwiązane z innymi encjami do encji konta użytkownika.
+     *
+     * @param account encja konta, do której mają zostać przekopiowane wartości
+     * @param accountDTO data transfer object, z którego kopiowane są pola
+     * @return encja konta z przekopiowanymi wartościami, podana jako parametr metody
+     */
     public Account copyNonNullValues(Account account, AccountDTO accountDTO) {
         if (accountDTO == null) return null;
         if (accountDTO.uuid() != null) account.setUuid(accountDTO.uuid());
         if (accountDTO.nickname() != null) account.setNickname(accountDTO.nickname());
         if (accountDTO.description() != null) account.setDescription(accountDTO.description());
         if (accountDTO.email() != null) account.setEmail(accountDTO.email());
-        if (accountDTO.salt() != null) account.setSalt(accountDTO.salt());
         if (accountDTO.phone() != null) account.setPhone(accountDTO.phone());
         if (accountDTO.role() != null) account.setRole(accountDTO.role());
         if (accountDTO.isPublic() != null) account.setPublic(accountDTO.isPublic());
