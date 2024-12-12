@@ -78,7 +78,7 @@ public class GroupMapper {
         return new Group(
                 groupDTO.uuid(),
                 groupDTO.name(),
-                1,
+                0,
                 groupDTO.isPublic() != null,
                 groupDTO.description(),
                 groupDTO.rules(),

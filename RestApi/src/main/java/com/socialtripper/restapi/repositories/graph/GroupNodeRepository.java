@@ -100,10 +100,10 @@ public interface GroupNodeRepository extends Neo4jRepository<GroupNode, String> 
     /**
      * Metoda zwracająca listę węzłów użytkowników, którzy wysłali zapytanie o dołączenie do grupy.
      *
-     * @param eventUuid globalny, unikalny identyfikator grupy w systemie
+     * @param groupUuid globalny, unikalny identyfikator grupy w systemie
      * @return lista węzłów użytkowników, którzy wysłali zapytanie o dołączenie do grupy
      */
-    @Query(value = "match (u:USER)-[:APPLIES_FOR_GROUP]->(e:EVENT {uuid: $eventUuid})" +
+    @Query(value = "match (u:USER)-[:APPLIES_FOR_GROUP]->(g:GROUP {uuid: $groupUuid})" +
             " return u {.*}")
-    List<UserNode> findGroupRequests(@Param("eventUuid") String eventUuid);
+    List<UserNode> findGroupRequests(@Param("groupUuid") String groupUuid);
 }
