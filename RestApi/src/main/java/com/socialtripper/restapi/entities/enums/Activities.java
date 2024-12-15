@@ -36,7 +36,7 @@ public enum Activities {
     /**
      * Kemping.
      */
-    CYCLING(7L, "camping");
+    CAMPING(7L, "camping");
 
     /**
      * Identyfikator aktywności pokrywający się z id w bazie danych.
