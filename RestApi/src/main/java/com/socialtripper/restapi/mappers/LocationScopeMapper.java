@@ -4,21 +4,21 @@ import com.socialtripper.restapi.dto.entities.LocationScopeDTO;
 import com.socialtripper.restapi.entities.LocationScope;
 import org.springframework.stereotype.Component;
 
+/**
+ * Komponent odpowiedzialny za mapowanie pomiędzy encją zasięgu grupy {@link LocationScope},
+ * a data transfer object {@link LocationScopeDTO}.
+ */
 @Component
 public class LocationScopeMapper {
-
-    public LocationScope toEntity(LocationScopeDTO locationScopeDTO) {
-        if (locationScopeDTO == null) return null;
-        return new LocationScope(
-                locationScopeDTO.id(),
-                locationScopeDTO.name()
-        );
-    }
-
+    /**
+     * Metoda mapująca encję zasięgu grupy do data transfer object.
+     *
+     * @param locationScope encja zasięgu grupy
+     * @return data transfer object zasięgu grupy
+     */
     public LocationScopeDTO toDTO(LocationScope locationScope) {
         if (locationScope == null) return null;
         return new LocationScopeDTO(
-                locationScope.getId(),
                 locationScope.getName()
         );
     }

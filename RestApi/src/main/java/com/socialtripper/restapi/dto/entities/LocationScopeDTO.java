@@ -1,5 +1,10 @@
 package com.socialtripper.restapi.dto.entities;
 
 
-public record LocationScopeDTO (Long id, String name) {
+/**
+ * Data transfer object dla encji zasięgu grupy.
+ *
+ * @param name nazwa zasięgu grupy
+ */
+public record LocationScopeDTO (String name) {
 }

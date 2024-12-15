@@ -7,28 +7,52 @@ spring:
   application:
     name: social-tripper-rest-api
   datasource:
-#    url: ${SPRING_DATASOURCE_URL}
-#    username: ${SPRING_DATASOURCE_USERNAME}
-#    password: ${SPRING_DATASOURCE_PASSWORD}
-    url: jdbc:postgresql://localhost:5432/SocialTripperDB
-    username: postgres
-    password: postgres
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+#    url: jdbc:postgresql://localhost:5432/SocialTripperDB
+#    username: postgres
+#    password: postgres
     driver-class-name: org.postgresql.Driver
 
   jpa:
     hibernate:
-      #ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO}
-      ddl-auto: update
+      ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO}
+#      ddl-auto: update
     show-sql: true
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
   neo4j:
-    uri: "bolt://localhost:7687"
+#    uri: "bolt://localhost:7687"
+    uri: ${SPRING_NEO4J_URI}
+    #uri: bolt://neo4j:7687
     authentication:
-      username: "neo4j"
-      password: "neo4j"
-#  flyway:
-#    enabled: true
-#    locations: "classpath:db/migration"
-#    baseline-on-migrate: true
+#      username: neo4j
+#      password: neo4j
+      username: ${SPRING_NEO4J_AUTHENTICATION_USERNAME}
+      password: ${SPRING_NEO4J_AUTHENTICATION_PASSWORD}
+#      username: neo4j
+#      password: neo-db-passwd
+  servlet:
+    multipart:
+      max-file-size: 300MB
+      max-request-size: 300MB
+  cloud:
+    azure:
+      storage:
+        blob:
+          connection-string:  BlobEndpoint=https://socialtripperstorage.blob.core.windows.net/;QueueEndpoint=https://socialtripperstorage.queue.core.windows.net/;FileEndpoint=https://socialtripperstorage.file.core.windows.net/;TableEndpoint=https://socialtripperstorage.table.core.windows.net/;SharedAccessSignature=sv=2022-11-02&ss=bfqt&srt=o&sp=rwdlacupiytfx&se=2024-12-31T00:15:14Z&st=2024-11-16T16:15:14Z&spr=https&sig=k6LwTX0JP3UZLx9wZuYa5RNkHAecckcfXdiApF9ZxWE%3D
+          container-name: blob
+#  security:
+#    oauth2:
+#      resourceserver:
+#        jwt:
+#          issuer-uri: "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_wzWATk9X1"
+#          jwk-set-uri: "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_wzWATk9X1/.well-known/jwks.json"
+#
+#
+#cognito:
+#  userPoolId: us-east-1_wzWATk9X1
+#  clientId: 3un0a9e1ti72pie1cc7ekh3qo2
+#  region: us-east-1
