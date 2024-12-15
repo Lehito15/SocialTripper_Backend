@@ -16,7 +16,7 @@ REST API implemented for SocialTripper in Spring Boot.
 
 ---
 
-## Wymagania
+## Requirements
 - **Java 17** or newer version
 - **Maven** for dependencies
 - **Docker** for containerization
